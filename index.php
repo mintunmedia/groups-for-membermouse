@@ -335,7 +335,13 @@ if(!class_exists('MemberMouseGroupAddon')){
 							<div class="membermousegroupmanage">
 								<?php include_once(dirname(__FILE__)."/includes/manage.php");?>
 							</div>
-			<?php		else:?>
+			<?php		// NEW block - begin
+						elseif($type == "import"):?>			
+							<div class="membermousegroupmanage">
+								<?php include_once(dirname(__FILE__)."/includes/import.php");?>
+							</div>							
+			<?php		// NEW block - end
+						else:?>
 							<div class="membermousegroupconfig">
 								<?php include_once(dirname(__FILE__)."/includes/config.php");?>
 							</div>
