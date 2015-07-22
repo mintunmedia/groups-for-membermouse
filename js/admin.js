@@ -417,8 +417,20 @@ jQuery(document).ready(function(){
 		},
 		updateGroup:function(gId){
 			$(".group-loading-container").show();
+			var group_name	= $("#group_name").val();
 			var group_size	= $("#group_size").val();
 			var retVar		= false;
+
+			if(group_name == ''){
+				$("#group_namee").css({"border-color":"#FF0000"});
+				$("#groupNameErr").html("Please enter the Group  Name.");
+				retVar = true;
+			}else{
+				$("#group_name").css({"border-color":"#DFDFDF"});
+				$("#groupNaeErr").html('');
+				retVar = false;
+			}
+
 			if(group_size == ''){
 				$("#group_size").css({"border-color":"#FF0000"});
 				$("#groupSizeErr").html("Please enter the Group Size.");
@@ -437,7 +449,7 @@ jQuery(document).ready(function(){
 					type: 'post',
 					url : updateGroup.ajaxurl,
 					dataType : 'json',
-					data: 'gId='+gId+'&group_size='+group_size,
+					data: 'gId='+gId+'&group_size='+group_size+'&group_name='+group_name,
 					success: function(data){
 						$.each(data, function(i){
 							if(i == "group_size"){
@@ -721,10 +733,22 @@ jQuery(document).ready(function(){
 			}			
 		},
 		createGroupLeader:function(){
+			var group_name 	= $("#group_name").val();
 			var group 		= $("#group").val();
 			var user 		= $("#user").val();
 			var user_id 	= $("#user_id").val();
 			var retVar		= false;
+
+			if(group_name == ''){
+				$("#groupNameErr").html('Please type the Group Name.');
+				$("#group_name").css({"border-color":"#FF0000"});
+				retVar = true;
+			}else{
+				$("#groupNameErr").html('');
+				$("#group_name").css({"border-color":"#DFDFDF"});
+				retVar = false;
+			}
+
 			if(group == ''){
 				$("#groupErr").html('Please select the Group Type.');
 				$("#group").css({"border-color":"#FF0000"});
@@ -754,7 +778,7 @@ jQuery(document).ready(function(){
 					type: 'post',
 					url : createGroupLeader.ajaxurl,
 					dataType : 'json',
-					data: 'group='+group+'&user='+encodeURIComponent(user)+'&user_id='+user_id,
+					data: 'group='+group+'&user='+encodeURIComponent(user)+'&user_id='+user_id+'&group_name='+group_name,
 					success: function(data){
 						$(".group-loading-container").hide();
 						$.each(data, function(i){

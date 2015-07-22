@@ -10,24 +10,13 @@ if(count($_POST) > 0):
 		$$key = $value;
 	endforeach;
 	
-	$errs 	= false;
-	$error	= array();
-	if(empty($group_size)):
-		$error["group_size"]	= 'Please enter the Group Size.';
-		$errs					= true;
-	endif;
-	
-	if($errs == true):
-		$return = json_encode($error);
-	else:
-		$sql	= "UPDATE ".$wpdb -> prefix."group_sets SET group_size = '".$group_size."', modifiedDate = now() WHERE id = '".$gId."'";
+		$sql	= "UPDATE ".$wpdb -> prefix."group_sets SET group_size = '".$group_size."', group_name = '".$group_name."', modifiedDate = now() WHERE id = '".$gId."'";
 		$query	= $wpdb -> query($sql);
 		if($query):
 			$return = json_encode(array("success"=> "yes")); 
 		else:
 			$return = json_encode(array("success"=> "no"));
 		endif;	
-	endif;
 	echo $return;
 endif;	
 ?>

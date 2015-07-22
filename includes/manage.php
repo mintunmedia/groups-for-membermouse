@@ -59,6 +59,7 @@ $results	= $wpdb -> get_results($sql);
 			<th>Group Type</th>
 			<th>Group Leader</th>
 			<th># of Members</th>
+			<th>Enrollment Link</th>
 			<th>Actions</th>
 		</tr>
 	</thead>
@@ -76,6 +77,11 @@ $results	= $wpdb -> get_results($sql);
 				<td><?php echo $groupTypeResult->name; ?></td>
 				<td><a href="<?php echo MM_ModuleUtils::getUrl(MM_MODULE_MANAGE_MEMBERS, MM_MODULE_MEMBER_DETAILS_GENERAL).'&user_id='.$res -> group_leader; ?>" target="_blank"><?php echo $userResult -> user_email;?></a></td>
 				<td><?php echo $activeResult -> active;?> of <?php echo $res -> group_size;?> members</td>
+				<td>
+					<a href="javascript:void(0)" title="Get Purchase Link" class="group-button button-small" onclick='javascript:MGROUP.showMemberPurchaseLink(<?php echo $res -> id;?>, <?php echo $res -> group_leader;?>);'>
+						<?php echo MM_Utils::getIcon('money', '', '1.3em', '1px', '', 'margin-right:0px;'); ?>
+					</a>
+				</td>
 				<td>
 					<?php 
 					$editActionUrl = 'onclick="javascript:MGROUP.editGroupForm(\''.$res -> id.'\');"';

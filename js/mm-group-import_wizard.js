@@ -12,31 +12,37 @@ var MM_ImportGroupWizardViewJS = MM_Core.extend({
 	
 	validateForm: function()
 	{
-		var importFileFromComputer = jQuery('#mm-import-file-from-computer-radio').is(':checked');
+		var importFileFromComputer = jQuery('#mm-group-import-file-from-computer-radio').is(':checked');
 
 		if(importFileFromComputer)
 		{
-			jQuery("#mm-import-file-from-url").val("");
-			jQuery("#mm-import-file-source").val("computer");
+			jQuery("#mm-group-import-file-from-url").val("");
+			jQuery("#mm-group-import-file-source").val("computer");
 			
-			var fileFromComputer = jQuery("#mm-uploaded-file-hidden").html();
+			var fileFromComputer = jQuery("#fileToUpload").val();
+			var length = fileFromComputer.length;
 			
-			if(fileFromComputer == undefined || fileFromComputer.length <= 0)
+			if(fileFromComputer == undefined || length <= 0)
 			{
 				alert("Please upload a file before importing members");
 				return false;
 			}
+			if(fileFromComputer.substring(length-3,length) != 'csv')
+			{
+				alert("Please upload s CSV file like the above template");
+				return false;
+			}
 			else
 			{
-				jQuery("#mm-import-file-from-computer").val(fileFromComputer);
+				jQuery("#mm-group-import-file-from-computer").val(fileFromComputer);
 			}
 		}
 		else
 		{
-			jQuery("#mm-import-file-from-computer").val("");
-			jQuery("#mm-import-file-source").val("url");
+			jQuery("#mm-group-import-file-from-computer").val("");
+			jQuery("#mm-group-import-file-source").val("url");
 
-			var fileFromUrl = jQuery("#mm-import-file-from-url-source").val();
+			var fileFromUrl = jQuery("#mm-group-import-file-from-url-source").val();
 			
 			if(fileFromUrl == undefined || fileFromUrl == "")
 			{
@@ -45,7 +51,7 @@ var MM_ImportGroupWizardViewJS = MM_Core.extend({
 			}
 			else
 			{
-				jQuery("#mm-import-file-from-url").val(fileFromUrl);
+				jQuery("#mm-group-import-file-from-url").val(fileFromUrl);
 			}
 		}
 		
@@ -57,4 +63,4 @@ var MM_ImportGroupWizardViewJS = MM_Core.extend({
 	}
 });
 
-var mmjs = new MM_ImportGroupWizardViewJS("MM_ImportGroupWizardView", "Import Wizard");
+var mgjs = new MM_ImportGroupWizardViewJS("MM_ImportGroupWizardView", "Import Wizard");
