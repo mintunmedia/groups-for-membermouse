@@ -1,0 +1,2 @@
+Username, Email, Phone, Registration Date, Expiration Date, Password, First Name, Last Name, Billing Address, Billing City, Billing State, Billing Zip Code, Billing Country, Shipping Address, Shipping City, Shipping State, Shipping Zip Code, Shipping Country, Status, Bundles, Bundle Status, Bundle Start Dates, Bundle Expiration Dates, Custom Field 1, Custom Field 2
+,jdoe@gmail.com,212-555-1212,10/1/2012,,mypass123,John,Doe,123 Pine St.,New York,NY,10004,US,123 Pine St.,New York,NY,10004,US,1,1|3|4,1|2|1,10/10/12|3/8/12|7/10/12,,,

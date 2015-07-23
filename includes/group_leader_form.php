@@ -25,6 +25,20 @@ $groupResults	= $wpdb -> get_results($groupSql);
 		<div id="group_popup_msg" style="display:none;"></div>
 		<table cellpadding="2" cellspacing="0" border="0" width="100%" style="float:left;">
 			<tr>
+				<td width="140">Group Name*</td>
+				<td>
+					<div style="float:left;width:auto;">
+						<input type="text" name="group_name" id="group_name" value=""  style="width:200px;"/>
+					</div>
+					<div class="groupError" id="groupNameErr"></div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div class="group-divider"></div>
+				</td>
+			</tr>
+			<tr>
 				<td width="140">Group Type*</td>
 				<td>
 					<select name="group" id="group">

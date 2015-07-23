@@ -63,9 +63,8 @@ if(count($_POST) > 0):
 	if($errs == false):
 		$gNameSql		= "SELECT group_size FROM ".$wpdb -> prefix."group_items WHERE id = '".$group."'";
 		$gNameResult	= $wpdb -> get_row($gNameSql);
-		$groupName 		= 'Group';
 		$group_size		= $gNameResult -> group_size;
-		$sql	= "INSERT INTO ".$wpdb -> prefix."group_sets(id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','".$group."','".$groupName."','".$group_size."','".$user_id."','1',now(),now())";
+		$sql	= "INSERT INTO ".$wpdb -> prefix."group_sets(id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','".$group."','".$group_name."','".$group_size."','".$user_id."','1',now(),now())";
 		$query  = $wpdb -> query($sql);
 		if($query):
 			$updateUser 	= wp_update_user(array('ID' => $user_id, 'role' => 'Group Leader'));
