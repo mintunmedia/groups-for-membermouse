@@ -202,7 +202,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 			$table_group_item 	= $wpdb -> prefix.'group_items';
 			$table_group_notice	= $wpdb -> prefix.'group_notices';
 			
-            if($wpdb -> get_var( "show tables like $table_name" ) != $table_name):
+            if($wpdb -> get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name):
 				$sql = "CREATE TABLE IF NOT EXISTS $table_name (
                     id INT(11) NOT NULL AUTO_INCREMENT,
                     group_template_id INT(11) NOT NULL DEFAULT '0',
@@ -217,7 +217,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 				dbDelta($sql);
 			endif;
 			
-			if($wpdb -> get_var( "show tables like $table_name1" ) != $table_name1):
+			if($wpdb -> get_var( "SHOW TABLES LIKE '$table_name1'" ) != $table_name1):
 				$sql = "CREATE TABLE IF NOT EXISTS $table_name1 (
                     id INT(11) NOT NULL AUTO_INCREMENT,
                     group_id INT(11) NOT NULL DEFAULT '0',
@@ -229,7 +229,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 				dbDelta($sql);
 			endif;
 			
-			if($wpdb -> get_var( "show tables like $table_group_item" ) != $table_group_item):
+			if($wpdb -> get_var( "SHOW TABLES LIKE '$table_group_item'" ) != $table_group_item):
 				$sql = "CREATE TABLE IF NOT EXISTS $table_group_item (
                     id INT(11) NOT NULL AUTO_INCREMENT,
                     name VARCHAR(255) NOT NULL,
@@ -246,7 +246,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 				dbDelta($sql);
 			endif;
 			
-			if($wpdb -> get_var( "show tables like $table_group_notice" ) != $table_group_notice):
+			if($wpdb -> get_var( "SHOW TABLES LIKE '$table_group_notice'" ) != $table_group_notice):
 				$sql = "CREATE TABLE IF NOT EXISTS $table_group_notice(
                     id INT(11) NOT NULL AUTO_INCREMENT,
                     group_id INT(11) NOT NULL DEFAULT '0',
