@@ -104,10 +104,11 @@ $results	= $wpdb -> get_results($sql);
 			    $header = null;
 			    $data   = array();
 			    # Open the File.
+			    ini_set( 'auto_detect_line_endings', TRUE ); // fix for OSX systems not set to insert Unix \n
 			    if (($handle = fopen($movefile['file'], "r")) !== false) {
-
+			    	 $fp = file_get_contents( $movefile['file'] );
 			    	 $rows = explode("\n", $fp);
-   					 $seats_required = count($rows);
+   					 $seats_required = count($rows) - 1; // -1 to not include the header of the file
 
    					 if($seats_required <= $seats_available){
 	   					 	while (($row = fgetcsv($handle, 1000, ",")) !== false) {
@@ -158,6 +159,7 @@ $results	= $wpdb -> get_results($sql);
 			        //redirect to the group management page
 			        $url = admin_url('admin.php?page=membermousegroupaddon&type=import');
 			    }
+			    ini_set( 'auto_detect_line_endings', FALSE );
 		}
 	}
 	else 
