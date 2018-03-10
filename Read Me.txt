@@ -1,5 +1,0 @@
-In order to use MemberMouse Groups Addon, follow these steps:
-1. Download the MemberMouse Groups Addon zip inside your plugins folder
-2. Unzip file
-3. Rename the unzipped folder from membermouse-groups-addon-master to MemberMouseGroupAddon
-4. Go to your Plugin menu in the dashboard of Wordpress and activate the plugin
