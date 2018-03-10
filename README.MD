@@ -7,4 +7,4 @@ The MemberMouse Group Addon plugin extends MemberMouse with the ability to have 
 ## Installation
 
 1. Copy the `MemberMouseGroupAddon/` directory to your `wp-content/plugins/` folder.
-2. Go to the Plugins Dashboard in your WordPress installation and click `Activate`
+2. Go to the Plugins page in your WordPress Dashboard and click `Activate`.
