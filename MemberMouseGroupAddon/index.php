@@ -3,9 +3,9 @@
  * Plugin Name: MemberMouse Groups Extension
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type.
  * Version: 1.0.2
- * Author: MemberMouse, LLC
- * Plugin URI:  http://membermouse.com
- * Author URI:  http://membermouse.com
+ * Author: Mintun Media
+ * Plugin URI:  https://www.membermousegroupsplugin.com
+ * Author URI:  https://www.mintunmedia.com
  *
  ****************************************************************************************************************************/
 if(!(DEFINED( 'MGROUP_DIR' ))) DEFINE('MGROUP_DIR', WP_PLUGIN_URL."/MemberMouseGroupAddon/");
@@ -13,7 +13,7 @@ if(!(DEFINED( 'MGROUP_IMG' ))) DEFINE('MGROUP_IMG', WP_PLUGIN_URL."/MemberMouseG
 
 if(!class_exists('MemberMouseGroupAddon')){
 	class MemberMouseGroupAddon{
-		
+
 		function __construct(){
 			$this -> plugin_name = basename(dirname(__FILE__)).'/'.basename(__FILE__);
 			include_once(ABSPATH .'wp-admin/includes/plugin.php');
@@ -31,21 +31,21 @@ if(!class_exists('MemberMouseGroupAddon')){
 				add_shortcode('MM_Group_SignUp_Link', array(&$this, 'MemberMouseGroupPurchaseLinkShortcode'));
 			endif;
 		}
-		
+
 		function MemberMouseGroupAddonActivate(){
 			$this -> MemberMouseGroupAddGroup();
 			$this -> MemberMouseGroupAddonCreateTables();
 			$this -> MemberMouseGroupAddCap();
 			$this -> MemberMouseGroupAddRoll();
 		}
-		
+
 		function MemberMouseGroupAddonDeactivate(){
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
 			global $wpdb, $current_user;
 			$user_id = $current_user -> ID;
-					
-			/* CODE TO CANCEL MEMBERSHIP OF GROUP LEADERS AND MEMBERS 	
+
+			/* CODE TO CANCEL MEMBERSHIP OF GROUP LEADERS AND MEMBERS
 			$leaderSql		= "SELECT id,group_leader FROM ".$wpdb -> prefix."group_sets WHERE 1";
 			$leaderResults	= $wpdb -> get_results($leaderSql);
 			$leaderCount	= count($leaderResults);
@@ -72,12 +72,12 @@ if(!class_exists('MemberMouseGroupAddon')){
 			endif;
 			*/
 		}
-		
+
 		function MemberMouseGroupAddonAdminResources(){
 			/* Scripts */
 			wp_register_script('MemberMouseGroupAddOnAdminJs', MGROUP_DIR.'js/admin.js');
 			wp_enqueue_script('MemberMouseGroupAddOnAdminJs', plugins_url('js/admin.js', __FILE__), array('jquery', 'MemberMouseGroupAddOnAdminJs'));
-			
+
 			wp_enqueue_script( 'import-group', MGROUP_DIR . 'js/mm-group-import_wizard.js', array('jquery', 'MemberMouseGroupAddOnAdminJs'), '1.0.0', true );
 
 			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'createGroup', array('ajaxurl' => plugins_url('includes/create_group.php', __FILE__)));
@@ -103,14 +103,14 @@ if(!class_exists('MemberMouseGroupAddon')){
 			//Styles
 			wp_enqueue_style( 'MemberMouseGroupAddOnAdminCss', plugins_url('/css/admin.css', __FILE__));
 		}
-		
+
 		function MemberMouseGroupAddonAdminMenu(){
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
 			add_menu_page("MemberMouse Groups","MM Groups",'list_users',"membermousegroupaddon",array(&$this,'MemberMouseGroupAddonAdminManagement'), MM_Utils::getImageUrl('mm-logo-svg-white'), '3.21');
 			add_submenu_page("membermousegroupaddon","Group Management Dashboard","Group Management Dashboard",'Group Leader',"membermousemanagegroup",array(&$this,"MemberMouseManageGroup"));
 		}
-		
+
 		function MemberMouseGroupPurchaseLinkShortcode(){
 			global $wpdb, $current_user;
 			if(is_user_logged_in() && in_array('Group Leader', $current_user -> roles)):
@@ -122,22 +122,22 @@ if(!class_exists('MemberMouseGroupAddon')){
 					$groupName		= $leaderResult -> group_name;
 					$itemSql		= "SELECT member_memlevel,group_member_cost FROM ".$wpdb -> prefix."group_items WHERE id = '".$template_id."'";
 					$itemResult		= $wpdb -> get_row($itemSql);
-	
+
 					if(!empty($itemResult -> group_member_cost)):
 						$itemCost		= $itemResult -> group_member_cost;
 						$purchaseUrl 	= MM_CorePageEngine::getCheckoutPageStaticLink($itemCost);
 					else:
 						$itemCost		= $itemResult -> member_memlevel;
 						$purchaseUrl 	= MM_CorePageEngine::getCheckoutPageStaticLink($itemCost, true);
-					endif;	
-					$custom_field	= get_option("mm_custom_field_group_id");	
+					endif;
+					$custom_field	= get_option("mm_custom_field_group_id");
 					$purchaseUrl 	.= '&cf_'.$custom_field.'=g'.$group_id;
 					return $purchaseUrl;
-				endif;	
+				endif;
 			endif;
 			return '';
 		}
-		
+
 		function MemberMouseGroupAdminNotice(){
 			global $current_user;
 	        $user_id 	= $current_user -> ID;
@@ -149,40 +149,40 @@ if(!class_exists('MemberMouseGroupAddon')){
 						printf(__('<strong>Please add the following to your checkout page within the [MM_Form type="checkout"] and [/MM_Form] tags:</strong> [MM_Form_Field type="custom-hidden" id="'.$group_id.'"] | <a href="%1$s">Hide Notice</a>'), '?MemberMouseGroupIgnoreNotice=0');
 					echo "</p></div>";
 				endif;
-				
+
 				if(!get_user_meta($user_id, 'MemberMouseGroupShortcodeIgnoreNotice')):
 					echo '<div class="updated"><p>';
 						printf(__('<strong>Place this shortcode on your Group Leader\'s confirmation page to show their member signup link.</strong> [MM_Group_SignUp_Link]. | <a href="%1$s">Hide Notice</a>'), '?MemberMouseGroupShortcodeIgnoreNotice=0');
-					echo "</p></div>";	
-					
+					echo "</p></div>";
+
 				endif;
-			endif;	
+			endif;
 		}
-		
+
 		function MemberMouseGroupAdminNoticeIgnore(){
 			global $current_user;
 	        $user_id = $current_user -> ID;
 	        if(isset($_GET['MemberMouseGroupIgnoreNotice']) && '0' == $_GET['MemberMouseGroupIgnoreNotice']):
 	             add_user_meta($user_id, 'MemberMouseGroupIgnoreNotice', 'true', true);
 			endif;
-			
+
 			if(isset($_GET['MemberMouseGroupShortcodeIgnoreNotice']) && '0' == $_GET['MemberMouseGroupShortcodeIgnoreNotice']):
 	             add_user_meta($user_id, 'MemberMouseGroupShortcodeIgnoreNotice', 'true', true);
 			endif;
 		}
-		
+
 		function MemberMouseGroupAddCap(){
 			$custom_cap	= "membermouse_group_capability";
-			$grant      = true; 
+			$grant      = true;
 			foreach($GLOBALS['wp_roles'] -> role_objects as $role => $name):
 			//	if($role == "Group Leader"):
 			if(!$name -> has_cap($custom_cap)):
 				$name -> add_cap($custom_cap, $grant);
 			endif;
-			//	endif;	
+			//	endif;
 			endforeach;
 		}
-		
+
 		function MemberMouseGroupRemoveCap(){
 			$custom_cap	= "membermouse_group_capability";
 			foreach($GLOBALS['wp_roles'] -> role_objects as $role => $name):
@@ -190,10 +190,10 @@ if(!class_exists('MemberMouseGroupAddon')){
 					if(!$name -> has_cap($custom_cap)):
 						$name -> remove_cap($custom_cap);
 					endif;
-			//	endif;	
-			endforeach;			
-		} 
-		
+			//	endif;
+			endforeach;
+		}
+
 		function MemberMouseGroupAddonCreateTables(){
 			global $wpdb;
 			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -201,7 +201,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 			$table_name1 		= $wpdb -> prefix.'group_sets_members';
 			$table_group_item 	= $wpdb -> prefix.'group_items';
 			$table_group_notice	= $wpdb -> prefix.'group_notices';
-			
+
             if($wpdb -> get_var( "SHOW TABLES LIKE '$table_name'" ) != $table_name):
 				$sql = "CREATE TABLE IF NOT EXISTS $table_name (
                     id INT(11) NOT NULL AUTO_INCREMENT,
@@ -216,7 +216,7 @@ if(!class_exists('MemberMouseGroupAddon')){
                 );";
 				dbDelta($sql);
 			endif;
-			
+
 			if($wpdb -> get_var( "SHOW TABLES LIKE '$table_name1'" ) != $table_name1):
 				$sql = "CREATE TABLE IF NOT EXISTS $table_name1 (
                     id INT(11) NOT NULL AUTO_INCREMENT,
@@ -228,7 +228,7 @@ if(!class_exists('MemberMouseGroupAddon')){
                 );";
 				dbDelta($sql);
 			endif;
-			
+
 			if($wpdb -> get_var( "SHOW TABLES LIKE '$table_group_item'" ) != $table_group_item):
 				$sql = "CREATE TABLE IF NOT EXISTS $table_group_item (
                     id INT(11) NOT NULL AUTO_INCREMENT,
@@ -245,7 +245,7 @@ if(!class_exists('MemberMouseGroupAddon')){
                 );";
 				dbDelta($sql);
 			endif;
-			
+
 			if($wpdb -> get_var( "SHOW TABLES LIKE '$table_group_notice'" ) != $table_group_notice):
 				$sql = "CREATE TABLE IF NOT EXISTS $table_group_notice(
                     id INT(11) NOT NULL AUTO_INCREMENT,
@@ -260,7 +260,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 				dbDelta($sql);
 			endif;
 		}
-		
+
 		function MemberMouseGroupAddGroup(){
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
@@ -290,9 +290,9 @@ if(!class_exists('MemberMouseGroupAddon')){
 				$customField -> setShowOnMyAccount("0");
 				$customField -> setHiddenFlag("1");
 				$customField -> commitData();
-			endif;	
+			endif;
 		}
-		
+
 		function MemberMouseGroupOptionUpdate(){
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
@@ -301,21 +301,21 @@ if(!class_exists('MemberMouseGroupAddon')){
 				if($displayName == "group_id"):
 					update_option("mm_custom_field_group_id", $id);
 					break;
-				endif;	
+				endif;
 			endforeach;
 		}
-		
+
 		function MemberMouseGroupAddRoll(){
 			$role 			= "Group Leader";
 			$display_name 	= "Group Leader";
 			$capabilities	= array("read" => true,"membermouse_group_capability" => true);
 			add_role($role, $display_name, $capabilities);
 		}
-		
+
 		function MemberMouseGroupRemoveRoll(){
 			remove_role("Group Leader");
 		}
-				
+
 		function MemberMouseGroupAddonAdminManagement(){
 			global $wpdb;
 			if(isset($_GET["type"]) && !empty($_GET["type"])):
@@ -334,30 +334,30 @@ if(!class_exists('MemberMouseGroupAddon')){
 						<?php include_once(dirname(__FILE__)."/includes/tabs.php");?>
 					</div>
 					<div class="membermousegroupcontent">
-			<?php		if($type == "manage"):?>			
+			<?php		if($type == "manage"):?>
 							<div class="membermousegroupmanage">
 								<?php include_once(dirname(__FILE__)."/includes/manage.php");?>
 							</div>
 			<?php		// NEW block - begin
-						elseif($type == "import"):?>			
+						elseif($type == "import"):?>
 							<div class="membermousegroupmanage">
 								<?php include_once(dirname(__FILE__)."/includes/import.php");?>
-							</div>							
+							</div>
 			<?php		// NEW block - end
 						else:?>
 							<div class="membermousegroupconfig">
 								<?php include_once(dirname(__FILE__)."/includes/config.php");?>
 							</div>
-			<?php		endif;?>	
-					</div>	
-				</div>	
+			<?php		endif;?>
+					</div>
+				</div>
 			</div>
 <?php	}
 
 		function MemberMouseManageGroup(){
 			include_once(dirname(__FILE__)."/includes/manage_groups.php");
 		}
-		
+
 		function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetpage, $type="groups"){
 			$prev 		= $page - 1;
 			$next 		= $page + 1;
@@ -365,7 +365,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 			$pagination = "";
 			$pagination .= "<div class=\"group_pagination\">";
 				$pagination .= '<span class="group_prev_next">';
-					$pagination .= 'Page'; 
+					$pagination .= 'Page';
 					if($page > 1):
 						$pagination .= '<a href="'.$targetpage.'&p='.$prev.'" class="prev" title="Previous" style="margin-left:4px; margin-right:4px;">';
 							$pagination .= MM_Utils::getIcon('chevron-circle-left', 'light-blue', '1.4em', '1px');
@@ -384,16 +384,16 @@ if(!class_exists('MemberMouseGroupAddon')){
 						$pagination .= '<a href="javascript:void(0);" title="Next" style="margin-left:4px; margin-right:4px;">';
 							$pagination .= MM_Utils::getIcon('chevron-circle-right', 'light-blue', '1.4em', '1px');
 						$pagination .= '</a>';
-					endif;	
+					endif;
 					$pagination .= 'of	'.$lastpage.' pages';
 				$pagination .= '</span>';
 				$pagination .= '<span class="group_show">';
-					$pagination .= 'Show '; 
+					$pagination .= 'Show ';
 					$pagination .= "<select name=\"show_record\" id=\"show_record\" onchange=\"javascript:MGROUP.changeRecordVal(this.value,'".$targetpage."');\">";
 						$pagination .= '<option value="10"';
 							if($limit == 10):
 								$pagination .= ' selected="selected"';
-							endif;	
+							endif;
 						$pagination .= '>10</option>';
 						$pagination .= '<option value="20"';
 							if($limit == 20):
@@ -420,17 +420,17 @@ if(!class_exists('MemberMouseGroupAddon')){
 								$pagination .= ' selected="selected"';
 							endif;
 						$pagination .= '>1000</option>';
-					$pagination .= '</select> '; 
+					$pagination .= '</select> ';
 					$pagination .= 'per page';
 				$pagination .= '</span>';
 				$pagination .= '<span class="group_found">'.$count.' '.$type.' found</span>';
 			$pagination.= "</div>";
-			
+
 			return $pagination;
 		}
 
 		// hook over mm_member_add
-		
+
 		function MemberMouseGroupMemberAdded($data){
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
@@ -448,7 +448,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 						$groupSize		= $templateResult -> group_size;
 						$sql			= "INSERT INTO ".$wpdb -> prefix."group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','".$template_id."','".$groupName."','".$groupSize."','".$memberId."','1',now(),now())";
 						$query			= $wpdb -> query($sql);
-						$updateUser 	= wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));	
+						$updateUser 	= wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));
 					endif;
 				else:
 				//	$gID	= substr($cf, -1);
@@ -468,21 +468,21 @@ if(!class_exists('MemberMouseGroupAddon')){
 							$groupSql		= "SELECT group_leader FROM ".$wpdb -> prefix."group_sets WHERE id = '".$groupId."'";
 							$groupResult	= $wpdb -> get_row($groupSql);
 							$group_leader	= $groupResult -> group_leader;
-			
+
 							$adminSql	= "INSERT INTO ".$wpdb -> prefix."group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','".$groupId."','".$memberId."','".$group_leader."','0',now(),now())";
 							$adminQuery	= $wpdb -> query($adminSql);
-							
+
 							$leaderSql		= "INSERT INTO ".$wpdb -> prefix."group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','".$groupId."','".$memberId."','".$group_leader."','1',now(),now())";
 							$leaderQuery	= $wpdb -> query($leaderSql);
-							
+
 							$user 		= new MM_User($memberId);
 							$userStatus	= MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
 						endif;
-					endif;	
-				endif;		
-			endif;	
+					endif;
+				endif;
+			endif;
 		}
-		
+
 		function MemberMouseGroupLeaderStatus($data){
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
 			include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
@@ -506,7 +506,7 @@ if(!class_exists('MemberMouseGroupAddon')){
 						$userStatus	= MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
 					endforeach;
 				endif;
-			endif;	
+			endif;
 		}
 	}
 }
