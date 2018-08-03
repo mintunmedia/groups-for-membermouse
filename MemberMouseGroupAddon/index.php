@@ -349,25 +349,40 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					<div id="create_group_content" style="display:none;"></div>
 				</div>
 				<div class="membermousegroupaddon">
-					<div class="membermousegrouptabs">
-						<?php include_once(dirname(__FILE__) . "/includes/tabs.php"); ?>
-					</div>
-					<div class="membermousegroupcontent">
-			<?php	if ($type == "manage") : ?>
+					<h2>MemberMouse Groups</h2>
+					<div class="membermousegroups-row">
+						<div class="membermousegrouptabs">
+							<?php include_once(dirname(__FILE__) . "/includes/tabs.php"); ?>
+						</div>
+						<div class="membermousegroupcontent">
+						<?php if ($type == "manage") : ?>
 							<div class="membermousegroupmanage">
 								<?php include_once(dirname(__FILE__) . "/includes/manage.php"); ?>
 							</div>
-			<?php		// NEW block - begin
-		elseif ($type == "import") : ?>
+						<?php // NEW block - begin
+					elseif ($type == "import") : ?>
 							<div class="membermousegroupmanage">
 								<?php include_once(dirname(__FILE__) . "/includes/import.php"); ?>
 							</div>
-			<?php		// NEW block - end
-		else : ?>
+						<?php // NEW block - end
+					else : ?>
 							<div class="membermousegroupconfig">
 								<?php include_once(dirname(__FILE__) . "/includes/config.php"); ?>
 							</div>
-			<?php	endif; ?>
+						<?php endif; ?>
+						</div>
+						<div class="membermousegroups-cta">
+							<div class="theCta red hideme">
+								<h2>Get More Features with<br />MemberMouse+ PRO</h2>
+								<p>MemberMouse+ PRO gives you more features and integrations that help you concentrate on building your business versus working in it!</p>
+								<a href="https://www.membermouseplus.com/" target="_blank" class="redbtn">Check It Out</a>
+							</div>
+							<div class="theCta purple">
+								<h2>Need MemberMouse Development Help?</h2>
+								<p>The development team behind the MemberMouse Groups plugin is here to help you get started or take your membership site to the next level! We offer development services and customization services.</p>
+								<a href="https://www.membermouseplus.com/support/" target="_blank">Yes! Help Me!</a>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

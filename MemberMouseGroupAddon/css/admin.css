@@ -25,7 +25,7 @@
     font-family				: Arial,Helvetica,sans-serif;
     height					: 33px;
 	float					: left;
-	width					: 100%;
+	width					: 75%;
 }
 .membermousegrouptabs ul li a{
     text-decoration	: none;
@@ -102,12 +102,11 @@
 }
 .membermousegroupcontent{
 	float	: left;
-	width	: 100%;
+	width	: 75%;
 	padding	: 0px;
 	margin	: 20px 0px 0px 0px;
 }
 .membermousegroupcontent h2{
-	float	: left;
 	width	: 100%;
 	padding	: 0px;
 	margin	: 0px 0px 10px 0px;
@@ -123,6 +122,57 @@
 	width	: 100%;
 	padding	: 0px;
 	margin	: 0px;
+}
+.membermousegroups-cta {
+    float:right;
+    width:22%;
+}
+.membermousegroups-cta .theCta {
+    background: #fff;
+    padding: 20px;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+    margin-bottom:20px;
+}
+.membermousegroups-cta h2 {
+    text-align: center;
+    margin: 0 0 1em;
+}
+.membermousegroups-cta .theCta p {
+    text-align:center;
+    font-size:14px;
+}
+.membermousegroups-cta .theCta.red {
+    border-color:#ec5f5f;
+}
+.membermousegroups-cta .theCta.purple {
+    border-color:#7085e2;
+}
+.membermousegroups-cta .theCta.teal {
+    border-color:#85e2da;
+}
+.membermousegroups-cta .theCta a {
+    display: block;
+    text-align: center;
+    background: #7085e2;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 3px;
+    padding: 8px;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+    font-weight:700;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    transition:0.3s ease;
+}
+.membermousegroups-cta .theCta a:hover {
+    opacity:0.7;
+}
+.membermousegroups-cta .theCta a.redbtn {
+    background:#ec5f5f;
+}
+.membermousegroups-cta .theCta.hideme {
+    display:none;
 }
 .membermousegroupbuttoncontainer{
 	float	: left;
