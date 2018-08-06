@@ -24,7 +24,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			if (is_plugin_active($plugin)) :
 				register_activation_hook($this->plugin_name, array(&$this, 'MemberMouseGroupAddonActivate'));
 			register_deactivation_hook($this->plugin_name, array(&$this, 'MemberMouseGroupAddonDeactivate'));
-			add_action('admin_menu', array(&$this, 'MemberMouseGroupAddonAdminMenu'));
+			add_action('admin_menu', array(&$this, 'MemberMouseGroupAddonAdminMenu'), 11 );
 			add_action('admin_head', array(&$this, 'MemberMouseGroupAddonAdminResources'));
 			add_action('mm_member_add', array(&$this, 'MemberMouseGroupMemberAdded'));
 			add_action('mm_member_status_change', array(&$this, 'MemberMouseGroupLeaderStatus'));
@@ -115,8 +115,9 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
 			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
 			//add_menu_page("MemberMouse Groups","MM Groups",'list_users',"membermousegroupaddon",array(&$this,'MemberMouseGroupAddonAdminManagement'), MM_Utils::getImageUrl('mm-logo-svg-white'), '3.21');
-			//add_submenu_page("membermousegroupaddon","Group Management Dashboard","Group Management Dashboard",'Group Leader',"membermousemanagegroup",array(&$this,"MemberMouseManageGroup"));
+			//add_submenu_page("mmdashboard","Group Management Dashboard","Group Management Dashboard",'Group Leader',"membermousemanagegroup",array(&$this,"MemberMouseManageGroup"));
 			add_submenu_page('mmdashboard', 'MemberMouse Groups', 'Groups', 'manage_options', 'membermousegroupaddon', array(&$this, 'MemberMouseGroupAddonAdminManagement'));
+			
 		}
 
 		function MemberMouseGroupPurchaseLinkShortcode()
