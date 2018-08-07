@@ -11,5 +11,5 @@ The MemberMouse Group Addon plugin extends MemberMouse with the ability to have 
 3. The plugin options screen is located in MemberMouse > Groups.
 
 ## Instructions on Usage
-1. You'll need to add a special shortcode to your checkout page in between the [MM_Form type="checkout"] and [/MM_Form] tags. This shortcode may have a different ID than the one displayed here: [MM_Form_Field type="custom-hidden" id="1"]
-2. You'll want to place a shortcode on the Group Leader's payment confirmation page, this shows them their member signup link (which they'll use to send to the people they want to invite to your membership): [MM_Group_SignUp_Link]
+1. You'll need to add a special shortcode to your checkout page in between the `[MM_Form type="checkout"]` and `[/MM_Form]` tags. This shortcode may have a different ID than the one displayed here: `[MM_Form_Field type="custom-hidden" id="1"]`
+2. You'll want to place a shortcode on the Group Leader's payment confirmation page, this shows them their member signup link (which they'll use to send to the people they want to invite to your membership): `[MM_Group_SignUp_Link]`
