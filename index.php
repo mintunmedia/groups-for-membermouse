@@ -1,12 +1,14 @@
 <?php
 
 /****************************************************************************************************************************
- * Plugin Name: MemberMouse Groups Extension
- * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type.
+ * Plugin Name: MemberMouse Groups
+ * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
  * Version: 1.0.2
  * Author: Mintun Media
- * Plugin URI:  https://www.membermousegroupsplugin.com
+ * Plugin URI:  https://www.membermouseplus.com/groups-plugin/
  * Author URI:  https://www.mintunmedia.com
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
  ****************************************************************************************************************************/
 if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', WP_PLUGIN_URL . "/MemberMouseGroupAddon/");
@@ -115,8 +117,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
 			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
 			//add_menu_page("MemberMouse Groups","MM Groups",'list_users',"membermousegroupaddon",array(&$this,'MemberMouseGroupAddonAdminManagement'), MM_Utils::getImageUrl('mm-logo-svg-white'), '3.21');
-			//add_submenu_page("mmdashboard","Group Management Dashboard","Group Management Dashboard",'Group Leader',"membermousemanagegroup",array(&$this,"MemberMouseManageGroup"));
 			add_submenu_page('mmdashboard', 'MemberMouse Groups', 'Groups', 'manage_options', 'membermousegroupaddon', array(&$this, 'MemberMouseGroupAddonAdminManagement'));
+			add_submenu_page('mmdashboard','Group Management Dashboard','Group Management Dashboard','Group Leader','membermousemanagegroup',array(&$this,"MemberMouseManageGroup"));
 			
 		}
 
