@@ -1,6 +1,6 @@
-=== MemberMouse Groups ===
+=== Groups for MemberMouse ===
 Contributors: mintunmedia,premiumbizthemes,roymckenzie
-Tags: membermouse, member management, membership site, groups
+Tags: membermouse, member management, membership site, groups, mm groups, groups for membermouse
 Requires at least: 4.8
 Tested up to: 4.9.8
 Requires PHP: 5.6

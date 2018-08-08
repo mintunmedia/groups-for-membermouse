@@ -11,19 +11,19 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
  ****************************************************************************************************************************/
-if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', WP_PLUGIN_URL . "/groups-for-membermouse/");
-if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', WP_PLUGIN_URL . "/groups-for-membermouse/images/");
+if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membermouse'));
+if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
 if (!class_exists('MemberMouseGroupAddon')) {
 	class MemberMouseGroupAddon
 	{
 
-		function __construct()
-		{
+		function __construct() {
 			$this->plugin_name = basename(dirname(__FILE__)) . '/' . basename(__FILE__);
-			include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-			$plugin = 'membermouse/index.php';
-			if (is_plugin_active($plugin)) :
+			include_once(network_admin_url('includes/plugin.php')); // will work for multisite as well. Currently not loading. Need to hook to admin_init
+
+			$mmplugin = 'membermouse/index.php';
+			if (is_plugin_active($mmplugin)) { // not working because plugin.php is not loaded yet
 				register_activation_hook($this->plugin_name, array(&$this, 'MemberMouseGroupAddonActivate'));
 				register_deactivation_hook($this->plugin_name, array(&$this, 'MemberMouseGroupAddonDeactivate'));
 				add_action('admin_menu', array(&$this, 'MemberMouseGroupAddonAdminMenu'), 11 );
@@ -34,7 +34,19 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				add_action('admin_notices', array(&$this, 'MemberMouseGroupAdminNotice'));
 				add_action('admin_init', array(&$this, 'MemberMouseGroupAdminNoticeIgnore'));
 				add_shortcode('MM_Group_SignUp_Link', array(&$this, 'MemberMouseGroupPurchaseLinkShortcode'));
-			endif;
+			} else {
+
+				// Show notice that plugin can't be activated
+				add_action( 'admin_notices', 'groupsformm_notice_mmrequired' );
+			}
+		}
+
+		function groupsformm_notice_mmrequired() {
+			?>
+			<div class="notice notice-error is-dismissible">
+					<p>Sorry! MemberMouse is required to activate Groups for MemberMouse.</p>
+			</div>
+			<?php
 		}
 
 		function MemberMouseGroupAddonActivate()
