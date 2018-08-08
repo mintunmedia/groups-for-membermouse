@@ -1,4 +1,4 @@
-# MemberMouse Group Addon
+# Groups for MemberMouse
 
 ## Introduction
 
