@@ -26,7 +26,7 @@ if($page == 0):
 	$page = 1;
 endif;
 
-$targetpage = 'admin.php?page=membermousegroupaddon&type=manage';
+$targetpage = 'admin.php?page=groupsformm&type=manage';
 if(!empty($show)):
 	$targetpage .= '&show='.$show;
 endif;
