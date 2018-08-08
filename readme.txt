@@ -4,7 +4,7 @@ Tags: membermouse, member management, membership site, groups, mm groups, groups
 Requires at least: 4.8
 Tested up to: 4.9.8
 Requires PHP: 5.6
-Stable tag: stable
+Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

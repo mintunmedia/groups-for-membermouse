@@ -2,10 +2,10 @@
 global $wpdb;
 if(!isset($wpdb)):
 	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
+  require_once('../../../../wp-includes/wp-db.php');
 endif;
-include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
-include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 
 if(count($_POST) > 0):
 	foreach($_POST as $key => $value):

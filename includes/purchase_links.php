@@ -5,8 +5,8 @@ if(!isset($wpdb)):
     require_once('../../../../wp-includes/wp-db.php');
 endif;
 
-include_once("../../membermouse/includes/mm-constants.php");
-include_once("../../membermouse/includes/init.php");
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 
 if(count($_POST) > 0):
 	foreach($_POST as $key => $value):

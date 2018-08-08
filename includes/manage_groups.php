@@ -1,6 +1,6 @@
 <?php
-include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
-include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 global $wpdb, $current_user;?>
 <script type="text/javascript" src="<?php echo get_bloginfo("url");?>/wp-content/plugins/membermouse/resources/js/admin/mm-details_access_rights.js"></script>
 <div id="create_group_background" style="display:none;">

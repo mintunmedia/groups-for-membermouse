@@ -1,4 +1,5 @@
-f(!isset($_GET["file_path"]) && !isset($_GET["data"]))
+<?php
+if(!isset($_GET["file_path"]) && !isset($_GET["data"]))
 {
 	exit;
 }

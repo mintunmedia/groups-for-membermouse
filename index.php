@@ -11,19 +11,22 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
  ****************************************************************************************************************************/
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membermouse'));
 if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
-if (!class_exists('MemberMouseGroupAddon')) {
+if ( ! class_exists('MemberMouseGroupAddon') ) {
 	class MemberMouseGroupAddon
 	{
 
+		const MM_PLUGIN_PATH = 'membermouse/index.php';
+
 		function __construct() {
 			$this->plugin_name = basename(dirname(__FILE__)) . '/' . basename(__FILE__);
-			include_once(network_admin_url('includes/plugin.php')); // will work for multisite as well. Currently not loading. Need to hook to admin_init
 
-			$mmplugin = 'membermouse/index.php';
-			if (is_plugin_active($mmplugin)) { // not working because plugin.php is not loaded yet
+			if ( $this->is_plugin_active( self::MM_PLUGIN_PATH ) ) {
 				register_activation_hook($this->plugin_name, array(&$this, 'MemberMouseGroupAddonActivate'));
 				register_deactivation_hook($this->plugin_name, array(&$this, 'MemberMouseGroupAddonDeactivate'));
 				add_action('admin_menu', array(&$this, 'MemberMouseGroupAddonAdminMenu'), 11 );
@@ -39,6 +42,18 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				// Show notice that plugin can't be activated
 				add_action( 'admin_notices', 'groupsformm_notice_mmrequired' );
 			}
+
+		}
+
+		/**
+		 * Checks if a plugin is loaded.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		private function is_plugin_active( $plugin ) {
+			return in_array( $plugin, (array) get_option( 'active_plugins', array() ) );
 		}
 
 		function groupsformm_notice_mmrequired() {
@@ -59,8 +74,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		function MemberMouseGroupAddonDeactivate()
 		{
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			global $wpdb, $current_user;
 			$user_id = $current_user->ID;
 
@@ -124,8 +139,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		function MemberMouseGroupAddonAdminMenu()
 		{
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			add_submenu_page('mmdashboard', 'MemberMouse Groups', 'Groups', 'manage_options', 'groupsformm', array(&$this, 'MemberMouseGroupAddonAdminManagement'));
 			add_submenu_page('mmdashboard','Group Management Dashboard','Group Management Dashboard','Group Leader','membermousemanagegroup',array(&$this,"MemberMouseManageGroup"));
 
@@ -222,7 +237,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		function MemberMouseGroupAddonCreateTables()
 		{
 			global $wpdb;
-			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
 			$table_name = $wpdb->prefix . 'group_sets';
 			$table_name1 = $wpdb->prefix . 'group_sets_members';
 			$table_group_item = $wpdb->prefix . 'group_items';
@@ -240,7 +255,10 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					modifiedDate DATETIME NOT NULL,
 					PRIMARY KEY (id)
 				);";
+
+				require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 				dbDelta($sql);
+
 			endif;
 
 			if ($wpdb->get_var("SHOW TABLES LIKE '$table_name1'") != $table_name1) :
@@ -289,8 +307,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		function MemberMouseGroupAddGroup()
 		{
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			$customFieldList = MM_CustomField::getCustomFieldsList();
 			if (count($customFieldList) > 0) :
 				$customFieldId = 0;
@@ -322,8 +340,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		function MemberMouseGroupOptionUpdate()
 		{
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			$customFieldList = MM_CustomField::getCustomFieldsList();
 			foreach ($customFieldList as $id => $displayName) :
 				if ($displayName == "group_id") :
@@ -482,8 +500,8 @@ function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetp
 
 function MemberMouseGroupMemberAdded($data)
 {
-	include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-	include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+	include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+	include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 	global $wpdb;
 	$groupId = get_option("mm_custom_field_group_id");
 	if (isset($data["cf_" . $groupId]) && !empty($data["cf_" . $groupId])) :
@@ -535,8 +553,8 @@ function MemberMouseGroupMemberAdded($data)
 
 function MemberMouseGroupLeaderStatus($data)
 {
-	include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-	include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+	include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+	include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 	global $wpdb;
 	$memberId = $data["member_id"];
 	$status = $data["status"];

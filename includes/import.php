@@ -1,8 +1,4 @@
 <?php
-/**
- * 
- * NEW FILE
- */
 global $wpdb;
 
 
