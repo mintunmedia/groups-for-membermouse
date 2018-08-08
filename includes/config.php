@@ -10,12 +10,12 @@ if(isset($_GET["notice"]) && !empty($_GET["notice"])):
 	$delQuery	= $wpdb -> query($delSql);
 	if($delQuery):?>
 		<script type="text/javascript">
-			window.location = 'admin.php?page=membermousegroupaddon&ndelete=1';
+			window.location = 'admin.php?page=groupsformm&ndelete=1';
 		</script>
 <?php
 	else:?>
 		<script type="text/javascript">
-			window.location = 'admin.php?page=membermousegroupaddon&ndelete=0';
+			window.location = 'admin.php?page=groupsformm&ndelete=0';
 		</script>
 <?php	
 	endif;
@@ -42,7 +42,7 @@ if($page == 0):
 	$page = 1;
 endif;
 
-$targetpage = 'admin.php?page=membermousegroupaddon';
+$targetpage = 'admin.php?page=groupsformm';
 if(!empty($show)):
 	$targetpage .= '&show='.$show;
 endif;
@@ -173,7 +173,7 @@ if($noticeCount > 0):?>
 				<tr>
 					<td>Member <font style="color:#FF0000;"><?php echo $userEmail;?></font> failed to join <?php echo $groupName;?> (<?php echo $leaderEmail;?>) because it was full. Please cancel that member account and inform the group leader.</td>
 					<td>
-						<a title="Delete Notice" href="admin.php?page=membermousegroupaddon&notice=<?php echo $noticeResult -> id;?>">Delete Notice</a>
+						<a title="Delete Notice" href="admin.php?page=groupsformm&notice=<?php echo $noticeResult -> id;?>">Delete Notice</a>
 					</td>
 				</tr>	
 <?php		endforeach;?>

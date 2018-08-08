@@ -148,7 +148,7 @@ $results	= $wpdb -> get_results($sql);
 			        	}
 
 			        	//redirect to the group management page
-			        	echo '<script> window.location.replace("/wp-admin/admin.php?page=membermousegroupaddon&type=manage"); </script>';
+			        	echo '<script> window.location.replace("/wp-admin/admin.php?page=groupsformm&type=manage"); </script>';
    					 }
    					 else{
    					 	echo "<pre>ERROR, the group does not have enough seats!\n</pre>";
@@ -157,7 +157,7 @@ $results	= $wpdb -> get_results($sql);
 
 
 			        //redirect to the group management page
-			        $url = admin_url('admin.php?page=membermousegroupaddon&type=import');
+			        $url = admin_url('admin.php?page=groupsformm&type=import');
 			    }
 			    ini_set( 'auto_detect_line_endings', FALSE );
 		}

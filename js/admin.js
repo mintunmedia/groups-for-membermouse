@@ -67,6 +67,8 @@ jQuery(document).ready(function(){
 			var group_size			= $("#group_size").val();
 			var description			= $("#description").val();
 			var retVar				= false;
+			
+			// Error Handling
 			if(name == ''){
 				$("#name").css({"border-color":"#FF0000"});
 				$("#nameErr").html("Please enter the Name.");
@@ -174,7 +176,7 @@ jQuery(document).ready(function(){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_success">Successfully save the Group.</div>');
 									$("#group_popup_msg").show();
-									window.location = 'admin.php?page=membermousegroupaddon';
+									window.location = 'admin.php?page=groupsformm';
 								}else if(data[i] == "no"){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_failure">Some error occure please try again later.</div>');
@@ -256,11 +258,11 @@ jQuery(document).ready(function(){
 								if(data[i] == "yes"){
 									$("#create_group_loading").hide();
 									$("#create_group_background").hide();
-									window.location = 'admin.php?page=membermousegroupaddon&delete=1';
+									window.location = 'admin.php?page=groupsformm&delete=1';
 								}else if(data[i] == "no"){
 									$("#create_group_loading").hide();
 									$("#create_group_background").hide();
-									window.location = 'admin.php?page=membermousegroupaddon&delete=0';
+									window.location = 'admin.php?page=groupsformm&delete=0';
 								}
 							}
 						});
@@ -290,11 +292,11 @@ jQuery(document).ready(function(){
 							if(data[i] == "yes"){
 								$("#create_group_loading").hide();
 								$("#create_group_background").hide();
-								window.location = 'admin.php?page=membermousegroupaddon&type=manage&msg=1';
+								window.location = 'admin.php?page=groupsformm&type=manage&msg=1';
 							}else if(data[i] == "no"){
 								$("#create_group_loading").hide();
 								$("#create_group_background").hide();
-								window.location = 'admin.php?page=membermousegroupaddon&type=manage&msg=2';
+								window.location = 'admin.php?page=groupsformm&type=manage&msg=2';
 							}
 						});
 					}	
@@ -322,11 +324,11 @@ jQuery(document).ready(function(){
 							if(data[i] == "yes"){
 								$("#create_group_loading").hide();
 								$("#create_group_background").hide();
-								window.location = 'admin.php?page=membermousegroupaddon&type=manage&msg=1';
+								window.location = 'admin.php?page=groupsformm&type=manage&msg=1';
 							}else if(data[i] == "no"){
 								$("#create_group_loading").hide();
 								$("#create_group_background").hide();
-								window.location = 'admin.php?page=membermousegroupaddon&type=manage&msg=2';
+								window.location = 'admin.php?page=groupsformm&type=manage&msg=2';
 							}
 						});
 					}	
@@ -353,11 +355,11 @@ jQuery(document).ready(function(){
 						if(data[i] == "yes"){
 							$("#create_group_loading").hide();
 							$("#create_group_background").hide();
-							window.location = 'admin.php?page=membermousegroupaddon&type=manage&msg=1';
+							window.location = 'admin.php?page=groupsformm&type=manage&msg=1';
 						}else if(data[i] == "no"){
 							$("#create_group_loading").hide();
 							$("#create_group_background").hide();
-							window.location = 'admin.php?page=membermousegroupaddon&type=manage&msg=2';
+							window.location = 'admin.php?page=groupsformm&type=manage&msg=2';
 						}
 					});
 				}	
@@ -460,7 +462,7 @@ jQuery(document).ready(function(){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_success">Update successful.</div>');
 									$("#group_popup_msg").show();
-									window.location = 'admin.php?page=membermousegroupaddon&type=manage';
+									window.location = 'admin.php?page=groupsformm&type=manage';
 								}else if(data[i] == "no"){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_failure">An error occured. Please try again later.</div>');
@@ -793,7 +795,7 @@ jQuery(document).ready(function(){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_success">Successfully created the Group Leader.</div>');
 									$("#group_popup_msg").show();
-									window.location = 'admin.php?page=membermousegroupaddon&type=manage';
+									window.location = 'admin.php?page=groupsformm&type=manage';
 								}else if(data[i] == "no"){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_failure">Some error occure please try again later.</div>');
