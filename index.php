@@ -142,6 +142,16 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 				'methods' 	=> 'POST',
 				'callback' 	=> array( $this, 'show_help_window' )
 			));
+
+			register_rest_route( 'mm-groups/v1', '/edit_group_name_form', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'edit_group_name_form' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/update_group_name', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'update_group_name' )
+			));
 		}
 
 		/**
@@ -384,6 +394,38 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			exit();
 		}
 
+		/**
+		 * Edit group name form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function edit_group_name_form( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/edit_group_name_form.php' );
+
+			exit();
+		}
+
+		/**
+		 * Update group name handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function update_group_name( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/edit_group_name.php' );
+
+			exit();
+		}
+
 
 		/**
 		 * Checks if a plugin is loaded.
@@ -459,8 +501,8 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'purchaseLink', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/purchase_link' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'editGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/edit_group' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'updateGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/update_group' ) ) );
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'editGroupName', array('ajaxurl' => plugins_url('includes/edit_groupname_form.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'updateGroupName', array('ajaxurl' => plugins_url('includes/edit_groupname.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'editGroupName', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/edit_group_name_form' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'updateGroupName', array('ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/update_group_name' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'showPurchaseLink', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/show_purchase_link' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'checkUsername', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/check_username' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'addGroupUser', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/add_group_user' ) ) );
