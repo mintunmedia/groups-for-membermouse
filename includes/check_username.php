@@ -1,9 +1,6 @@
 <?php
 global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
-endif;
+
 if(count($_POST) > 0):
 	foreach($_POST as $key => $value):
 		$$key = $value;

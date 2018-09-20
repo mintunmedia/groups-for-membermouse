@@ -1,9 +1,6 @@
 <?php 
 global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
-endif;
+
 $group_id = get_option("mm_custom_field_group_id");?>
 <div id="group_popup_container">
 	<h2>

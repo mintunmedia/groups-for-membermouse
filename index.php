@@ -37,6 +37,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 				add_action('admin_notices', array(&$this, 'MemberMouseGroupAdminNotice'));
 				add_action('admin_init', array(&$this, 'MemberMouseGroupAdminNoticeIgnore'));
 				add_shortcode('MM_Group_SignUp_Link', array(&$this, 'MemberMouseGroupPurchaseLinkShortcode'));
+				add_action( 'plugins_loaded', array( $this, 'plugins_loaded') );
 			} else {
 
 				// Show notice that plugin can't be activated
@@ -44,6 +45,345 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			}
 
 		}
+
+		/**
+		 * Plugins loaded action.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie<roypmckenzie@icloud.com>
+		 */
+		public function plugins_loaded()
+		{
+			add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
+		}
+
+		/**
+		 * Register REST routes.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function rest_api_init()
+		{
+			register_rest_route( 'mm-groups/v1', '/create_group', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'create_group' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/add_group', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'add_group' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/delete_group', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'delete_group' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/purchase_link', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'purchase_link' )
+			));
+
+
+			register_rest_route( 'mm-groups/v1', '/group_leader_form', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'group_leader_form' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/check_user', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'check_user' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/create_group_leader', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'create_group_leader' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/show_purchase_link', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'show_purchase_link' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/edit_group', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'edit_group' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/check_username', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'check_username' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/update_group', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'update_group' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/add_group_user', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'add_group_user' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/cancel_group', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'cancel_group' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/delete_group_data', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'delete_group_data' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/show_help_window', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'show_help_window' )
+			));
+		}
+
+		/**
+		 * Create group handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function create_group( $data )
+		{
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/create_group.php' );
+
+			exit();
+		}
+
+		/**
+		 * Add group handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function add_group( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/add_group.php' );
+
+			exit();
+		}
+
+		/**
+		 * Delete group handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function delete_group( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/delete_group.php' );
+
+			exit();
+		}
+
+		/**
+		 * Purchase link handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function purchase_link( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/purchase_links.php' );
+
+			exit();
+		}
+
+		/**
+		 * Group leader form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function group_leader_form( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/group_leader_form.php' );
+
+			exit();
+		}
+
+		/**
+		 * Check Group user form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function check_user( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/check_user.php' );
+
+			exit();
+		}
+
+		/**
+		 * Create group leader form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function create_group_leader( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/create_group_leader.php' );
+
+			exit();
+		}
+
+		/**
+		 * Show purchase link handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function show_purchase_link( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/show_purchase_link.php' );
+
+			exit();
+		}
+
+		/**
+		 * Edit group form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function edit_group( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/edit_group.php' );
+
+			exit();
+		}
+
+		/**
+		 * Check username handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function check_username( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/check_username.php' );
+
+			exit();
+		}
+
+		/**
+		 * Update group form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function update_group( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/update_group.php' );
+
+			exit();
+		}
+
+		/**
+		 * Add group user form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function add_group_user( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/add_group_user.php' );
+
+			exit();
+		}
+
+		/**
+		 * Cancel group form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function cancel_group( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/cancel_group.php' );
+
+			exit();
+		}
+
+		/**
+		 * Show help window handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function show_help_window( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/help.php' );
+
+			exit();
+		}
+
+		/**
+		 * Delete group data form handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function delete_group_data( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/delete_group_data.php' );
+
+			exit();
+		}
+
 
 		/**
 		 * Checks if a plugin is loaded.
@@ -110,29 +450,29 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		function MemberMouseGroupAddonAdminResources()
 		{
 			/* Scripts */
-			wp_enqueue_script('MemberMouseGroupAddOnAdminJs', plugins_url('js/admin.js', __FILE__), array('jquery', 'membermouse-global'/*'MemberMouseGroupAddOnAdminJs'*/));
+			wp_enqueue_script('MemberMouseGroupAddOnAdminJs', plugins_url('js/admin.js', __FILE__), array('jquery', 'membermouse-global' ), filemtime( plugin_dir_path( __FILE__) .'/js/admin.js' ) );
 			wp_enqueue_script('import-group', plugins_url('js/mm-group-import_wizard.js', __FILE__), array('jquery', 'MemberMouseGroupAddOnAdminJs'), '1.0.0', true);
 
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'createGroup', array('ajaxurl' => plugins_url('includes/create_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'addGroup', array('ajaxurl' => plugins_url('includes/add_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'deleteGroup', array('ajaxurl' => plugins_url('includes/delete_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'purchaseLink', array('ajaxurl' => plugins_url('includes/purchase_links.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'editGroup', array('ajaxurl' => plugins_url('includes/edit_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'updateGroup', array('ajaxurl' => plugins_url('includes/update_group.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'createGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/create_group' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'addGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/add_group' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'deleteGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/delete_group' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'purchaseLink', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/purchase_link' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'editGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/edit_group' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'updateGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/update_group' ) ) );
 			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'editGroupName', array('ajaxurl' => plugins_url('includes/edit_groupname_form.php', __FILE__)));
 			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'updateGroupName', array('ajaxurl' => plugins_url('includes/edit_groupname.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'showPurchaseLink', array('ajaxurl' => plugins_url('includes/show_purchase_link.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'checkUsername', array('ajaxurl' => plugins_url('includes/check_username.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'addGroupUser', array('ajaxurl' => plugins_url('includes/add_group_user.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'showPurchaseLink', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/show_purchase_link' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'checkUsername', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/check_username' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'addGroupUser', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/add_group_user' ) ) );
 			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'deleteGroupMember', array('ajaxurl' => plugins_url('includes/delete_group_member.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'GroupLeaderForm', array('ajaxurl' => plugins_url('includes/group_leader_form.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'checkGroupUser', array('ajaxurl' => plugins_url('includes/check_user.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'createGroupLeader', array('ajaxurl' => plugins_url('includes/create_group_leader.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'GroupLeaderForm', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/group_leader_form' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'checkGroupUser', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/check_user' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'createGroupLeader', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/create_group_leader' ) ) );
 			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'changeGroupCost', array('ajaxurl' => plugins_url('includes/change_group_cost.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'showHelpWindow', array('ajaxurl' => plugins_url('includes/help.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'cancelGroup', array('ajaxurl' => plugins_url('includes/cancel_group.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'showHelpWindow', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/show_help_window' ) ) );
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'cancelGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/cancel_group' ) ) );
 			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'activateGroup', array('ajaxurl' => plugins_url('includes/activate_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'deletegroupData', array('ajaxurl' => plugins_url('includes/delete_group_data.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'deletegroupData', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/delete_group_data' ) ) );
 			//Styles
 			wp_enqueue_style('MemberMouseGroupAddOnAdminCss', plugins_url('css/admin.css', __FILE__));
 		}

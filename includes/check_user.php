@@ -1,15 +1,12 @@
 <?php
 global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
-endif;
+
 if(count($_POST) > 0):
 	foreach($_POST as $key => $value):
 		$$key = $value;
 	endforeach;
 	
-	$userSql	= "SELECT ID FROM ".$wpdb -> prefix."users WHERE user_email = '".$user."' OR user_login = '".$user."'";
+	$userSql	= "SELECT ID FROM ".$wpdb->prefix."users WHERE user_email = '".$user."' OR user_login = '".$user."'";
 	$userResult	= $wpdb -> get_row($userSql);
 	if(count($userResult) > 0):
 		$user_id 		= $userResult -> ID;

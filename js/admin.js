@@ -9,19 +9,17 @@ jQuery(document).ready(function(){
 		jQuery("#create_group_background").show();
 		jQuery("#create_group_loading").show();
 		jQuery("#create_group_content").show();
-		jQuery.ajax({
-			type: 'post',
-			url : createGroup.ajaxurl,
-			data: '',
-			success: function(data){
+		jQuery
+			.post( createGroup.ajaxurl, null, 'html' )
+			.done( function( data ) {
 				jQuery("#create_group_content").html(data);
 				var contentLeft = MGROUP.contentDataLeft();
 				var contentTop = MGROUP.contentDataTop();
 				jQuery("#create_group_content").css({"top": contentTop, "left":contentLeft});
 				jQuery("#create_group_loading").hide();
 				jQuery("#create_group_content").show();
-			}
-		});
+			});
+
 	});
 });
 
