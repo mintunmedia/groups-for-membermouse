@@ -113,9 +113,9 @@ $results	= $wpdb -> get_results($sql);
 				                $username 	= $row[0];
 				                $email 		= $row[1];
 				                $pass 		= substr( "abcdefghijklmnopqrstuvwxyz" ,mt_rand( 0 ,25 ) ,1 ) .substr( md5( time( ) ) ,1 ) ;
-				                // $phone 		= $row[2];
-				                $first_name = $row[2];
-				                $last_name 	= $row[3];
+				                $phone 		= $row[2];
+				                $first_name = $row[3];
+				                $last_name 	= $row[4];
 												if(!email_exists( $email )){// the user is already registered
 				                	$userdata = array('user_login' => $username , 'user_email' => $email  , 'user_pass' => $pass, 'first_name' => $first_name  , 'last_name' => $last_name);
 													$userId = wp_insert_user( $userdata ) ;
