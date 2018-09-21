@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 global $wpdb, $current_user;?>
@@ -108,12 +111,12 @@ if(count($result) > 0):
 		</thead>
 		<tbody>
 <?php		foreach($gMemResults as $gMemRes):
-				$userSql		= "SELECT * FROM ".$wpdb -> prefix."users WHERE ID = '".$gMemRes -> member_id."'";
+				$userSql		= "SELECT * FROM ".$wpdb->prefix."users WHERE ID = '".$gMemRes->member_id."'";
 				$userResult		= $wpdb -> get_row($userSql);
-				$registered		= $userResult -> user_registered;
-				$memSql			= "SELECT * FROM mm_user_data WHERE wp_user_id = '".$gMemRes -> member_id."'";
+				$registered		= $userResult->user_registered;
+				$memSql			= "SELECT * FROM mm_user_data WHERE wp_user_id = '".$gMemRes->member_id."'";
 				$memResult		= $wpdb -> get_row($memSql);
-				$firstName 		= $memResult -> first_name;
+				$firstName 		= $memResult->first_name;
 				$lastName 		= $memResult -> last_name;
 				$email 			= $userResult -> user_email;
 				$phone 			= empty($memResult -> phone) ? "&mdash;" : $memResult -> phone;

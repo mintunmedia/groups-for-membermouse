@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 if(!isset($_GET["file_path"]) && !isset($_GET["data"]))
 {
 	exit;

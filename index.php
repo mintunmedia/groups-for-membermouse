@@ -152,6 +152,21 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 				'methods' 	=> 'POST',
 				'callback' 	=> array( $this, 'update_group_name' )
 			));
+
+			register_rest_route( 'mm-groups/v1', '/delete_group_member', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'delete_group_member' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/change_group_cost', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'change_group_cost' )
+			));
+
+			register_rest_route( 'mm-groups/v1', '/activate_group', array(
+				'methods' 	=> 'POST',
+				'callback' 	=> array( $this, 'activate_group' )
+			));
 		}
 
 		/**
@@ -426,6 +441,54 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			exit();
 		}
 
+		/**
+		 * Delete group member handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function delete_group_member( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/delete_group_member.php' );
+
+			exit();
+		}
+
+		/**
+		 * Change group cost handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function change_group_cost( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/change_group_cost.php' );
+
+			exit();
+		}
+
+		/**
+		 * Activate group handler for REST route.
+		 * 
+		 * @since 1.0.2
+		 * 
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function activate_group( $data )
+		{			
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . '/includes/activate_group.php' );
+
+			exit();
+		}
+
 
 		/**
 		 * Checks if a plugin is loaded.
@@ -506,14 +569,14 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'showPurchaseLink', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/show_purchase_link' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'checkUsername', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/check_username' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'addGroupUser', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/add_group_user' ) ) );
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'deleteGroupMember', array('ajaxurl' => plugins_url('includes/delete_group_member.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'deleteGroupMember', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/delete_group_member' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'GroupLeaderForm', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/group_leader_form' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'checkGroupUser', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/check_user' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'createGroupLeader', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/create_group_leader' ) ) );
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'changeGroupCost', array('ajaxurl' => plugins_url('includes/change_group_cost.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'changeGroupCost', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/change_group_cost' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'showHelpWindow', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/show_help_window' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'cancelGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/cancel_group' ) ) );
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'activateGroup', array('ajaxurl' => plugins_url('includes/activate_group.php', __FILE__)));
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'activateGroup', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/activate_group' ) ) );
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'deletegroupData', array( 'ajaxurl' => get_rest_url( NULL, '/mm-groups/v1/delete_group_data' ) ) );
 			//Styles
 			wp_enqueue_style('MemberMouseGroupAddOnAdminCss', plugins_url('css/admin.css', __FILE__));

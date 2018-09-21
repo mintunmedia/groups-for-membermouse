@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $wpdb;
 
 
@@ -68,10 +71,6 @@ $results	= $wpdb -> get_results($sql);
 		    // Get the type of the uploaded file. This is returned as "type/extension"
 		    $uploaded_file_type = $_FILES['fileToUpload']['type'];
 
-		    if (!function_exists('wp_handle_upload')) {
-		        require_once(ABSPATH . 'wp-admin/includes/file.php');
-		    }
-
 			    $upload_overrides = array('test_form' => false);
 
 			    $movefile  = wp_handle_upload($uploadedfile, $upload_overrides);
@@ -114,14 +113,14 @@ $results	= $wpdb -> get_results($sql);
 				                $username 	= $row[0];
 				                $email 		= $row[1];
 				                $pass 		= substr( "abcdefghijklmnopqrstuvwxyz" ,mt_rand( 0 ,25 ) ,1 ) .substr( md5( time( ) ) ,1 ) ;
-				                $phone 		= $row[2];
-				                $first_name = $row[3];
-				                $last_name 	= $row[4];
-				                if(!email_exists( $email )){// the user is already registered
+				                // $phone 		= $row[2];
+				                $first_name = $row[2];
+				                $last_name 	= $row[3];
+												if(!email_exists( $email )){// the user is already registered
 				                	$userdata = array('user_login' => $username , 'user_email' => $email  , 'user_pass' => $pass, 'first_name' => $first_name  , 'last_name' => $last_name);
-				                	$userId = wp_insert_user( $userdata ) ;
-				                	if( !is_wp_error( $userId ) ){				                		
-				                		wp_new_user_notification( $userId );
+													$userId = wp_insert_user( $userdata ) ;
+				                	if( !is_wp_error( $userId ) ){
+				                		// wp_new_user_notification( $userId );
 				                	}
 				                }
 				                else{
@@ -132,8 +131,8 @@ $results	= $wpdb -> get_results($sql);
 				                if( !is_wp_error( $userId ) ){	
 					                //verify if the user is already registered in the group
 					                $sql = "SELECT id FROM ".$wpdb -> prefix."group_sets_members WHERE group_id=".$group_id." AND member_id=".$userId;
-					                $registered = $wpdb -> get_var($sql);
-
+													$registered = $wpdb -> get_var($sql);
+													
 					                if(is_null($registered)){
 					                	//register user in the group
 						                $sql	= "INSERT INTO ".$wpdb -> prefix."group_sets_members (id,group_id,member_id,createdDate,modifiedDate)VALUES('','".$group_id."','".$userId."',now(),now())";

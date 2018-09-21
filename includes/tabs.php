@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 	if(isset($_GET["type"]) && !empty($_GET["type"]) && ($_GET["type"] == "manage")):
 		$manageClass = "selected";
 		$configClass = "";
@@ -23,9 +26,9 @@
 		<a href="admin.php?page=groupsformm&type=manage" title="Manage Groups">Manage Groups</a>
 	</li>
 	<!-- NEW: Add tab to import members -->
-	<li id="group-manage" class="<?php echo $importClass;?>">
+	<!-- <li id="group-manage" class="<?php echo $importClass;?>">
 		<a href="admin.php?page=groupsformm&type=import" title="Import Members">Import Members</a>
-	</li>
+	</li> -->
 	<li id="group-help" class="mm-group-help">
 		<a href="javascript:MGROUP.showHelpWindow();">Need help?</a>
 	</li>

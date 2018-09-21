@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $wpdb;
 
 include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php");

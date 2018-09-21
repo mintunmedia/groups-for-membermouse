@@ -1,9 +1,10 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+
 global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-  require_once('../../../../wp-includes/wp-db.php');
-endif;
+
 include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 

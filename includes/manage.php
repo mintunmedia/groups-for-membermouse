@@ -1,4 +1,7 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $wpdb;
 $totalSql	= "SELECT COUNT(id) AS total FROM ".$wpdb -> prefix."group_sets WHERE 1 ORDER BY createdDate DESC";
 $totalRes	= $wpdb -> get_row($totalSql);
