@@ -707,7 +707,7 @@ jQuery(document).ready(function(){
 				$("#userLoading").show();
 				$.ajax({
 					type		: 'POST',
-					url			: check_group_user.ajax_url,
+					url			: check_user.ajax_url,
 					dataType	: 'json',
 					data		: 'user='+encodeURIComponent(user)+'&_wpnonce='+rest_nonce._wpnonce,
 					success		: function(data){

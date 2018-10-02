@@ -35,7 +35,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			'add_group_user',
 			'delete_group_member',
 			'group_leader_form',
-			'check_group_user',
+			'check_user',
 			'create_group_leader',
 			'change_group_cost',
 			'show_help_window',
@@ -110,8 +110,12 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			foreach ( self::ACTIONS as $action ) {
 				register_rest_route( 'mm-groups/v1/', $action, array(
 					'methods' 	=> WP_REST_Server::EDITABLE,
-					'callback' 	=> array( $this, $action ),
-					'permission_callback' => array( $this, 'permission_callback' )
+					'callback' 	=> function() use( $action ) {
+						$this->rest_callback( $action );
+					},
+					'permission_callback' => function() use( $action ) {
+						return $this->permission_callback( $action );
+					}
 				));
 			}
 		}
@@ -123,11 +127,9 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		 *
 		 * @author Roy McKenzie<roypmckenzie@icloud.com>
 		 */
-		public function permission_callback( $request )
+		public function permission_callback( $action )
 		{
 			$user = wp_get_current_user();
-
-			$action = $request->get_attributes()['callback'][1];
 
 			$group_leader_actions = array(
 				'delete_group_member',
@@ -154,331 +156,14 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		 *
 		 * @author Roy McKenzie<roypmckenzie@icloud.com>
 		 */
-		public function rest_callback_handler( $data )
-		{
-			// TODO: Add the ability to handle all the action requests with one callback
-		}
-
-		/**
-		 * Create group handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function create_group( $data )
+		public function rest_callback( $action )
 		{
 			header('Content-Type: text/html');
 
-			require( plugin_dir_path( __FILE__ ) . '/includes/create_group.php' );
+			require( plugin_dir_path( __FILE__ ) . "/includes/$action.php" );
 
 			exit();
 		}
-
-		/**
-		 * Add group handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function add_group( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/add_group.php' );
-
-			exit();
-		}
-
-		/**
-		 * Delete group handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function delete_group( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/delete_group.php' );
-
-			exit();
-		}
-
-		/**
-		 * Purchase link handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function purchase_link( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/purchase_links.php' );
-
-			exit();
-		}
-
-		/**
-		 * Group leader form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function group_leader_form( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/group_leader_form.php' );
-
-			exit();
-		}
-
-		/**
-		 * Check Group user form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function check_user( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/check_user.php' );
-
-			exit();
-		}
-
-		/**
-		 * Create group leader form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function create_group_leader( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/create_group_leader.php' );
-
-			exit();
-		}
-
-		/**
-		 * Show purchase link handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function show_purchase_link( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/show_purchase_link.php' );
-
-			exit();
-		}
-
-		/**
-		 * Edit group form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function edit_group( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/edit_group.php' );
-
-			exit();
-		}
-
-		/**
-		 * Check username handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function check_username( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/check_username.php' );
-
-			exit();
-		}
-
-		/**
-		 * Update group form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function update_group( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/update_group.php' );
-
-			exit();
-		}
-
-		/**
-		 * Add group user form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function add_group_user( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/add_group_user.php' );
-
-			exit();
-		}
-
-		/**
-		 * Cancel group form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function cancel_group( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/cancel_group.php' );
-
-			exit();
-		}
-
-		/**
-		 * Show help window handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function show_help_window( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/help.php' );
-
-			exit();
-		}
-
-		/**
-		 * Delete group data form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function delete_group_data( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/delete_group_data.php' );
-
-			exit();
-		}
-
-		/**
-		 * Edit group name form handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function edit_group_name( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/edit_group_name_form.php' );
-
-			exit();
-		}
-
-		/**
-		 * Update group name handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function update_group_name( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/edit_group_name.php' );
-
-			exit();
-		}
-
-		/**
-		 * Delete group member handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function delete_group_member( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/delete_group_member.php' );
-
-			exit();
-		}
-
-		/**
-		 * Change group cost handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function change_group_cost( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/change_group_cost.php' );
-
-			exit();
-		}
-
-		/**
-		 * Activate group handler for REST route.
-		 *
-		 * @since 1.0.2
-		 *
-		 * @author Roy McKenzie <roypmckenzie@icloud.com>
-		 */
-		public function activate_group( $data )
-		{
-			header('Content-Type: text/html');
-
-			require( plugin_dir_path( __FILE__ ) . '/includes/activate_group.php' );
-
-			exit();
-		}
-
 
 		/**
 		 * Checks if a plugin is loaded.
