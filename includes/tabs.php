@@ -2,22 +2,22 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
-	if(isset($_GET["type"]) && !empty($_GET["type"]) && ($_GET["type"] == "manage")):
+	if( isset( $_GET["type"] ) && !empty($_GET["type"] ) && ( $_GET["type"] == "manage" ) ):
 		$manageClass = "selected";
 		$configClass = "";
 		$importClass = ""; // NEW
 	// NEW block - Begin
-	elseif(isset($_GET["type"]) && !empty($_GET["type"]) && ($_GET["type"] == "import")):
+	elseif ( isset( $_GET["type"]) && !empty( $_GET["type"] ) && ( $_GET["type"] == "import" )) :
 		$manageClass = "";
 		$configClass = "";
-		$importClass = "selected";	
+		$importClass = "selected";
 	// NEW block - End
 	else:
 		$manageClass = '';
 		$configClass = "selected";
 		$importClass = ""; // NEW
 	endif;
-?>	
+?>
 <ul>
 	<li class="<?php echo $configClass;?>" id="group-config">
 		<a href="admin.php?page=groupsformm" title="Define Group Types">Define Group Types</a>

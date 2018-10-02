@@ -7,8 +7,9 @@ global $wpdb;
 include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 	$itemSql		= "SELECT name,leader_memlevel,group_leader_cost FROM ".$wpdb -> prefix."group_items WHERE id = '".$prodId."'";
@@ -29,6 +30,6 @@ if(count($_POST) > 0):
 			<p>Use the link below to allow customers to create a new '<?php echo $itemResult -> name;?>' group:</p>
 			<input type="text" onclick="jQuery('#mm-static-link').focus(); jQuery('#mm-static-link').select();" style="width:440px; font-family:courier; font-size:11px;" value="<?php echo $purchaseUrl;?>" readonly="" id="mm-static-link">
 		</div>
-	</div>	
-<?php	
+	</div>
+<?php
 endif;

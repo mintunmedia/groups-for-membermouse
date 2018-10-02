@@ -4,11 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
-	
+
 	if($type == "leader"):
 		$selectName	= "group_leader_cost";
 		$hiddenName = "leaderCost";
@@ -18,13 +19,13 @@ if(count($_POST) > 0):
 		$hiddenName	= "memberCost";
 		$divId		= "member_associated_cost";
 	endif;
-	
+
 	$costVal = 0;
 	$productSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM mm_membership_level_products AS lp LEFT JOIN mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$levelId."' ORDER BY p.name ASC";
 	$productResults	= $wpdb -> get_results($productSql);
 	echo '<td>';
 		if(count($productResults) > 0): echo 'Associated Cost*';endif;
-	echo '</td>';	
+	echo '</td>';
 	echo '<td>';
 		if(count($productResults) > 0):
 			echo '<select name="'.$selectName.'" id="'.$selectName.'">';
@@ -37,5 +38,4 @@ if(count($_POST) > 0):
 		endif;
 		echo '<input type="hidden" name="'.$hiddenName.'" id="'.$hiddenName.'" value="'.$costVal.'"/>';
 	echo '</td>';
-endif;	
-?>
+endif;

@@ -15,8 +15,9 @@ $group_leader_cost	= '';
 $group_member_cost	= '';
 $group_size			= "";
 $description		= "";
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 
@@ -30,7 +31,7 @@ if(count($_POST) > 0):
 		$group_leader_cost	= $groupResult -> group_leader_cost;
 		$group_member_cost	= $groupResult -> group_member_cost;
 		$group_size			= $groupResult -> group_size;
-		$description		= $groupResult -> description;	
+		$description		= $groupResult -> description;
 	endif;
 endif;
 $leaderSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM mm_membership_level_products AS lp LEFT JOIN mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$leader_memlevel."' ORDER BY p.name ASC";
@@ -62,7 +63,7 @@ $memberResults	= $wpdb -> get_results($memberSql);
 			<tr>
 				<td><strong>Group Leader</strong></td>
 				<td></td>
-			</tr>	
+			</tr>
 			<tr>
 				<td>Associated Access*</td>
 				<td>
@@ -72,12 +73,12 @@ $memberResults	= $wpdb -> get_results($memberSql);
 				<?php			echo MM_HtmlUtils::getMemberships($leader_memlevel, true); ?>
 							</select>
 						</div>
-						
+
 						<?php echo MM_Utils::getIcon('warning', 'red', '1.2em', '1px', "IMPORTANT: Make sure that the membership level you select here is not setting the WordPress role. Do this by editing the membership level in MemberMouse and seting the WordPress role option to '&mdash; Don't set or change role &mdash;'.", "padding-top:6px; padding-left:5px;"); ?>
 						<div id="leadermemLoading" style="display:none;">
 							<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
 						</div>
-	
+
 					</div>
 					<div class="groupError" id="leadermemlevelErr"></div>
 				</td>
@@ -85,17 +86,17 @@ $memberResults	= $wpdb -> get_results($memberSql);
 			<tr id="leader_associated_cost">
 				<td><?php if(count($leaderResults) > 0):?>Associated Cost*<?php endif;?></td>
 				<td>
-<?php				if(count($leaderResults) > 0):?>				
+<?php				if(count($leaderResults) > 0):?>
 						<select name="group_leader_cost" id="group_leader_cost">
 							<option value="">&mdash; select option &mdash;</option>
 <?php						foreach($leaderResults as $leaderResult):?>
 								<option value="<?php echo $leaderResult -> id;?>" <?php if($group_leader_cost == $leaderResult -> id): echo 'selected="selected"';endif;?>><?php echo $leaderResult -> name;?></option>
-<?php						endforeach;?>							
+<?php						endforeach;?>
 						</select>
 						<input type="hidden" id="leaderCost" name="leaderCost" value="1"/>
 <?php				else:?>
 						<input type="hidden" name="leaderCost" id="leaderCost" value="0"/>
-<?php				endif;?>					
+<?php				endif;?>
 					<div class="groupError" id="groupLeaderCostErr"></div>
 				</td>
 			</tr>
@@ -119,7 +120,7 @@ $memberResults	= $wpdb -> get_results($memberSql);
 						</div>
 						<div id="memberLoading" style="display:none;">
 							<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
-						</div>	
+						</div>
 					</div>
 					<div class="groupError" id="membermemlevelErr"></div>
 				</td>
@@ -127,17 +128,17 @@ $memberResults	= $wpdb -> get_results($memberSql);
 			<tr id="member_associated_cost">
 				<td><?php if(count($memberResults) > 0):?>Associated Cost*<?php endif;?></td>
 				<td>
-<?php				if(count($memberResults) > 0):?>				
+<?php				if(count($memberResults) > 0):?>
 						<select name="group_member_cost" id="group_member_cost">
 							<option value="">&mdash; select option &mdash;</option>
 <?php						foreach($memberResults as $memberResult):?>
 								<option value="<?php echo $memberResult -> id;?>" <?php if($group_member_cost == $memberResult -> id): echo 'selected="selected"';endif;?>><?php echo $memberResult -> name;?></option>
-<?php						endforeach;?>					
+<?php						endforeach;?>
 						</select>
 						<input type="hidden" id="memberCost" name="memberCost" value="1"/>
 <?php				else:?>
 						<input type="hidden" id="memberCost" name="memberCost" value="0"/>
-<?php				endif;?>					
+<?php				endif;?>
 					<div class="groupError" id="groupMemberCostErr"></div>
 				</td>
 			</tr>
@@ -159,7 +160,7 @@ $memberResults	= $wpdb -> get_results($memberSql);
 				</td>
 			</tr>
 			<tr>
-				<td>Description*</td> 
+				<td>Description*</td>
 				<td>
 					<textarea rows="3" cols="55" id="description" name="description"><?php echo $description;?></textarea>
 					<div class="groupError" id="descriptionErr"></div>

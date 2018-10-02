@@ -3,12 +3,12 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
-
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
-	
+
 	$groupSql		= "SELECT * FROM ".$wpdb -> prefix."group_sets WHERE id = '".$gId."'";
 	$groupResult	= $wpdb -> get_row($groupSql);
 	$gId			= $groupResult -> id;
@@ -17,7 +17,7 @@ if(count($_POST) > 0):
 	$group_leader = $groupResult -> group_leader;
 
 	$groupTypeSql   = "SELECT * FROM ".$wpdb->prefix."group_items WHERE id = '".$groupResult->group_template_id."'";
-	$groupTypeResult = $wpdb -> get_row($groupTypeSql);	
+	$groupTypeResult = $wpdb -> get_row($groupTypeSql);
 	$group_type = $groupTypeResult->name;
 
 
@@ -78,7 +78,7 @@ if(count($_POST) > 0):
 					</td>
 				</tr>
 			</table>
-		</div>		
+		</div>
 		<div id="popup_group_bottom">
 			<div class="group-dialog-button-container">
 				<a class="group-button button-blue" href="javascript:MGROUP.updateGroup('<?php echo $gId;?>');">Update</a>&nbsp;&nbsp;
@@ -93,4 +93,4 @@ if(count($_POST) > 0):
 </div>
 <?php
 endif;
-?>	
+?>

@@ -83,7 +83,7 @@
 }
 .membermousegrouptabs ul li{
     border-right	: 1px solid rgba(10, 10, 10, 0.1);
-	margin-bottom	: 0px;	
+	margin-bottom	: 0px;
 }
 .membermousegrouptabs ul li a{
     border-left	: 1px solid rgba(255, 255, 255, 0.35);
@@ -91,7 +91,7 @@
 .membermousegrouptabs ul li.mm-group-help{
 	position:absolute;
 	right:0;
-}	
+}
 .membermousegrouptabs ul {
 	float		: left;
 	width		: 100%;
@@ -684,7 +684,7 @@
 	-webkit-border-radius	: 4px 4px 4px 4px;
 	background				: #FFFFFF;
 	color					: #222222;
-	padding					: 0px 0px;	
+	padding					: 0px 0px;
 }
 #create_group_content h2{
 	float						: left;
@@ -693,9 +693,9 @@
     border-radius				: 0 0 0 0;
     -moz-border-radius			: 0 0 0 0;
     -webkit-border-radius		: 0 0 0 0;
-    box-shadow					: 0 1px #F4F4F4 inset, 0 -1px #B3B3B3 inset, 0 1px 3px #DDDDDD;	
-    -moz-box-shadow				: 0 1px #F4F4F4 inset, 0 -1px #B3B3B3 inset, 0 1px 3px #DDDDDD;	
-    -webkit-box-shadow			: 0 1px #F4F4F4 inset, 0 -1px #B3B3B3 inset, 0 1px 3px #DDDDDD;	
+    box-shadow					: 0 1px #F4F4F4 inset, 0 -1px #B3B3B3 inset, 0 1px 3px #DDDDDD;
+    -moz-box-shadow				: 0 1px #F4F4F4 inset, 0 -1px #B3B3B3 inset, 0 1px 3px #DDDDDD;
+    -webkit-box-shadow			: 0 1px #F4F4F4 inset, 0 -1px #B3B3B3 inset, 0 1px 3px #DDDDDD;
     color						: #444444;
     font-family					: Arial,Helvetica,sans-serif;
     font-size					: 13px;
@@ -705,7 +705,7 @@
     text-shadow					: 0 1px #F8F8F8;
 	background					: url(../images/group_title_bg.png) repeat-x;
 	margin						: 0px 0px 10px 0px;
-	line-height					: 30px;	
+	line-height					: 30px;
 }
 #group_popup_container{
 	float	: left;
@@ -713,7 +713,7 @@
 	padding	: 0px;
 	margin	: 0px;
 	border	: #AAAAAA 2px solid;
-}	
+}
 #group_popup_main{
 	float	: left;
 	width	: 560px;
@@ -762,7 +762,7 @@
 	padding		: 5px 0px 0px 0px;
 	margin		: 0px;
 	font-size	: 12px;
-	color		: #FF0000;	
+	color		: #FF0000;
 }
 .group-loading-container{
 	float	: right;
@@ -913,4 +913,17 @@
 	width	: 100%;
 	padding	: 5px 0px;
 	margin	: 0px;
+}
+
+.mm-import-wizard-step {
+    font: 21px/1.3 'PT Sans','Myriad Pro',Myriad,Arial,Helvetica,sans-serif;
+    margin-bottom: 20px;
+    color: #004D66;
+    margin-top: 20px;
+}
+.mm-import-wizard-notice {
+    color: #F90;
+    font: 16px/0.4em 'PT Sans','Myriad Pro',Myriad,Arial,Helvetica,sans-serif;
+    margin-bottom: 20px;
+    margin-top: 20px;
 }

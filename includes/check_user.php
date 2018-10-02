@@ -4,11 +4,12 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
-	
+
 	$userSql	= "SELECT ID FROM ".$wpdb->prefix."users WHERE user_email = '".$user."' OR user_login = '".$user."'";
 	$userResult	= $wpdb -> get_row($userSql);
 	if(count($userResult) > 0):
@@ -25,7 +26,7 @@ if(count($_POST) > 0):
 					$group_name = $groupResult -> group_name;
 				else:
 					$group_name = 'Group';
-				endif;	
+				endif;
 				$msg["error"] = 'This member is already a Group Leader of '.$group_name.'.';
 			else:
 				$checkMemSql	= "SELECT gm.group_id,g.group_name FROM ".$wpdb -> prefix."group_sets_members AS gm LEFT JOIN ".$wpdb -> prefix."group_sets AS g ON gm.group_id = g.id WHERE gm.member_id = '".$user_id."'";
@@ -36,16 +37,16 @@ if(count($_POST) > 0):
 					else:
 						$gName = "Group";
 					endif;
-					$msg["error"] = "<font class=\"red-text\">This member is already registered to Group '".$gName."'.</font>";	
+					$msg["error"] = "<font class=\"red-text\">This member is already registered to Group '".$gName."'.</font>";
 				else:
 					$msg["success"] = $user_id;
-				endif;	
+				endif;
 			endif;
 		endif;
 	else:
 		$msg["error"] = 'This member doesn\'t exist';
 	endif;
 	$return = json_encode($msg);
-	echo $return;	
+	echo $return;
 endif;
 ?>

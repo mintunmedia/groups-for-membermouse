@@ -4,8 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 	$return		= array();
@@ -18,6 +19,6 @@ if(count($_POST) > 0):
 	else:
 		$return["success"]	= "no";
 	endif;
-	echo json_encode($return);	
-endif;	
+	echo json_encode($return);
+endif;
 ?>

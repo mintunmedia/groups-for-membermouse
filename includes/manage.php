@@ -3,55 +3,60 @@
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
-$totalSql	= "SELECT COUNT(id) AS total FROM ".$wpdb -> prefix."group_sets WHERE 1 ORDER BY createdDate DESC";
-$totalRes	= $wpdb -> get_row($totalSql);
-$count		= $totalRes -> total;
-$show		= 0;
-if(isset($_GET["show"]) && !empty($_GET["show"])):
-	$show = $_GET["show"];
-endif;
-			
-if(!empty($show)):
+
+$total_sql	= "SELECT COUNT(id) AS total FROM ".$wpdb -> prefix."group_sets WHERE 1 ORDER BY createdDate DESC";
+$total_res	= $wpdb->get_row( $total_sql );
+$count			= $total_res->total;
+$show				= 0;
+
+if ( isset( $_GET['show'] ) && ! empty( $_GET['show'] ) && is_int( $_GET['show'] ) ) {
+	$show = $_GET['show'];
+}
+
+if ( ! empty( $show ) ) {
 	$limit = $show;
-else:
+} else {
 	$limit = 10;
-endif;
+}
 
 $page = 0;
-if(isset($_GET["p"]) && !empty($_GET["p"])):
-	$page 	= $_GET["p"];
-	$start 	= ($page - 1) * $limit;
-else:
-	$start	= 0;	
-endif;
 
-if($page == 0):
+if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_int( $_GET['p'] ) ) {
+	$page 	= $_GET['p'];
+	$start 	= ( $page - 1 ) * $limit;
+} else {
+	$start	= 0;
+}
+
+if( $page == 0 ) {
 	$page = 1;
-endif;
+}
 
 $targetpage = 'admin.php?page=groupsformm&type=manage';
-if(!empty($show)):
-	$targetpage .= '&show='.$show;
-endif;
 
-$sql		= "SELECT * FROM ".$wpdb -> prefix."group_sets WHERE 1 ORDER BY createdDate DESC LIMIT $start, $limit";
-$results	= $wpdb -> get_results($sql);
+if ( ! empty( $show ) ) {
+	$targetpage .= '&show=' . $show;
+}
+
+$sql			= "SELECT * FROM ".$wpdb -> prefix."group_sets WHERE 1 ORDER BY createdDate DESC LIMIT $start, $limit";
+$results	= $wpdb->get_results( $sql );
 ?>
-<?php if(isset($_GET["msg"])):?>
+
+<?php if ( isset( $_GET["msg"] ) ) { ?>
 	<div id="group_popup_msg">
-		<?php if($_GET["msg"] == 1):?>
+		<?php if ( $_GET["msg"] == 1 ) { ?>
 			<div class="group_success">The operation completed successfully.</div>
-		<?php elseif($_GET["msg"] == 2):?>
+		<?php } elseif ( $_GET["msg"] == 2 ) { ?>
 			<div class="group_failure">An error occured. Please try again later.</div>
-		<?php endif;?>
+		<?php }?>
 	</div>
-<?php endif;?>
+<?php } ?>
 <h2>Manage Groups</h2>
 <div class="membermousemanagegroupbuttoncontainer">
 	<a href="javascript:MGROUP.GroupLeaderForm();" title="Create Group" class="group-button button-green button-small">Create Group</a>
 </div>
 
-<?php if(count($results) == 0) { ?>
+<?php if ( count( $results ) == 0 ) { ?>
 <p><em>No groups created yet.</em></p>
 <?php } else { ?>
 <?php echo MemberMouseGroupAddon::MemberMouseGroupPagination($limit, $count, $page, $start, $targetpage, 'groups');?>
@@ -68,12 +73,12 @@ $results	= $wpdb -> get_results($sql);
 	</thead>
 	<tbody>
 <?php	foreach($results as $res):
-			$userSql		= "SELECT user_email FROM ".$wpdb -> prefix."users WHERE ID = '".$res -> group_leader."'";
-			$userResult		= $wpdb -> get_row($userSql);
-			$groupTypeSql   = "SELECT name FROM ".$wpdb -> prefix."group_items WHERE id = '".$res -> group_template_id."'";
-			$groupTypeResult = $wpdb -> get_row($groupTypeSql);
-			$activeSql		= "SELECT count(id) AS active FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$res -> id."'";
-			$activeResult	= $wpdb -> get_row($activeSql);
+			$userSql					= "SELECT user_email FROM ".$wpdb -> prefix."users WHERE ID = '".$res -> group_leader."'";
+			$userResult				= $wpdb -> get_row($userSql);
+			$groupTypeSql   	= "SELECT name FROM ".$wpdb -> prefix."group_items WHERE id = '".$res -> group_template_id."'";
+			$groupTypeResult 	= $wpdb -> get_row($groupTypeSql);
+			$activeSql				= "SELECT count(id) AS active FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$res -> id."'";
+			$activeResult			= $wpdb->get_row($activeSql);
 			?>
 			<tr>
 				<td><?php if(!empty($res -> group_name)): echo $res -> group_name;else: echo "Group";endif;?></td>
@@ -86,7 +91,7 @@ $results	= $wpdb -> get_results($sql);
 					</a>
 				</td>
 				<td>
-					<?php 
+					<?php
 					$editActionUrl = 'onclick="javascript:MGROUP.editGroupForm(\''.$res -> id.'\');"';
 					$deleteActionUrl = 'onclick="javascript:MGROUP.deleteGroupData(\''.$res -> id.'\');"';
 					?>
@@ -98,7 +103,7 @@ $results	= $wpdb -> get_results($sql);
 					<?php endif;?>
 				</td>
 			</tr>
-<?php	endforeach;?>	
+<?php	endforeach;?>
 	</tbody>
 </table>
 <?php } ?>

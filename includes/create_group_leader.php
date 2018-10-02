@@ -4,18 +4,19 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
-	
+
 	$errs = false;
 	$msg  = array();
 	if(empty($group)):
 		$msg["group"] = "Please select the Group type.";
 		$errs = true;
 	endif;
-	
+
 	if(empty($user)):
 		$msg["user"] = "Please enter the Group Leader.";
 		$errs = true;
@@ -37,7 +38,7 @@ if(count($_POST) > 0):
 						$group_name = $groupResult -> group_name;
 					else:
 						$group_name = 'Group';
-					endif;	
+					endif;
 					$msg["user"] = 'This member is already the Group Leader of '.$group_name.'.';
 					$errs = true;
 				else:
@@ -49,17 +50,17 @@ if(count($_POST) > 0):
 						else:
 							$gName = "Group";
 						endif;
-						$msg["user"] = "<font class=\"red-text\">This member is already registered to Group '".$gName."'.</font>";	
+						$msg["user"] = "<font class=\"red-text\">This member is already registered to Group '".$gName."'.</font>";
 						$errs = true;
 					endif;
 				endif;
 			endif;
 		else:
 			$msg["user"] = 'This member doesn\'t exist.';
-			$errs = true; 
+			$errs = true;
 		endif;
 	endif;
-	
+
 	if($errs == false):
 		$gNameSql		= "SELECT group_size FROM ".$wpdb -> prefix."group_items WHERE id = '".$group."'";
 		$gNameResult	= $wpdb -> get_row($gNameSql);
@@ -71,9 +72,9 @@ if(count($_POST) > 0):
 			$msg["success"] = 'yes';
 		else:
 			$msg["success"] = 'no';
-		endif;	
+		endif;
 	endif;
-	
+
 	$return = json_encode($msg);
 	echo $return;
 endif;

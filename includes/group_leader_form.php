@@ -4,8 +4,9 @@ if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 endif;
@@ -14,7 +15,7 @@ $group			= "";
 $user			= "";
 $groupSize		= "";
 $groupSql		= "SELECT id,name FROM ".$wpdb -> prefix."group_items ORDER BY createdDate DESC";
-$groupResults	= $wpdb -> get_results($groupSql); 
+$groupResults	= $wpdb -> get_results($groupSql);
 ?>
 <div id="group_popup_container">
 	<h2>
@@ -45,7 +46,7 @@ $groupResults	= $wpdb -> get_results($groupSql);
 						<option value="">&mdash; select option &mdash;</option>
 <?php					foreach($groupResults as $groupResult):?>
 							<option value="<?php echo $groupResult -> id;?>" <?php if($groupResult -> id == $group): echo 'selected="selected"';endif;?>><?php echo $groupResult -> name;?></option>
-<?php					endforeach;?>						
+<?php					endforeach;?>
 					</select>
 					<div class="groupError" id="groupErr"></div>
 				</td>
