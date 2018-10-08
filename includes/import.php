@@ -1,8 +1,7 @@
 <?php
-/**
- * 
- * NEW FILE
- */
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $wpdb;
 
 
@@ -11,43 +10,21 @@ $results	= $wpdb -> get_results($sql);
 ?>
 <?php if(count($results) == 0) { ?>
 <p><em>No groups created yet.</em></p>
-<?php } else { 
+<?php } else {
 
 	$select_list = "";
-	
+
 	foreach($results as $res){
 		$select_list .= "<option value=".$res->group_leader.">".$res->user_email."</option>";
 	}
 }
 ?>
 
-	<style>
-	.mm-import-wizard-step {
-		font: 21px/1.3 'PT Sans','Myriad Pro',Myriad,Arial,Helvetica,sans-serif;
-		margin-bottom: 20px;
-		color: #004D66;
-		margin-top: 20px;
-	}
-	.mm-import-wizard-notice {
-		color: #F90;
-		font: 16px/0.4em 'PT Sans','Myriad Pro',Myriad,Arial,Helvetica,sans-serif;
-		margin-bottom: 20px;
-		margin-top: 20px;
-	}
-	#mm-form-container td {
-		font-size: 14px;
-		vertical-align: middle;
-	}
-	.ui-progressbar-value { 
-		background-image: url('<?php echo MM_IMAGES_URL."pbar-animated.gif" ?>'); 
-	}
-	</style>
-
 	<div class="mm-wrap" style="font-size:14px;">
 	<?php
-	if(isset($_POST["mm-membership-selector"]))
-	{	
-		//get the leader id       
+	if( isset ( $_POST["mm-membership-selector"] ) && is_int( $_POST["mm-membership-selector"] ) )
+	{
+		//get the leader id
 		$leader_id = $_POST["mm-membership-selector"];
 
 		//get the group id of the leader user selected
@@ -66,15 +43,11 @@ $results	= $wpdb -> get_results($sql);
 		</script>
 	</div>
 	</div>
-	<?php 
+	<?php
 		if ($_FILES) {
 			$uploadedfile = $_FILES['fileToUpload'];
 		    // Get the type of the uploaded file. This is returned as "type/extension"
 		    $uploaded_file_type = $_FILES['fileToUpload']['type'];
-
-		    if (!function_exists('wp_handle_upload')) {
-		        require_once(ABSPATH . 'wp-admin/includes/file.php');
-		    }
 
 			    $upload_overrides = array('test_form' => false);
 
@@ -82,7 +55,7 @@ $results	= $wpdb -> get_results($sql);
 
 			    if (!$movefile) {
 			        echo "<pre>ERROR, file was NOT uploaded!\n</pre>";
-			    } 
+			    }
 
 			    if (!file_exists($movefile['file']) || !is_readable($movefile['file'])) {
 			        return false;
@@ -121,11 +94,11 @@ $results	= $wpdb -> get_results($sql);
 				                $phone 		= $row[2];
 				                $first_name = $row[3];
 				                $last_name 	= $row[4];
-				                if(!email_exists( $email )){// the user is already registered
+												if(!email_exists( $email )){// the user is already registered
 				                	$userdata = array('user_login' => $username , 'user_email' => $email  , 'user_pass' => $pass, 'first_name' => $first_name  , 'last_name' => $last_name);
-				                	$userId = wp_insert_user( $userdata ) ;
-				                	if( !is_wp_error( $userId ) ){				                		
-				                		wp_new_user_notification( $userId );
+													$userId = wp_insert_user( $userdata ) ;
+				                	if( !is_wp_error( $userId ) ){
+				                		// wp_new_user_notification( $userId );
 				                	}
 				                }
 				                else{
@@ -133,10 +106,10 @@ $results	= $wpdb -> get_results($sql);
 				                	$userId = $user->ID;
 				                }
 
-				                if( !is_wp_error( $userId ) ){	
+				                if( !is_wp_error( $userId ) ){
 					                //verify if the user is already registered in the group
 					                $sql = "SELECT id FROM ".$wpdb -> prefix."group_sets_members WHERE group_id=".$group_id." AND member_id=".$userId;
-					                $registered = $wpdb -> get_var($sql);
+													$registered = $wpdb -> get_var($sql);
 
 					                if(is_null($registered)){
 					                	//register user in the group
@@ -162,7 +135,7 @@ $results	= $wpdb -> get_results($sql);
 			    ini_set( 'auto_detect_line_endings', FALSE );
 		}
 	}
-	else 
+	else
 	{
 	?>
 		<p class="mm-import-wizard-step">Step 1: Download Import Template</p>
@@ -170,7 +143,7 @@ $results	= $wpdb -> get_results($sql);
 		<p style="margin-left:12px;">
 			<a class="mm-ui-button" href="<?php echo plugin_dir_url( __FILE__ )."templates/mm_group_template.csv" ?>" download="mm_group_template.csv"><?php echo MM_Utils::getIcon('download', '', '1.3em', '2px'); ?> Download Import Template</a>
 		</p>
-		
+
 		<p class="mm-import-wizard-step" style="margin-bottom:10px;">Step 2: Upload Import File</p>
 
 		<div id="mm-upload-import-file-form">
@@ -209,7 +182,7 @@ $results	= $wpdb -> get_results($sql);
 		</table>
 		</div>
 		<p class="mm-import-wizard-step" style="margin-bottom:10px;">Step 3: Configure Import Settings</p>
-		
+
 		<table cellspacing="12">
 			<tr>
 				<td width="140">Import members to the group of</td>
@@ -220,9 +193,9 @@ $results	= $wpdb -> get_results($sql);
 				</td>
 			</tr>
 		</table>
-		
+
 		<p class="mm-import-wizard-step" style="margin-top:10px;">Step 4: Import Members</p>
-		
+
 		<p style="margin-left:12px;">
 			<input type="hidden" id="mm-group-import-file-source" name="mm-import-file-source" />
 			<input type="hidden" id="mm-group-import-file-from-computer" name="mm-import-file-from-computer" />

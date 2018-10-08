@@ -11,30 +11,177 @@
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
  ****************************************************************************************************************************/
-if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', WP_PLUGIN_URL . "/groups-for-membermouse/");
-if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', WP_PLUGIN_URL . "/groups-for-membermouse/images/");
 
-if (!class_exists('MemberMouseGroupAddon')) {
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membermouse'));
+if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
+
+if ( ! class_exists('MemberMouseGroupAddon') ) {
 	class MemberMouseGroupAddon
 	{
 
-		function __construct()
-		{
+		const ACTIONS = array(
+			'create_group',
+			'add_group',
+			'delete_group',
+			'purchase_link',
+			'edit_group',
+			'update_group',
+			'edit_group_name',
+			'update_group_name',
+			'show_purchase_link',
+			'check_username',
+			'add_group_user',
+			'delete_group_member',
+			'group_leader_form',
+			'check_user',
+			'create_group_leader',
+			'change_group_cost',
+			'show_help_window',
+			'cancel_group',
+			'activate_group',
+			'delete_group_data'
+		);
+
+		const MM_PLUGIN_PATH = 'membermouse/index.php';
+
+		function __construct() {
 			$this->plugin_name = basename(dirname(__FILE__)) . '/' . basename(__FILE__);
-			include_once(ABSPATH . 'wp-admin/includes/plugin.php');
-			$plugin = 'membermouse/index.php';
-			if (is_plugin_active($plugin)) :
+
+			if ( $this->is_plugin_active( self::MM_PLUGIN_PATH ) ) {
 				register_activation_hook($this->plugin_name, array(&$this, 'MemberMouseGroupAddonActivate'));
 				register_deactivation_hook($this->plugin_name, array(&$this, 'MemberMouseGroupAddonDeactivate'));
 				add_action('admin_menu', array(&$this, 'MemberMouseGroupAddonAdminMenu'), 11 );
 				add_action('admin_head', array(&$this, 'MemberMouseGroupAddonAdminResources'));
+				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts') );
 				add_action('mm_member_add', array(&$this, 'MemberMouseGroupMemberAdded'));
 				add_action('mm_member_status_change', array(&$this, 'MemberMouseGroupLeaderStatus'));
 				add_action('admin_head', array(&$this, 'MemberMouseGroupOptionUpdate'));
 				add_action('admin_notices', array(&$this, 'MemberMouseGroupAdminNotice'));
 				add_action('admin_init', array(&$this, 'MemberMouseGroupAdminNoticeIgnore'));
 				add_shortcode('MM_Group_SignUp_Link', array(&$this, 'MemberMouseGroupPurchaseLinkShortcode'));
-			endif;
+				add_action( 'plugins_loaded', array( $this, 'plugins_loaded') );
+			} else {
+
+				// Show notice that plugin can't be activated
+				add_action( 'admin_notices', 'groupsformm_notice_mmrequired' );
+			}
+
+		}
+
+		/**
+		 * Enqueue Scripts into Groups for MemberMouse head
+		 *
+		 * @since 1.0.2
+		 *
+		 * @author Roy McKenzie<roypmckenzie@icloud.com>
+		 */
+		public function admin_enqueue_scripts( $hook_suffix )
+		{
+			$pages_to_enqueue_in = array('membermouse_page_membermousemanagegroup');
+
+			if ( in_array( $hook_suffix, $pages_to_enqueue_in ) ) {
+				wp_enqueue_script('mm-detail-access-rights', plugins_url( '/membermouse/resources/js/admin/mm-details_access_rights.js' ), array('jquery', 'membermouse-global') );
+			}
+		}
+
+		/**
+		 * Plugins loaded action.
+		 *
+		 * @since 1.0.2
+		 *
+		 * @author Roy McKenzie<roypmckenzie@icloud.com>
+		 */
+		public function plugins_loaded()
+		{
+			add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
+		}
+
+		/**
+		 * Register REST routes.
+		 *
+		 * @since 1.0.2
+		 *
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		public function rest_api_init()
+		{
+			foreach ( self::ACTIONS as $action ) {
+				register_rest_route( 'mm-groups/v1/', $action, array(
+					'methods' 	=> WP_REST_Server::EDITABLE,
+					'callback' 	=> function() use( $action ) {
+						$this->rest_callback( $action );
+					},
+					'permission_callback' => function() use( $action ) {
+						return $this->permission_callback( $action );
+					}
+				));
+			}
+		}
+
+		/**
+		 * Permission callback for REST routes
+		 *
+		 * @since 1.0.2
+		 *
+		 * @author Roy McKenzie<roypmckenzie@icloud.com>
+		 */
+		public function permission_callback( $action )
+		{
+			$user = wp_get_current_user();
+
+			$group_leader_actions = array(
+				'delete_group_member',
+				'show_purchase_link',
+				'edit_group_name',
+				'update_group_name'
+			);
+
+			if ( in_array( 'Group Leader', $user->roles ) && in_array( $action, $group_leader_actions ) ) {
+				return check_ajax_referer( 'wp_rest', FALSE, FALSE );
+			}
+
+			if ( in_array( 'administrator', $user->roles ) ) {
+				return check_ajax_referer( 'wp_rest', FALSE, FALSE );
+			}
+
+			return FALSE;
+		}
+
+		/**
+		 * REST callback handler
+		 *
+		 * @since 1.0.2
+		 *
+		 * @author Roy McKenzie<roypmckenzie@icloud.com>
+		 */
+		public function rest_callback( $action )
+		{
+			header('Content-Type: text/html');
+
+			require( plugin_dir_path( __FILE__ ) . "/includes/$action.php" );
+
+			exit();
+		}
+
+		/**
+		 * Checks if a plugin is loaded.
+		 *
+		 * @since 1.0.2
+		 *
+		 * @author Roy McKenzie <roypmckenzie@icloud.com>
+		 */
+		private function is_plugin_active( $plugin ) {
+			return in_array( $plugin, (array) get_option( 'active_plugins', array() ) );
+		}
+
+		function groupsformm_notice_mmrequired() {
+			?>
+			<div class="notice notice-error is-dismissible">
+					<p>Sorry! MemberMouse is required to activate Groups for MemberMouse.</p>
+			</div>
+			<?php
 		}
 
 		function MemberMouseGroupAddonActivate()
@@ -47,8 +194,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		function MemberMouseGroupAddonDeactivate()
 		{
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			global $wpdb, $current_user;
 			$user_id = $current_user->ID;
 
@@ -82,41 +229,32 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		function MemberMouseGroupAddonAdminResources()
 		{
-			/* Scripts */
-			wp_enqueue_script('MemberMouseGroupAddOnAdminJs', plugins_url('js/admin.js', __FILE__), array('jquery', 'membermouse-global'/*'MemberMouseGroupAddOnAdminJs'*/));
+			/** Scripts */
+			wp_enqueue_script('MemberMouseGroupAddOnAdminJs', plugins_url('js/admin.js', __FILE__), array('jquery', 'membermouse-global' ), filemtime( plugin_dir_path( __FILE__) .'/js/admin.js' ) );
 			wp_enqueue_script('import-group', plugins_url('js/mm-group-import_wizard.js', __FILE__), array('jquery', 'MemberMouseGroupAddOnAdminJs'), '1.0.0', true);
 
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'createGroup', array('ajaxurl' => plugins_url('includes/create_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'addGroup', array('ajaxurl' => plugins_url('includes/add_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'deleteGroup', array('ajaxurl' => plugins_url('includes/delete_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'purchaseLink', array('ajaxurl' => plugins_url('includes/purchase_links.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'editGroup', array('ajaxurl' => plugins_url('includes/edit_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'updateGroup', array('ajaxurl' => plugins_url('includes/update_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'editGroupName', array('ajaxurl' => plugins_url('includes/edit_groupname_form.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'updateGroupName', array('ajaxurl' => plugins_url('includes/edit_groupname.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'showPurchaseLink', array('ajaxurl' => plugins_url('includes/show_purchase_link.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'checkUsername', array('ajaxurl' => plugins_url('includes/check_username.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'addGroupUser', array('ajaxurl' => plugins_url('includes/add_group_user.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'deleteGroupMember', array('ajaxurl' => plugins_url('includes/delete_group_member.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'GroupLeaderForm', array('ajaxurl' => plugins_url('includes/group_leader_form.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'checkGroupUser', array('ajaxurl' => plugins_url('includes/check_user.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'createGroupLeader', array('ajaxurl' => plugins_url('includes/create_group_leader.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'changeGroupCost', array('ajaxurl' => plugins_url('includes/change_group_cost.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'showHelpWindow', array('ajaxurl' => plugins_url('includes/help.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'cancelGroup', array('ajaxurl' => plugins_url('includes/cancel_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'activateGroup', array('ajaxurl' => plugins_url('includes/activate_group.php', __FILE__)));
-			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'deletegroupData', array('ajaxurl' => plugins_url('includes/delete_group_data.php', __FILE__)));
-			//Styles
+			/** Styles */
 			wp_enqueue_style('MemberMouseGroupAddOnAdminCss', plugins_url('css/admin.css', __FILE__));
+
+			/** REST Actions */
+			foreach ( self::ACTIONS as $action ) {
+				wp_localize_script(
+					'MemberMouseGroupAddOnAdminJs',
+					$action,
+					array( 'ajax_url' => get_rest_url( NULL, "/mm-groups/v1/$action" ) )
+				);
+			}
+
+			/** REST nonce */
+			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'rest_nonce', array( '_wpnonce' => wp_create_nonce( 'wp_rest' ) ) );
 		}
 
 		function MemberMouseGroupAddonAdminMenu()
 		{
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			add_submenu_page('mmdashboard', 'MemberMouse Groups', 'Groups', 'manage_options', 'groupsformm', array(&$this, 'MemberMouseGroupAddonAdminManagement'));
 			add_submenu_page('mmdashboard','Group Management Dashboard','Group Management Dashboard','Group Leader','membermousemanagegroup',array(&$this,"MemberMouseManageGroup"));
-
 		}
 
 		function MemberMouseGroupPurchaseLinkShortcode()
@@ -173,7 +311,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		{
 			global $current_user;
 			$user_id = $current_user->ID;
-			if (isset($_GET['mmgroups-ignore']) && '1' == $_GET['mmgroups-ignore']) :
+			if ( isset( $_GET['mmgroups-ignore'] ) && '1' == $_GET['mmgroups-ignore']) :
 				add_user_meta($user_id, 'mmgroups-ignore', 'true', true);
 			endif;
 
@@ -210,7 +348,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		function MemberMouseGroupAddonCreateTables()
 		{
 			global $wpdb;
-			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
 			$table_name = $wpdb->prefix . 'group_sets';
 			$table_name1 = $wpdb->prefix . 'group_sets_members';
 			$table_group_item = $wpdb->prefix . 'group_items';
@@ -228,7 +366,10 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					modifiedDate DATETIME NOT NULL,
 					PRIMARY KEY (id)
 				);";
+
+				require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 				dbDelta($sql);
+
 			endif;
 
 			if ($wpdb->get_var("SHOW TABLES LIKE '$table_name1'") != $table_name1) :
@@ -277,8 +418,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		function MemberMouseGroupAddGroup()
 		{
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			$customFieldList = MM_CustomField::getCustomFieldsList();
 			if (count($customFieldList) > 0) :
 				$customFieldId = 0;
@@ -310,8 +451,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		function MemberMouseGroupOptionUpdate()
 		{
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-			include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			$customFieldList = MM_CustomField::getCustomFieldsList();
 			foreach ($customFieldList as $id => $displayName) :
 				if ($displayName == "group_id") :
@@ -337,11 +478,11 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		function MemberMouseGroupAddonAdminManagement()
 		{
 			global $wpdb;
-			if (isset($_GET["type"]) && !empty($_GET["type"])) :
+			if ( isset($_GET["type"] ) && ! empty( $_GET["type"] ) ) {
 				$type = $_GET["type"];
-			else :
+			} else {
 				$type = '';
-			endif;
+			}
 			?>
 			<div class="wrap" style="margin-top:20px;">
 				<div id="create_group_background" style="display:none;">
@@ -470,8 +611,8 @@ function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetp
 
 function MemberMouseGroupMemberAdded($data)
 {
-	include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-	include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+	include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+	include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 	global $wpdb;
 	$groupId = get_option("mm_custom_field_group_id");
 	if (isset($data["cf_" . $groupId]) && !empty($data["cf_" . $groupId])) :
@@ -523,8 +664,8 @@ function MemberMouseGroupMemberAdded($data)
 
 function MemberMouseGroupLeaderStatus($data)
 {
-	include_once(ABSPATH . "wp-content/plugins/membermouse/includes/mm-constants.php");
-	include_once(ABSPATH . "wp-content/plugins/membermouse/includes/init.php");
+	include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+	include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 	global $wpdb;
 	$memberId = $data["member_id"];
 	$status = $data["status"];

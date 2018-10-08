@@ -1,52 +1,52 @@
 <?php
-global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
-endif;
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+global $wpdb;
+
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 
 	$errs = false;
-	
+
 	if(empty($name)):
 		$error["name"]	= 'Please enter the Name.';
 		$errs			= true;
 	endif;
-	
+
 	if(empty($leader_memlevel)):
 		$error["leader_memlevel"]	= 'Please select the Group Leader Associated Access.';
 		$errs						= true;
 	endif;
-	
+
 	if(($lCost == 1) && empty($leader_cost)):
 		$error["leader_cost"]	= 'Please select the Group Leader Associated Cost.';
 		$errs					= true;
 	endif;
-	
+
 	if(empty($member_memlevel)):
 		$error["member_memlevel"]	= 'Please select the Group Member Associated Access.';
 		$errs						= true;
 	endif;
-	
+
 	if(($mCost == 1) && empty($member_cost)):
 		$error["member_cost"]	= 'Please select the Group Member Associated Cost.';
 		$errs					= true;
 	endif;
-	
+
 	if(empty($group_size)):
 		$error["group_size"]	= 'Please enter the Group Size.';
 		$errs					= true;
 	endif;
-	
+
 	if(empty($description)):
 		$error["description"]	= 'Please enter the Description.';
 		$errs					= true;
 	endif;
-	
+
 	if($errs == true):
 		$return = json_encode($error);
 	else:
@@ -57,10 +57,10 @@ if(count($_POST) > 0):
 		endif;
 		$query	= $wpdb -> query($sql);
 		if($query):
-			$return = json_encode(array("success"=> "yes")); 
+			$return = json_encode(array("success"=> "yes"));
 		else:
 			$return = json_encode(array("success"=> "no"));
-		endif;	
+		endif;
 	endif;
 	echo $return;
 endif;

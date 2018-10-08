@@ -1,11 +1,12 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
-endif;
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 	$userId		= 0;
@@ -21,7 +22,7 @@ if(count($_POST) > 0):
 			else:
 				$gName = "Group";
 			endif;
-			$msg["error"] = "<font class=\"red-text\">This member is already registered to Group '".$gName."'.</font>";	
+			$msg["error"] = "<font class=\"red-text\">This member is already registered to Group '".$gName."'.</font>";
 		else:
 			$leaderSql		= "SELECT group_name FROM ".$wpdb -> prefix."group_sets WHERE group_leader = '".$userId."'";
 			$leaderResult	= $wpdb -> get_row($leaderSql);
@@ -44,12 +45,12 @@ if(count($_POST) > 0):
 				else:
 					$msg["error"] = '<font class="red-text">There is already '.$groupSize.' members in this group.</font>';
 				endif;
-			endif;		
+			endif;
 		endif;
 	else:
 		$msg["error"] = '<font class="red-text">No member found with this username or email.</font>';
 	endif;
 	$return = json_encode($msg);
-	echo $return;	
+	echo $return;
 endif;
 ?>

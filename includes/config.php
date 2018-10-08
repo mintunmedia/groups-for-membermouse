@@ -1,73 +1,77 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $wpdb;
 $totalSql	= "SELECT COUNT(id) AS total FROM ".$wpdb -> prefix."group_items WHERE 1";
 $totalRes	= $wpdb -> get_row($totalSql);
 $count		= $totalRes -> total;
 $show		= 0;
-if(isset($_GET["notice"]) && !empty($_GET["notice"])):
-	$notice 	= $_GET["notice"];
-	$delSql		= "DELETE FROM ".$wpdb -> prefix."group_notices WHERE id = '".$notice."'";
-	$delQuery	= $wpdb -> query($delSql);
-	if($delQuery):?>
+if( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_int( $_GET['notice'] ) ) {
+	$notice 	= $_GET['notice'];
+	$delSql		= "DELETE FROM ". $wpdb->prefix . "group_notices WHERE id = '" . $notice . "'";
+	$delQuery	= $wpdb->query( $delSql );
+	if ( $delQuery ) { ?>
 		<script type="text/javascript">
 			window.location = 'admin.php?page=groupsformm&ndelete=1';
 		</script>
-<?php
-	else:?>
+<?php } else { ?>
 		<script type="text/javascript">
 			window.location = 'admin.php?page=groupsformm&ndelete=0';
 		</script>
-<?php	
-	endif;
-endif;	
-if(isset($_GET["show"]) && !empty($_GET["show"])):
-	$show = $_GET["show"];
-endif;
-			
-if(!empty($show)):
+<?php
+	}
+}
+if ( isset( $_GET['show'] ) && ! empty( $_GET['show'] ) && is_int( $_GET['show'] ) ) {
+	$show = $_GET['show'];
+}
+
+if ( ! empty ($show) ) {
 	$limit = $show;
-else:
+} else {
 	$limit = 10;
-endif;
+}
 
 $page = 0;
-if(isset($_GET["p"]) && !empty($_GET["p"])):
-	$page 	= $_GET["p"];
-	$start 	= ($page - 1) * $limit;
-else:
-	$start	= 0;	
-endif;
 
-if($page == 0):
+if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_int( $_GET['p'] ) ) {
+	$page 	= $_GET['p'];
+	$start 	= ( $page - 1 ) * $limit;
+} else {
+	$start	= 0;
+}
+
+if ( $page == 0) {
 	$page = 1;
-endif;
+}
 
 $targetpage = 'admin.php?page=groupsformm';
-if(!empty($show)):
+
+if ( !empty( $show ) ) {
 	$targetpage .= '&show='.$show;
-endif;
+}
 $sql 		= "SELECT * FROM ".$wpdb -> prefix."group_items WHERE 1 ORDER BY createdDate DESC LIMIT $start, $limit";
-$results	= $wpdb -> get_results($sql);	
+$results	= $wpdb->get_results($sql);
 
 $group_id 	= get_option("mm_custom_field_group_id");
 ?>
 <h2>Define Group Types</h2>
 <div id="group_popup_msg">
-<?php if(isset($_GET["delete"])):?>
-	<?php if($_GET["delete"] == 1):?>
+<?php if ( isset( $_GET["delete"] ) ) { ?>
+	<?php if ( $_GET["delete"] == 1 ) { ?>
 		<div class="group_success">Successfully deleted the Group.</div>
-	<?php elseif($_GET["delete"] == 0):?>
+	<?php } elseif ( $_GET["delete"] == 0 ) { ?>
 		<div class="group_failure">Some error occured please try again later.</div>
-	<?php endif;?>
-<?php endif;?>
+	<?php } ?>
+<?php } ?>
 
-<?php if(isset($_GET["ndelete"])):?>
-	<?php if($_GET["ndelete"] == 1):?>
+<?php if ( isset( $_GET["ndelete"] ) ) { ?>
+	<?php if ( $_GET["ndelete"] == 1) { ?>
 		<div class="group_success">Successfully deleted the Notice.</div>
-	<?php elseif($_GET["ndelete"] == 0):?>
+	<?php } elseif ( $_GET["ndelete"] == 0 ) { ?>
 		<div class="group_failure">Some error occured please try again later.</div>
-	<?php endif;?>
-<?php endif;?>
+	<?php } ?>
+<?php }?>
 </div>
 
 <div class="membermousegroupbuttoncontainer">
@@ -98,20 +102,20 @@ $group_id 	= get_option("mm_custom_field_group_id");
 			$leadermemResult	= $wpdb -> get_row($leadermemSql);
 			$leaderCost			= "";
 			if(!empty($res -> group_leader_cost)):
-				$leaderSql			= "SELECT name FROM mm_products WHERE id = '".$res -> group_leader_cost."'";	
+				$leaderSql			= "SELECT name FROM mm_products WHERE id = '".$res -> group_leader_cost."'";
 				$leaderResult		= $wpdb -> get_row($leaderSql);
-				$leaderCost			= $leaderResult -> name;	
+				$leaderCost			= $leaderResult -> name;
 			endif;
-			
+
 			$membermemSql 		= "SELECT name FROM mm_membership_levels WHERE id = '".$res -> member_memlevel."'";
 			$membermemResult	= $wpdb -> get_row($membermemSql);
 			$memberCost			= "";
 			if(!empty($res -> group_member_cost)):
-				$memberSql			= "SELECT name FROM mm_products WHERE id = '".$res -> group_member_cost."'";	
+				$memberSql			= "SELECT name FROM mm_products WHERE id = '".$res -> group_member_cost."'";
 				$memberResult		= $wpdb -> get_row($memberSql);
-				$memberCost			= $memberResult -> name;	
+				$memberCost			= $memberResult -> name;
 			endif;
-			?> 		
+			?>
 			<tr>
 				<td><?php echo $res -> name;?></td>
 				<td><?php echo $leadermemResult -> name;?></td>
@@ -125,7 +129,7 @@ $group_id 	= get_option("mm_custom_field_group_id");
 					</a>
 				</td>
 				<!--td><?php echo $res -> description;?></td-->
-				<?php 
+				<?php
 				$editActionUrl = 'onclick="javascript:MGROUP.editGroup(\''.$res -> id.'\');"';
 				$deleteActionUrl = 'onclick="javascript:MGROUP.deleteGroup(\''.$res -> id.'\');"';
 				?>
@@ -134,7 +138,7 @@ $group_id 	= get_option("mm_custom_field_group_id");
 					<?php echo MM_Utils::getDeleteIcon("Delete Group Type", 'margin-left:5px;', $deleteActionUrl); ?>
 				</td>
 			</tr>
-<?php	endforeach;?>	
+<?php	endforeach;?>
 	</tbody>
 </table>
 <?php } ?>
@@ -161,11 +165,11 @@ if($noticeCount > 0):?>
 				$groupSql		= "SELECT group_name FROM ".$wpdb -> prefix."group_sets WHERE id = '".$noticeResult -> group_id."'";
 				$groupResult	= $wpdb -> get_row($groupSql);
 				$groupName		= $groupResult -> group_name;
-				
+
 				$userSql		= "SELECT user_email FROM ".$wpdb -> prefix."users WHERE ID = '".$noticeResult -> user_id."'";
 				$userResult		= $wpdb -> get_row($userSql);
 				$userEmail		= $userResult -> user_email;
-				
+
 				$leaderSql		= "SELECT user_email FROM ".$wpdb -> prefix."users WHERE ID = '".$noticeResult -> leader_id."'";
 				$leaderResult	= $wpdb -> get_row($leaderSql);
 				$leaderEmail	= $leaderResult -> user_email;
@@ -175,11 +179,11 @@ if($noticeCount > 0):?>
 					<td>
 						<a title="Delete Notice" href="admin.php?page=groupsformm&notice=<?php echo $noticeResult -> id;?>">Delete Notice</a>
 					</td>
-				</tr>	
+				</tr>
 <?php		endforeach;?>
 			</tbody>
 		</table>
 	</div>
 <?php
 endif;
-?>	
+?>

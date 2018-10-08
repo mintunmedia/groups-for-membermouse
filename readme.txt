@@ -1,21 +1,21 @@
-=== MemberMouse Groups ===
+=== Groups for MemberMouse ===
 Contributors: mintunmedia,premiumbizthemes,roymckenzie
-Tags: membermouse, member management, membership site, groups
+Tags: membermouse, member management, membership site, groups, mm groups, groups for membermouse
 Requires at least: 4.8
 Tested up to: 4.9.8
 Requires PHP: 5.6
-Stable tag: stable
+Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Groups allows you to sell \"seats\" of membership to one Group Leader or Business. 
+Groups allows you to sell \"seats\" of membership to one Group Leader or Business.
 
 == Description ==
 Groups allows you to extend MemberMouse\'s premium Member Management tool with the ability to sell \"seats of membership\" to your members. This gives your members the capability to add their own users to their own account. The beauty is that you can increase your profit by allowing your members to purchase membership with any varying amount of seats:
 
-3 seats: $100/mo 
+3 seats: $100/mo
 5 seats: $120/mo
-10 seats: 200/mo
+10 seats: $200/mo
 
 This is the perfect solution for many different business models wanting to offer seats of membership:
 B2B

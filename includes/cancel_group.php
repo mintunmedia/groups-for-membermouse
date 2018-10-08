@@ -1,17 +1,18 @@
 <?php
-global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
-endif;
-include_once(ABSPATH."wp-content/plugins/membermouse/includes/mm-constants.php");
-include_once(ABSPATH."wp-content/plugins/membermouse/includes/init.php");
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+global $wpdb;
+
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
+
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
-	
+
 	$groupSql	= "UPDATE ".$wpdb -> prefix."group_sets SET group_status = '0', modifiedDate = now() WHERE id = '".$id."'";
 	$groupQuery	= $wpdb -> query($groupSql);
 	if($groupQuery):
@@ -38,6 +39,6 @@ if(count($_POST) > 0):
 	else:
 		$return["success"]	= "no";
 	endif;
-	echo json_encode($return);	
+	echo json_encode($return);
 endif;
-?>	
+?>

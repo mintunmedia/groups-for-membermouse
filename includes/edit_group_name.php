@@ -1,17 +1,17 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
 global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
-endif;
 
 $name 		= "";
 $group_id	= "";
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+$data = sanitize_post($_POST);
+if ( count( $data ) > 0 ):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
-	
+
 	$sql	= "SELECT id,group_name,group_leader FROM ".$wpdb -> prefix."group_sets WHERE id = '".$group_id."' AND group_leader = '".$member_id."'";
 	$result	= $wpdb -> get_row($sql);
 	if(count($result) > 0):
@@ -35,7 +35,7 @@ if(count($_POST) > 0):
 					</td>
 				</tr>
 			</table>
-		</div>		
+		</div>
 	<div id="popup_group_bottom">
 		<div class="group-dialog-button-container">
 			<a class="group-button button-blue" href="javascript:MGROUP.updateGroupName('<?php echo $group_id;?>','<?php echo $member_id;?>');">Save</a>&nbsp;&nbsp;
@@ -51,6 +51,6 @@ if(count($_POST) > 0):
 </div>
 </div>
 
-<?php	
+<?php
 endif;
-?>	
+?>

@@ -1,12 +1,12 @@
 <?php
-global $wpdb;
-if(!isset($wpdb)):
-	require_once('../../../../wp-config.php');
-    require_once('../../../../wp-includes/wp-db.php');
-endif;
 
-if(count($_POST) > 0):
-	foreach($_POST as $key => $value):
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+
+global $wpdb;
+
+$data = sanitize_post($_POST);
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 	$return		= array();
@@ -19,6 +19,6 @@ if(count($_POST) > 0):
 	else:
 		$return["success"]	= "no";
 	endif;
-	echo json_encode($return);	
-endif;	
+	echo json_encode($return);
+endif;
 ?>

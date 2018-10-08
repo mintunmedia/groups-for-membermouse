@@ -9,26 +9,24 @@ jQuery(document).ready(function(){
 		jQuery("#create_group_background").show();
 		jQuery("#create_group_loading").show();
 		jQuery("#create_group_content").show();
-		jQuery.ajax({
-			type: 'post',
-			url : createGroup.ajaxurl,
-			data: '',
-			success: function(data){
+		jQuery
+			.post( create_group.ajax_url, { _wpnonce: rest_nonce._wpnonce }, 'html' )
+			.done( function( data ) {
 				jQuery("#create_group_content").html(data);
 				var contentLeft = MGROUP.contentDataLeft();
 				var contentTop = MGROUP.contentDataTop();
 				jQuery("#create_group_content").css({"top": contentTop, "left":contentLeft});
 				jQuery("#create_group_loading").hide();
 				jQuery("#create_group_content").show();
-			}
-		});
+			});
+
 	});
 });
 
 (function($){
 	MGROUP = {
 		init: function() {
-		
+
 		},
 		changeAssociatedAccessValue:function(gVal){
 			$("#associated_access_value").val(gVal);
@@ -56,7 +54,7 @@ jQuery(document).ready(function(){
 			var member_memlevel		= $("#member_memlevel").val();
 			var lCost				= $("#leaderCost").val();
 			var leader_cost			= 0;
-			if(lCost == 1){	
+			if(lCost == 1){
 				leader_cost			= $("#group_leader_cost").val();
 			}
 			var mCost				= $("#memberCost").val();
@@ -67,7 +65,7 @@ jQuery(document).ready(function(){
 			var group_size			= $("#group_size").val();
 			var description			= $("#description").val();
 			var retVar				= false;
-			
+
 			// Error Handling
 			if(name == ''){
 				$("#name").css({"border-color":"#FF0000"});
@@ -78,7 +76,7 @@ jQuery(document).ready(function(){
 				$("#nameErr").html('');
 				retVar = false;
 			}
-			
+
 			if(leader_memlevel == ''){
 				$("#leader_memlevel").css({"border-color":"#FF0000"});
 				$("#leadermemlevelErr").html("Please select the Group Leader Associated Access.");
@@ -88,7 +86,7 @@ jQuery(document).ready(function(){
 				$("#leadermemlevelErr").html('');
 				retVar = false;
 			}
-			
+
 			if(lCost == 1 && leader_cost == ''){
 				$("#group_leader_cost").css({"border-color":"#FF0000"});
 				$("#groupLeaderCostErr").html("Please select the Group Leader Associated Cost.");
@@ -98,7 +96,7 @@ jQuery(document).ready(function(){
 				$("#groupLeaderCostErr").html('');
 				retVar = false;
 			}
-			
+
 			if(member_memlevel == ''){
 				$("#member_memlevel").css({"border-color":"#FF0000"});
 				$("#membermemlevelErr").html("Please select the Group Member Associated Access.");
@@ -108,7 +106,7 @@ jQuery(document).ready(function(){
 				$("#membermemlevelErr").html('');
 				retVar = false;
 			}
-			
+
 			if(mCost == 1 && member_cost == ''){
 				$("#group_member_cost").css({"border-color":"#FF0000"});
 				$("#groupMemberCostErr").html("Please select the Group Member Associated Cost.");
@@ -118,7 +116,7 @@ jQuery(document).ready(function(){
 				$("#groupMemberCostErr").html('');
 				retVar = false;
 			}
-			
+
 			if(group_size == ''){
 				$("#group_size").css({"border-color":"#FF0000"});
 				$("#groupSizeErr").html("Please enter the Group Size.");
@@ -128,7 +126,7 @@ jQuery(document).ready(function(){
 				$("#groupSizeErr").html('');
 				retVar = false;
 			}
-			
+
 			if(description == ''){
 				$("#description").css({"border-color":"#FF0000"});
 				$("#descriptionErr").html("Please enter the Description.");
@@ -138,16 +136,16 @@ jQuery(document).ready(function(){
 				$("#descriptionErr").html('');
 				retVar = false;
 			}
-			
+
 			if(retVar == true){
 				$(".group-loading-container").hide();
 			}else{
 				$(".group-loading-container").show();
 				$.ajax({
 					type: 'post',
-					url : addGroup.ajaxurl,
+					url : add_group.ajax_url,
 					dataType : 'json',
-					data: 'name='+name+'&leader_memlevel='+leader_memlevel+'&lCost='+lCost+'&leader_cost='+leader_cost+'&member_memlevel='+member_memlevel+'&mCost='+mCost+'&member_cost='+member_cost+'&group_size='+group_size+'&description='+description+'&groupId='+groupId,
+					data: 'name='+name+'&leader_memlevel='+leader_memlevel+'&lCost='+lCost+'&leader_cost='+leader_cost+'&member_memlevel='+member_memlevel+'&mCost='+mCost+'&member_cost='+member_cost+'&group_size='+group_size+'&description='+description+'&groupId='+groupId+'&_wpnonce='+rest_nonce._wpnonce,
 					success: function(data){
 						$.each(data, function(i){
 							if(i == "name"){
@@ -186,7 +184,7 @@ jQuery(document).ready(function(){
 						});
 					}
 				});
-			}	
+			}
 		},
 		showHelpWindow:function(){
 			var height = MGROUP.contentheight();
@@ -200,8 +198,8 @@ jQuery(document).ready(function(){
 			$("#create_group_content").show();
 			$.ajax({
 				type: 'post',
-				url : showHelpWindow.ajaxurl,
-				data: '',
+				url : show_help_window.ajax_url,
+				data: '_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#create_group_content").html(data);
 					var contentLeft = MGROUP.contentDataLeft();
@@ -224,8 +222,8 @@ jQuery(document).ready(function(){
 			$("#create_group_content").show();
 			$.ajax({
 				type: 'post',
-				url : createGroup.ajaxurl,
-				data: 'groupId='+groupId,
+				url : create_group.ajax_url,
+				data: 'groupId='+groupId+'&_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#create_group_content").html(data);
 					var contentLeft = MGROUP.contentDataLeft();
@@ -249,9 +247,9 @@ jQuery(document).ready(function(){
 				$("#create_group_loading").show();
 				$.ajax({
 					type: 'post',
-					url : deleteGroup.ajaxurl,
+					url : delete_group.ajax_url,
 					dataType : 'json',
-					data: 'groupId='+groupId,
+					data: 'groupId='+groupId+'&_wpnonce='+rest_nonce._wpnonce,
 					success: function(data){
 						$.each(data, function(i){
 							if(i == "success"){
@@ -266,12 +264,12 @@ jQuery(document).ready(function(){
 								}
 							}
 						});
-						
+
 					}
 				});
 			}
 		},
-		
+
 		deleteGroupData: function(id){
 			if(confirm("Are you sure you want to delete this Group?")){
 				var height = MGROUP.contentheight();
@@ -284,8 +282,8 @@ jQuery(document).ready(function(){
 				$("#create_group_loading").show();
 				$.ajax({
 					type		: 'POST',
-					url			: deletegroupData.ajaxurl,
-					data		: 'id='+id,
+					url			: delete_group_data.ajax_url,
+					data		: 'id='+id+'&_wpnonce='+rest_nonce._wpnonce,
 					dataType	: 'json',
 					success		: function(data){
 						$.each(data, function(i){
@@ -299,11 +297,11 @@ jQuery(document).ready(function(){
 								window.location = 'admin.php?page=groupsformm&type=manage&msg=2';
 							}
 						});
-					}	
+					}
 				});
 			}
 		},
-		
+
 		cancelGroup: function(id){
 			if(confirm('Are you sure you want to cancel this group?')){
 				var height = MGROUP.contentheight();
@@ -316,8 +314,8 @@ jQuery(document).ready(function(){
 				$("#create_group_loading").show();
 				$.ajax({
 					type		: 'POST',
-					url			: cancelGroup.ajaxurl,
-					data		: 'id='+id,
+					url			: cancel_group.ajax_url,
+					data		: 'id='+id+'&_wpnonce='+rest_nonce._wpnonce,
 					dataType	: 'json',
 					success		: function(data){
 						$.each(data, function(i){
@@ -331,11 +329,11 @@ jQuery(document).ready(function(){
 								window.location = 'admin.php?page=groupsformm&type=manage&msg=2';
 							}
 						});
-					}	
+					}
 				});
 			}
 		},
-		
+
 		activateGroup: function(id){
 			var height = MGROUP.contentheight();
 			var width  = MGROUP.contentwidth();
@@ -347,8 +345,8 @@ jQuery(document).ready(function(){
 			$("#create_group_loading").show();
 			$.ajax({
 				type		: 'POST',
-				url			: activateGroup.ajaxurl,
-				data		: 'id='+id,
+				url			: activate_group.ajax_url,
+				data		: 'id='+id+'&_wpnonce='+rest_nonce._wpnonce,
 				dataType	: 'json',
 				success		: function(data){
 					$.each(data, function(i){
@@ -362,10 +360,10 @@ jQuery(document).ready(function(){
 							window.location = 'admin.php?page=groupsformm&type=manage&msg=2';
 						}
 					});
-				}	
+				}
 			});
 		},
-		
+
 		showPurchaseLink:function(prodId, groupId){
 			var height = MGROUP.contentheight();
 			var width  = MGROUP.contentwidth();
@@ -378,8 +376,8 @@ jQuery(document).ready(function(){
 			$("#create_group_content").show();
 			$.ajax({
 				type: 'post',
-				url : purchaseLink.ajaxurl,
-				data: 'prodId='+prodId+'&groupId='+groupId,
+				url : purchase_link.ajax_url,
+				data: 'prodId='+prodId+'&groupId='+groupId+'&_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#create_group_content").html(data);
 					var contentLeft = MGROUP.contentDataLeft();
@@ -405,8 +403,8 @@ jQuery(document).ready(function(){
 			$("#create_group_content").show();
 			$.ajax({
 				type: 'post',
-				url : editGroup.ajaxurl,
-				data: 'gId='+gId,
+				url : edit_group.ajax_url,
+				data: 'gId='+gId+'&_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#create_group_content").html(data);
 					var contentLeft = MGROUP.contentDataLeft();
@@ -442,16 +440,16 @@ jQuery(document).ready(function(){
 				$("#groupSizeErr").html('');
 				retVar = false;
 			}
-			
+
 			if(retVar == true){
 				$(".group-loading-container").hide();
 			}else{
 				$(".group-loading-container").show();
 				$.ajax({
 					type: 'post',
-					url : updateGroup.ajaxurl,
+					url : update_group.ajax_url,
 					dataType : 'json',
-					data: 'gId='+gId+'&group_size='+group_size+'&group_name='+group_name,
+					data: 'gId='+gId+'&group_size='+group_size+'&group_name='+group_name+'&_wpnonce='+rest_nonce._wpnonce,
 					success: function(data){
 						$.each(data, function(i){
 							if(i == "group_size"){
@@ -486,8 +484,8 @@ jQuery(document).ready(function(){
 			$("#create_group_content").show();
 			$.ajax({
 				type: 'post',
-				url : editGroupName.ajaxurl,
-				data: 'group_id='+group_id+'&member_id='+member_id,
+				url : edit_group_name.ajax_url,
+				data: 'group_id='+group_id+'&member_id='+member_id+'&_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#create_group_content").html(data);
 					var contentLeft = MGROUP.contentDataLeft();
@@ -511,16 +509,16 @@ jQuery(document).ready(function(){
 				$("#nameErr").html('');
 				retVar = false;
 			}
-			
+
 			if(retVar == true){
 				$(".group-loading-container").hide();
 			}else{
 				$(".group-loading-container").show();
 				$.ajax({
 					type: 'post',
-					url : updateGroupName.ajaxurl,
+					url : update_group_name.ajax_url,
 					dataType : 'json',
-					data: 'group_id='+group_id+'&name='+name+'&member_id='+member_id,
+					data: 'group_id='+group_id+'&name='+name+'&member_id='+member_id+'&_wpnonce='+rest_nonce._wpnonce,
 					success: function(data){
 						$.each(data, function(i){
 							if(i == "name"){
@@ -555,8 +553,8 @@ jQuery(document).ready(function(){
 			$("#create_group_content").show();
 			$.ajax({
 				type: 'post',
-				url : showPurchaseLink.ajaxurl,
-				data: 'group_id='+group_id+'&member_id='+member_id,
+				url : show_purchase_link.ajax_url,
+				data: 'group_id='+group_id+'&member_id='+member_id+'&_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#create_group_content").html(data);
 					var contentLeft = MGROUP.contentDataLeft();
@@ -573,8 +571,8 @@ jQuery(document).ready(function(){
 			$.ajax({
 				type 		: 'post',
 				dataType 	: 'json',
-				data		: 'username='+encodeURIComponent(username)+'&group_id='+group_id,
-				url			: checkUsername.ajaxurl,
+				data		: 'username='+encodeURIComponent(username)+'&group_id='+group_id+'&_wpnonce='+rest_nonce._wpnonce,
+				url			: check_username.ajax_url,
 				success		: function(data){
 					$("#add_user_loading").hide();
 					$.each(data, function(i){
@@ -591,7 +589,7 @@ jQuery(document).ready(function(){
 						}
 					});
 				}
-				
+
 			});
 		},
 		addGroupUsers:function(group_id, member_id){
@@ -599,8 +597,8 @@ jQuery(document).ready(function(){
 			$.ajax({
 				type		: 'POST',
 				dataType	: 'json',
-				data		: 'group_id='+group_id+'&member_id='+member_id,
-				url			: addGroupUser.ajaxurl,
+				data		: 'group_id='+group_id+'&member_id='+member_id+'&_wpnonce='+rest_nonce._wpnonce,
+				url			: add_group_user.ajax_url,
 				success		: function(data){
 					$("#add_user_loading").hide();
 					$.each(data, function(i){
@@ -616,7 +614,7 @@ jQuery(document).ready(function(){
 							$("#user_id").val('0');
 						}
 					});
-				}	
+				}
 			});
 		},
 		deleteGroupMember:function(gmId){
@@ -632,9 +630,9 @@ jQuery(document).ready(function(){
 				$("#create_group_loading").show();
 				$.ajax({
 					type: 'post',
-					url : deleteGroupMember.ajaxurl,
+					url : delete_group_member.ajax_url,
 					dataType : 'json',
-					data: 'gmId='+gmId,
+					data: 'gmId='+gmId+'&_wpnonce='+rest_nonce._wpnonce,
 					success: function(data){
 						$.each(data, function(i){
 							if(i == "success"){
@@ -649,7 +647,7 @@ jQuery(document).ready(function(){
 								}
 							}
 						});
-						
+
 					}
 				});
 			}
@@ -684,7 +682,7 @@ jQuery(document).ready(function(){
 			var height = MGROUP.contentheight();
 			var width  = MGROUP.contentwidth();
 			var top	   = MGROUP.contentLoadingTop();
-			var left   = MGROUP.contentLoadingLeft();		
+			var left   = MGROUP.contentLoadingLeft();
 			$("#create_group_background").height(height);
 			$("#create_group_loading").css({"top":top, "left":left});
 			$("#create_group_background").show();
@@ -692,8 +690,8 @@ jQuery(document).ready(function(){
 			$("#create_group_content").show();
 			$.ajax({
 				type: 'post',
-				url : GroupLeaderForm.ajaxurl,
-				data: '',
+				url : group_leader_form.ajax_url,
+				data: '_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#create_group_content").html(data);
 					var contentLeft = MGROUP.contentDataLeft();
@@ -709,9 +707,9 @@ jQuery(document).ready(function(){
 				$("#userLoading").show();
 				$.ajax({
 					type		: 'POST',
-					url			: checkGroupUser.ajaxurl,
+					url			: check_user.ajax_url,
 					dataType	: 'json',
-					data		: 'user='+encodeURIComponent(user),
+					data		: 'user='+encodeURIComponent(user)+'&_wpnonce='+rest_nonce._wpnonce,
 					success		: function(data){
 						$("#userLoading").hide();
 						$.each(data, function(i){
@@ -723,16 +721,16 @@ jQuery(document).ready(function(){
 								$("#user_id").val(data[i]);
 								$("#userErr").html('');
 								$("#user").css({"border-color":"#DFDFDF"});
-							}							
+							}
 						});
-						
+
 					}
 				});
 			}else{
 				$("#user").css({"border-color":"#FF0000"});
 				$("#user_id").val(0);
 				$("#userErr").html('');
-			}			
+			}
 		},
 		createGroupLeader:function(){
 			var group_name 	= $("#group_name").val();
@@ -759,7 +757,7 @@ jQuery(document).ready(function(){
 				$("#groupErr").html('');
 				$("#group").css({"border-color":"#DFDFDF"});
 				retVar = false;
-			}	
+			}
 			if(user == ''){
 				$("#userErr").html('Please enter the Group Leader.');
 				$("#user").css({"border-color":"#FF0000"});
@@ -768,8 +766,8 @@ jQuery(document).ready(function(){
 				$("#userErr").html('');
 				$("#user").css({"border-color":"#DFDFDF"});
 				retVar = false;
-			}	
-				
+			}
+
 			if(retVar == false){
 				$(".group-loading-container").show();
 				$("#group").css({"border-color":"#DFDFDF"});
@@ -778,9 +776,9 @@ jQuery(document).ready(function(){
 				$("#userErr").html('');
 				$.ajax({
 					type: 'post',
-					url : createGroupLeader.ajaxurl,
+					url : create_group_leader.ajax_url,
 					dataType : 'json',
-					data: 'group='+group+'&user='+encodeURIComponent(user)+'&user_id='+user_id+'&group_name='+group_name,
+					data: 'group='+group+'&user='+encodeURIComponent(user)+'&user_id='+user_id+'&group_name='+group_name+'&_wpnonce='+rest_nonce._wpnonce,
 					success: function(data){
 						$(".group-loading-container").hide();
 						$.each(data, function(i){
@@ -813,8 +811,8 @@ jQuery(document).ready(function(){
 			$("#memberLoading").show();
 			$.ajax({
 				type: 'post',
-				url : changeGroupCost.ajaxurl,
-				data: 'levelId='+levelId+'&type=member',
+				url : change_group_cost.ajax_url,
+				data: 'levelId='+levelId+'&type=member&_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#member_associated_cost").html(data);
 					$("#memberLoading").hide();
@@ -825,8 +823,8 @@ jQuery(document).ready(function(){
 			$("#leadermemLoading").show();
 			$.ajax({
 				type: 'post',
-				url : changeGroupCost.ajaxurl,
-				data: 'levelId='+levelId+'&type=leader',
+				url : change_group_cost.ajax_url,
+				data: 'levelId='+levelId+'&type=leader&_wpnonce='+rest_nonce._wpnonce,
 				success: function(data){
 					$("#leader_associated_cost").html(data);
 					$("#leadermemLoading").hide();
@@ -834,7 +832,7 @@ jQuery(document).ready(function(){
 			});
 		},
 	}
-	$(document).ready(function(){ 
-		MGROUP.init(); 
-	});		
+	$(document).ready(function(){
+		MGROUP.init();
+	});
 })(jQuery);
