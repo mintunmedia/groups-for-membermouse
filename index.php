@@ -5,7 +5,7 @@
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
  * Version: 1.0.2
  * Author: Mintun Media
- * Plugin URI:  https://www.mintunmedia.com
+ * Plugin URI:  https://www.powerpackformembermouse.com/groups-for-membermouse-plugin/
  * Author URI:  https://www.mintunmedia.com
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -516,12 +516,12 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 							<div class="theCta red hideme">
 								<h2>Get More Features with<br />MemberMouse+ PRO</h2>
 								<p>MemberMouse+ PRO gives you more features and integrations that help you concentrate on building your business versus working in it!</p>
-								<a href="https://www.membermouseplus.com/" target="_blank" class="redbtn">Check It Out</a>
+								<a href="https://www.powerpackformembermouse.com/" target="_blank" class="redbtn">Check It Out</a>
 							</div>
 							<div class="theCta purple">
 								<h2>Need MemberMouse Development Help?</h2>
 								<p>The development team behind the MemberMouse Groups plugin is here to help you get started or take your membership site to the next level! We offer development services and customization services.</p>
-								<a href="https://www.membermouseplus.com/support/" target="_blank">Yes! Help Me!</a>
+								<a href="https://www.powerpackformembermouse.com/support/" target="_blank">Yes! Help Me!</a>
 							</div>
 						</div>
 					</div>
