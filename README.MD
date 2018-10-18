@@ -34,7 +34,7 @@ Groups for MemberMouse REQUIRES MemberMouse in order to run.
 - Add group import feature
 
 **Thanks to the Github Community**
-Thank you to the Github community for contributing to the plugin's codebase and for bringing it to the state is in today. Mintun Media decided to take ownership of the codebase and has enhanced its security and WordPress compatibility. We look forward to working with the Github and WordPress communities to add new features all while maintaing WordPress coding standards. We also encourage you to make a pull request if you see any issues or have ideas to enhance the plugin.
+Thank you to the Github community for contributing to the plugin's codebase and for bringing it to the state is in today. Mintun Media decided to take ownership of the codebase and has enhanced its security, stability, and WordPress compatibility. We look forward to working with the Github and WordPress communities to add new features all while maintaing WordPress coding standards. We also encourage you to make a pull request if you see any issues or have ideas to enhance the plugin.
 
 **Shortcodes and URLs**
 You'll need to add a special shortcode to your checkout page in between the `[MM_Form type="checkout"]` and `[/MM_Form]` tags. This shortcode may have a different ID than the one displayed here: `[MM_Form_Field type="custom-hidden" id="1"]`
