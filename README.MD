@@ -2,7 +2,7 @@
 
 ## Introduction
 
-*Groups for MemberMouse* is one of the most sought after add-ons for MemberMouse, allowing you to offer memberships to businesses, schools, sports teams, and other users who need the ability to give access to your membership site to their team members. 
+*Groups for MemberMouse* is one of the most sought after add-ons for MemberMouse, allowing you to offer memberships to businesses, schools, sports teams, and other users who need the ability to give access to your membership site to their team members.
 
 Groups allows you to extend MemberMouse's premium Member Management tool with the ability to sell "seats of membership" to your members. This gives your members the capability to add their own users to their own account. The beauty is that you can increase your profit by allowing your members to purchase membership with any varying amount of seats:
 
@@ -34,7 +34,7 @@ Groups for MemberMouse REQUIRES MemberMouse in order to run.
 - Add group import feature
 
 **Thanks to the Github Community**
-You may recognize this plugin from Github. We thank the community for getting the plugin to where it was at over the past few years. Since it became stagnant, we decided to take it over and implement many security features and do things "the WordPress way". 
+Thank you to the Github community for contributing to the plugin's codebase and for bringing it to the state is in today. Mintun Media decided to take ownership of the codebase and has enhanced its security and WordPress compatibility. We look forward to working with the Github and WordPress communities to add new features all while maintaing WordPress coding standards. We also encourage you to make a pull request if you see any issues or have ideas to enhance the plugin.
 
 **Shortcodes and URLs**
 You'll need to add a special shortcode to your checkout page in between the `[MM_Form type="checkout"]` and `[/MM_Form]` tags. This shortcode may have a different ID than the one displayed here: `[MM_Form_Field type="custom-hidden" id="1"]`
