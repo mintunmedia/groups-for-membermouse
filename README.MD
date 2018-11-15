@@ -37,7 +37,7 @@ Groups for MemberMouse REQUIRES MemberMouse in order to run.
 - Group Leader - the person who purchases the main group membership and can invite Group Members to join under them.
 - Group Member - the person who signs up under a Group Leader
 
-**How to Use Groups for MemberMouse**
+## How to Use Groups for MemberMouse**
 
 - Install Groups for MemberMouse from WP Plugins
 - Create a product and paid membership level used specifically for Group Signups (you can use your current products or membership levels as well - but most of the time, people want to separate their Group members from their Individual Members)
@@ -62,7 +62,7 @@ You'll want to place a shortcode on the Group Leader's payment confirmation page
 
 Important: You can add the `[MM_Group_SignUp_Link]` shortcode anywhere. The Payment Confirmation page may not be the most ideal place to put this shortcode. When used on the Confirmation page, we recommend using an `[MM_Order_Decision productId='#'][/MM_Order_Decision]` smart tag to put this group sign up shortcode in, that way you can add supportive copy to it and it's only seen by those who purchase Group membership.
 
-__Group Leader Management Page__
+** Group Leader Management Page **
 The URL you'll want to send your Group Leader to manage their Groups (adding and deleting people, etc) is located here:
 `https://[domain]/wp-admin/admin.php?page=membermousemanagegroup`
 
