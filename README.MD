@@ -41,7 +41,30 @@ You'll need to add a special shortcode to your checkout page in between the `[MM
 
 You'll want to place a shortcode on the Group Leader's payment confirmation page, this shows them their member signup link (which they'll use to send to the people they want to invite to your membership): `[MM_Group_SignUp_Link]`
 
-Important: You can add the `[MM_Group_SignUp_Link]` shortcode anywhere. The Payment Confirmation page may not be the most ideal place to put this shortcode.
+Important: You can add the `[MM_Group_SignUp_Link]` shortcode anywhere. The Payment Confirmation page may not be the most ideal place to put this shortcode. When used on the Confirmation page, we recommend using an `[MM_Order_Decision productId='#'][/MM_Order_Decision]` smart tag to put this group sign up shortcode in, that way you can add supportive copy to it and it's only seen by those who purchase Group membership.
+
+**A rundown of terms we use:**
+- Group Leader - the person who purchases the main group membership and can invite Group Members to join under them.
+- Group Member - the person who signs up under a Group Leader
+
+**How to Use Groups for MemberMouse**
+
+- Install Groups for MemberMouse from WP Plugins
+- Create a product and paid membership level used specifically for Group Signups (you can use your current products or membership levels as well - but most of the time, people want to separate their Group members from their Individual Members)
+- If Group Members join for FREE: Create a free membership level just for Group members to sign up under.
+- If Group Members join for a reduced price: Create a product and membership level just for Group Members
+- Create the Group in MemberMouse:
+- Navigate to MemberMouse > Groups
+- Click Create Group Type
+- Enter a Group Type name
+- Choose a Membership level you want to use for your Group Leader
+- This will now load Products associated with that membership level. Choose the product you want to use (this will be the Group Leaders price they pay)
+- Then choose the membership level for the Group Member - here you can choose a free membership level or a paid one. If you choose a paid membership level, you'll need to choose a product to associate with it as well.
+- Enter Group Size (this is how many "seats" are allowed within this group. Group size does not include the Group Leader)
+- Enter a Description - this description is not seen anywhere yet.
+- You'll see 2 informational messages at the top of the WordPRess admin dashboard - this tells you what shortcodes you need to add to your Checkout Page and your Confirmation page. These are mandatory in allowing the plugin to work.
+- Test Test Test! Be sure to test a group purchase and a group member sign up to ensure the flow works for you.
+
 
 __Group Leader Management Page__
 The URL you'll want to send your Group Leader to manage their Groups (adding and deleting people, etc) is located here:
