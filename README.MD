@@ -37,7 +37,7 @@ Groups for MemberMouse REQUIRES MemberMouse in order to run.
 - Group Leader - the person who purchases the main group membership and can invite Group Members to join under them.
 - Group Member - the person who signs up under a Group Leader
 
-## How to Use Groups for MemberMouse**
+## How to Use Groups for MemberMouse
 
 - Install Groups for MemberMouse from WP Plugins
 - Create a product and paid membership level used specifically for Group Signups (you can use your current products or membership levels as well - but most of the time, people want to separate their Group members from their Individual Members)
