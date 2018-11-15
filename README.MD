@@ -33,9 +33,6 @@ Groups for MemberMouse REQUIRES MemberMouse in order to run.
 - Improved leader management screen that takes the dashboard out of /wp-admin/
 - Add group import feature
 
-**Thanks to the Github Community**
-Thank you to the Github community for contributing to the plugin's codebase and for bringing it to the state is in today. Mintun Media decided to take ownership of the codebase and has enhanced its security, stability, and WordPress compatibility. We look forward to working with the Github and WordPress communities to add new features all while maintaing WordPress coding standards. We also encourage you to make a pull request if you see any issues or have ideas to enhance the plugin.
-
 **Shortcodes and URLs**
 You'll need to add a special shortcode to your checkout page in between the `[MM_Form type="checkout"]` and `[/MM_Form]` tags. This shortcode may have a different ID than the one displayed here: `[MM_Form_Field type="custom-hidden" id="1"]`
 
@@ -87,6 +84,8 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 2. Go to the Plugins page in your WordPress Dashboard and click `Activate`.
 3. The plugin options screen is located in MemberMouse > Groups.
 
+## Thanks to the Github Community
+Thank you to the Github community for contributing to the plugin's codebase and for bringing it to the state is in today. Mintun Media decided to take ownership of the codebase and has enhanced its security, stability, and WordPress compatibility. We look forward to working with the Github and WordPress communities to add new features all while maintaing WordPress coding standards. We also encourage you to make a pull request if you see any issues or have ideas to enhance the plugin.
 
 ## Changelog
 1.0.2 Initial release on WordPress Plugin Repository. Fixed a lot of dependency issues within the plugin. Plugin taken over by Mintun Media from MemberMouse and maintaining it for good.
