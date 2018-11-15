@@ -33,13 +33,6 @@ Groups for MemberMouse REQUIRES MemberMouse in order to run.
 - Improved leader management screen that takes the dashboard out of /wp-admin/
 - Add group import feature
 
-**Shortcodes and URLs**
-You'll need to add a special shortcode to your checkout page in between the `[MM_Form type="checkout"]` and `[/MM_Form]` tags. This shortcode may have a different ID than the one displayed here: `[MM_Form_Field type="custom-hidden" id="1"]`
-
-You'll want to place a shortcode on the Group Leader's payment confirmation page, this shows them their member signup link (which they'll use to send to the people they want to invite to your membership): `[MM_Group_SignUp_Link]`
-
-Important: You can add the `[MM_Group_SignUp_Link]` shortcode anywhere. The Payment Confirmation page may not be the most ideal place to put this shortcode. When used on the Confirmation page, we recommend using an `[MM_Order_Decision productId='#'][/MM_Order_Decision]` smart tag to put this group sign up shortcode in, that way you can add supportive copy to it and it's only seen by those who purchase Group membership.
-
 **A rundown of terms we use:**
 - Group Leader - the person who purchases the main group membership and can invite Group Members to join under them.
 - Group Member - the person who signs up under a Group Leader
@@ -62,6 +55,12 @@ Important: You can add the `[MM_Group_SignUp_Link]` shortcode anywhere. The Paym
 - You'll see 2 informational messages at the top of the WordPRess admin dashboard - this tells you what shortcodes you need to add to your Checkout Page and your Confirmation page. These are mandatory in allowing the plugin to work.
 - Test Test Test! Be sure to test a group purchase and a group member sign up to ensure the flow works for you.
 
+**Shortcodes and URLs**
+You'll need to add a special shortcode to your checkout page in between the `[MM_Form type="checkout"]` and `[/MM_Form]` tags. This shortcode may have a different ID than the one displayed here: `[MM_Form_Field type="custom-hidden" id="1"]`
+
+You'll want to place a shortcode on the Group Leader's payment confirmation page, this shows them their member signup link (which they'll use to send to the people they want to invite to your membership): `[MM_Group_SignUp_Link]`
+
+Important: You can add the `[MM_Group_SignUp_Link]` shortcode anywhere. The Payment Confirmation page may not be the most ideal place to put this shortcode. When used on the Confirmation page, we recommend using an `[MM_Order_Decision productId='#'][/MM_Order_Decision]` smart tag to put this group sign up shortcode in, that way you can add supportive copy to it and it's only seen by those who purchase Group membership.
 
 __Group Leader Management Page__
 The URL you'll want to send your Group Leader to manage their Groups (adding and deleting people, etc) is located here:
