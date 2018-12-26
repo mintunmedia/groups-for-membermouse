@@ -2,7 +2,7 @@
 Contributors: mintunmedia,roymckenzie
 Tags: membermouse, member management, membership site, groups, mm groups, groups for membermouse, membermouse groups
 Requires at least: 4.8
-Tested up to: 4.9.8
+Tested up to: 5.0.2
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv3
