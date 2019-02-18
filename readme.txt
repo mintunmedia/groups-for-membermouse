@@ -69,6 +69,8 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 1. The Groups Dashboard
 
 == Changelog ==
+1.0.3 Fixed bugs. - Removed Description Field from Create Group. Not used. Fixed issue with Pagination in plugin and number of results to display. Updated loading gif to fontawesome.
+
 1.0.2 Initial release on WordPress Plugin Repository. Fixed a lot of dependency issues within the plugin. Plugin taken over by Mintun Media from MemberMouse and maintaining it for good.
 
 1.0.1 Update to release on Github

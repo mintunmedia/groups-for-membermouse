@@ -9,7 +9,7 @@ $total_res	= $wpdb->get_row( $total_sql );
 $count			= $total_res->total;
 $show				= 0;
 
-if ( isset( $_GET['show'] ) && ! empty( $_GET['show'] ) && is_int( $_GET['show'] ) ) {
+if ( isset( $_GET['show'] ) && ! empty( $_GET['show'] ) ) {
 	$show = $_GET['show'];
 }
 
@@ -21,7 +21,7 @@ if ( ! empty( $show ) ) {
 
 $page = 0;
 
-if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_int( $_GET['p'] ) ) {
+if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) ) {
 	$page 	= $_GET['p'];
 	$start 	= ( $page - 1 ) * $limit;
 } else {
@@ -60,6 +60,7 @@ $results	= $wpdb->get_results( $sql );
 <p><em>No groups created yet.</em></p>
 <?php } else { ?>
 <?php echo MemberMouseGroupAddon::MemberMouseGroupPagination($limit, $count, $page, $start, $targetpage, 'groups');?>
+
 <table class="widefat" id="mm-data-grid" style="width:800px;">
 	<thead>
 		<tr>

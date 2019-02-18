@@ -51,7 +51,6 @@ Groups for MemberMouse REQUIRES MemberMouse in order to run.
 - This will now load Products associated with that membership level. Choose the product you want to use (this will be the Group Leaders price they pay)
 - Then choose the membership level for the Group Member - here you can choose a free membership level or a paid one. If you choose a paid membership level, you'll need to choose a product to associate with it as well.
 - Enter Group Size (this is how many "seats" are allowed within this group. Group size does not include the Group Leader)
-- Enter a Description - this description is not seen anywhere yet.
 - You'll see 2 informational messages at the top of the WordPRess admin dashboard - this tells you what shortcodes you need to add to your Checkout Page and your Confirmation page. These are mandatory in allowing the plugin to work.
 - Test Test Test! Be sure to test a group purchase and a group member sign up to ensure the flow works for you.
 

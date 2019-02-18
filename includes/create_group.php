@@ -14,7 +14,6 @@ $member_memlevel	= 2;
 $group_leader_cost	= '';
 $group_member_cost	= '';
 $group_size			= "";
-$description		= "";
 $data = sanitize_post($_POST);
 if(count($data) > 0):
 	foreach($data as $key => $value):
@@ -22,7 +21,7 @@ if(count($data) > 0):
 	endforeach;
 
 	if(!empty($groupId)):
-		$groupSql			= "SELECT id,name,leader_memlevel,member_memlevel,group_leader_cost,group_member_cost,group_size,description FROM ".$wpdb -> prefix."group_items WHERE id = '".$groupId."'";
+		$groupSql			= "SELECT id,name,leader_memlevel,member_memlevel,group_leader_cost,group_member_cost,group_size FROM ".$wpdb -> prefix."group_items WHERE id = '".$groupId."'";
 		$groupResult		= $wpdb -> get_row($groupSql);
 		$groupId			= $groupResult -> id;
 		$name				= $groupResult -> name;
@@ -31,7 +30,6 @@ if(count($data) > 0):
 		$group_leader_cost	= $groupResult -> group_leader_cost;
 		$group_member_cost	= $groupResult -> group_member_cost;
 		$group_size			= $groupResult -> group_size;
-		$description		= $groupResult -> description;
 	endif;
 endif;
 $leaderSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM mm_membership_level_products AS lp LEFT JOIN mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$leader_memlevel."' ORDER BY p.name ASC";
@@ -65,7 +63,7 @@ $memberResults	= $wpdb -> get_results($memberSql);
 				<td></td>
 			</tr>
 			<tr>
-				<td>Associated Access*</td>
+				<td>Associated Access* (Membership Level)</td>
 				<td>
 					<div id="group_membership_access_container">
 						<div style="float:left;width:auto;">
@@ -76,7 +74,7 @@ $memberResults	= $wpdb -> get_results($memberSql);
 
 						<?php echo MM_Utils::getIcon('warning', 'red', '1.2em', '1px', "IMPORTANT: Make sure that the membership level you select here is not setting the WordPress role. Do this by editing the membership level in MemberMouse and seting the WordPress role option to '&mdash; Don't set or change role &mdash;'.", "padding-top:6px; padding-left:5px;"); ?>
 						<div id="leadermemLoading" style="display:none;">
-							<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
+							<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 						</div>
 
 					</div>
@@ -84,7 +82,7 @@ $memberResults	= $wpdb -> get_results($memberSql);
 				</td>
 			</tr>
 			<tr id="leader_associated_cost">
-				<td><?php if(count($leaderResults) > 0):?>Associated Cost*<?php endif;?></td>
+				<td><?php if(count($leaderResults) > 0):?>Associated Cost* (Product)<?php endif;?></td>
 				<td>
 <?php				if(count($leaderResults) > 0):?>
 						<select name="group_leader_cost" id="group_leader_cost">
@@ -110,7 +108,7 @@ $memberResults	= $wpdb -> get_results($memberSql);
 				<td></td>
 			</tr>
 			<tr>
-				<td>Associated Access*</td>
+				<td>Associated Access* (Membership Level)</td>
 				<td>
 					<div id="group_membership_access_container">
 						<div style="float:left;width:auto;">
@@ -119,14 +117,14 @@ $memberResults	= $wpdb -> get_results($memberSql);
 							</select>
 						</div>
 						<div id="memberLoading" style="display:none;">
-							<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
+							<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 						</div>
 					</div>
 					<div class="groupError" id="membermemlevelErr"></div>
 				</td>
 			</tr>
 			<tr id="member_associated_cost">
-				<td><?php if(count($memberResults) > 0):?>Associated Cost*<?php endif;?></td>
+				<td><?php if(count($memberResults) > 0):?>Associated Cost* (Product)<?php endif;?></td>
 				<td>
 <?php				if(count($memberResults) > 0):?>
 						<select name="group_member_cost" id="group_member_cost">
@@ -159,13 +157,6 @@ $memberResults	= $wpdb -> get_results($memberSql);
 					<div class="group-divider"></div>
 				</td>
 			</tr>
-			<tr>
-				<td>Description*</td>
-				<td>
-					<textarea rows="3" cols="55" id="description" name="description"><?php echo $description;?></textarea>
-					<div class="groupError" id="descriptionErr"></div>
-				</td>
-			</tr>
 		</table>
 	</div>
 	<div id="popup_group_bottom">
@@ -179,7 +170,7 @@ $memberResults	= $wpdb -> get_results($memberSql);
 			<input type="hidden" name="groupId" id="groupId" value="<?php echo $groupId;?>"/>
 		</div>
 		<div class="group-loading-container" style="display:none;">
-			<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
+			<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 		</div>
 	</div>
 </div>

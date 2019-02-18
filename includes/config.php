@@ -92,7 +92,6 @@ $group_id 	= get_option("mm_custom_field_group_id");
 			<!--th>Member Associated Cost</th-->
 			<th>Group Size</th>
 			<th>Purchase Link</th>
-			<!--th>Description</th-->
 			<th>Actions</th>
 		</tr>
 	</thead>
@@ -128,7 +127,6 @@ $group_id 	= get_option("mm_custom_field_group_id");
 						<?php echo MM_Utils::getIcon('money', '', '1.3em', '1px', '', 'margin-right:0px;'); ?>
 					</a>
 				</td>
-				<!--td><?php echo $res -> description;?></td-->
 				<?php
 				$editActionUrl = 'onclick="javascript:MGROUP.editGroup(\''.$res -> id.'\');"';
 				$deleteActionUrl = 'onclick="javascript:MGROUP.deleteGroup(\''.$res -> id.'\');"';

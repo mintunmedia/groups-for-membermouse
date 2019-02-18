@@ -63,7 +63,6 @@ jQuery(document).ready(function(){
 				member_cost			= $("#group_member_cost").val();
 			}
 			var group_size			= $("#group_size").val();
-			var description			= $("#description").val();
 			var retVar				= false;
 
 			// Error Handling
@@ -79,7 +78,7 @@ jQuery(document).ready(function(){
 
 			if(leader_memlevel == ''){
 				$("#leader_memlevel").css({"border-color":"#FF0000"});
-				$("#leadermemlevelErr").html("Please select the Group Leader Associated Access.");
+				$("#leadermemlevelErr").html("Please select the Group Leader Associated Access (Membership Level).");
 				retVar = true;
 			}else{
 				$("#leader_memlevel").css({"border-color":"#DFDFDF"});
@@ -89,7 +88,7 @@ jQuery(document).ready(function(){
 
 			if(lCost == 1 && leader_cost == ''){
 				$("#group_leader_cost").css({"border-color":"#FF0000"});
-				$("#groupLeaderCostErr").html("Please select the Group Leader Associated Cost.");
+				$("#groupLeaderCostErr").html("Please select the Group Leader Associated Cost (Product).");
 				retVar = true;
 			}else{
 				$("#group_leader_cost").css({"border-color":"#DFDFDF"});
@@ -99,7 +98,7 @@ jQuery(document).ready(function(){
 
 			if(member_memlevel == ''){
 				$("#member_memlevel").css({"border-color":"#FF0000"});
-				$("#membermemlevelErr").html("Please select the Group Member Associated Access.");
+				$("#membermemlevelErr").html("Please select the Group Member Associated Access (Membership Level).");
 				retVar = true;
 			}else{
 				$("#member_memlevel").css({"border-color":"#DFDFDF"});
@@ -127,16 +126,6 @@ jQuery(document).ready(function(){
 				retVar = false;
 			}
 
-			if(description == ''){
-				$("#description").css({"border-color":"#FF0000"});
-				$("#descriptionErr").html("Please enter the Description.");
-				retVar = true;
-			}else{
-				$("#description").css({"border-color":"#DFDFDF"});
-				$("#descriptionErr").html('');
-				retVar = false;
-			}
-
 			if(retVar == true){
 				$(".group-loading-container").hide();
 			}else{
@@ -145,7 +134,7 @@ jQuery(document).ready(function(){
 					type: 'post',
 					url : add_group.ajax_url,
 					dataType : 'json',
-					data: 'name='+name+'&leader_memlevel='+leader_memlevel+'&lCost='+lCost+'&leader_cost='+leader_cost+'&member_memlevel='+member_memlevel+'&mCost='+mCost+'&member_cost='+member_cost+'&group_size='+group_size+'&description='+description+'&groupId='+groupId+'&_wpnonce='+rest_nonce._wpnonce,
+					data: 'name='+name+'&leader_memlevel='+leader_memlevel+'&lCost='+lCost+'&leader_cost='+leader_cost+'&member_memlevel='+member_memlevel+'&mCost='+mCost+'&member_cost='+member_cost+'&group_size='+group_size+'&groupId='+groupId+'&_wpnonce='+rest_nonce._wpnonce,
 					success: function(data){
 						$.each(data, function(i){
 							if(i == "name"){
@@ -166,18 +155,15 @@ jQuery(document).ready(function(){
 							}else if(i == "group_size"){
 								$("#group_size").css({"border-color":"#FF0000"});
 								$("#groupSizeErr").html(data[i]);
-							}else if(i == "description"){
-								$("#description").css({"border-color":"#FF0000"});
-								$("#descriptionErr").html(data[i]);
 							}else if(i == "success"){
 								if(data[i] == "yes"){
 									$(".group-loading-container").hide();
-									$("#group_popup_msg").html('<div class="group_success">Successfully save the Group.</div>');
+									$("#group_popup_msg").html('<div class="group_success">Success! Group Saved.</div>');
 									$("#group_popup_msg").show();
 									window.location = 'admin.php?page=groupsformm';
 								}else if(data[i] == "no"){
 									$(".group-loading-container").hide();
-									$("#group_popup_msg").html('<div class="group_failure">Some error occure please try again later.</div>');
+									$("#group_popup_msg").html('<div class="group_failure">Uh oh! An error occured. Please try again.</div>');
 									$("#group_popup_msg").show();
 								}
 							}
@@ -603,7 +589,7 @@ jQuery(document).ready(function(){
 					$("#add_user_loading").hide();
 					$.each(data, function(i){
 						if(data[i] == "yes"){
-							$("#add_user_msg").html('<font class="green-text">Successfully added the member.</font>');
+							$("#add_user_msg").html('<font class="green-text">Success! We added the member.</font>');
 							$("#add_user_msg").show();
 							$("#username").val('');
 							$("#user_id").val('0');
@@ -791,12 +777,12 @@ jQuery(document).ready(function(){
 							}else if(i == "success"){
 								if(data[i] == "yes"){
 									$(".group-loading-container").hide();
-									$("#group_popup_msg").html('<div class="group_success">Successfully created the Group Leader.</div>');
+									$("#group_popup_msg").html('<div class="group_success">Success! We created the group.</div>');
 									$("#group_popup_msg").show();
 									window.location = 'admin.php?page=groupsformm&type=manage';
 								}else if(data[i] == "no"){
 									$(".group-loading-container").hide();
-									$("#group_popup_msg").html('<div class="group_failure">Some error occure please try again later.</div>');
+									$("#group_popup_msg").html('<div class="group_failure">Uh oh, an error occured. Please try again.</div>');
 									$("#group_popup_msg").show();
 								}
 							}

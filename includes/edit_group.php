@@ -72,7 +72,7 @@ if(count($data) > 0):
 							<a class="group-button" title="Check Availability" onclick="MGROUP.checkUsername('<?php echo $gId;?>');">Check Availability</a>
 						</div>
 						<div id="add_user_loading" style="display:none;">
-							<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
+							<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 						</div>
 						<div id="add_user_msg" style="display:none;"></div>
 					</td>
@@ -86,7 +86,7 @@ if(count($data) > 0):
 				<input type="hidden" name="gId" id="gId" value="<?php echo $gId;?>"/>
 			</div>
 			<div class="group-loading-container" style="display:none;">
-				<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
+				<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 			</div>
 		</div>
 	</div>
