@@ -24,7 +24,7 @@ if(count($data) > 0):
 	$productSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM mm_membership_level_products AS lp LEFT JOIN mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$levelId."' ORDER BY p.name ASC";
 	$productResults	= $wpdb -> get_results($productSql);
 	echo '<td>';
-		if(count($productResults) > 0): echo 'Associated Cost*';endif;
+		if(count($productResults) > 0): echo 'Associated Cost* (Product)';endif;
 	echo '</td>';
 	echo '<td>';
 		if(count($productResults) > 0):

@@ -42,18 +42,13 @@ if(count($data) > 0):
 		$errs					= true;
 	endif;
 
-	if(empty($description)):
-		$error["description"]	= 'Please enter the Description.';
-		$errs					= true;
-	endif;
-
 	if($errs == true):
 		$return = json_encode($error);
 	else:
 		if(!empty($groupId)):
-			$sql	= "UPDATE ".$wpdb -> prefix."group_items SET name = '".$name."', leader_memlevel = '".$leader_memlevel."',  member_memlevel = '".$member_memlevel."', group_leader_cost = '".$leader_cost."', group_member_cost = '".$member_cost."', group_size = '".$group_size."', description = '".$description."', modifiedDate = now() WHERE id = '".$groupId."'";
+			$sql	= "UPDATE ".$wpdb -> prefix."group_items SET name = '".$name."', leader_memlevel = '".$leader_memlevel."',  member_memlevel = '".$member_memlevel."', group_leader_cost = '".$leader_cost."', group_member_cost = '".$member_cost."', group_size = '".$group_size."', modifiedDate = now() WHERE id = '".$groupId."'";
 		else:
-			$sql	= "INSERT INTO ".$wpdb -> prefix."group_items (id,name,leader_memlevel,member_memlevel,group_leader_cost,group_member_cost,group_size,description,createdDate,modifiedDate)VALUES('','".$name."','".$leader_memlevel."','".$member_memlevel."','".$leader_cost."','".$member_cost."','".$group_size."','".$description."',now(),now())";
+			$sql	= "INSERT INTO ".$wpdb -> prefix."group_items (id,name,leader_memlevel,member_memlevel,group_leader_cost,group_member_cost,group_size,createdDate,modifiedDate)VALUES('','".$name."','".$leader_memlevel."','".$member_memlevel."','".$leader_cost."','".$member_cost."','".$group_size."',now(),now())";
 		endif;
 		$query	= $wpdb -> query($sql);
 		if($query):

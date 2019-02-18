@@ -44,7 +44,7 @@ if ( count( $data ) > 0 ):
 			<input type="hidden" name="member_id" id="member_id" value="<?php echo $member_id;?>"/>
 		</div>
 		<div class="group-loading-container" style="display:none;">
-			<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
+			<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 		</div>
 	</div>
 	</div>

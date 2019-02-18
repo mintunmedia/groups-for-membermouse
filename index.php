@@ -176,6 +176,9 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			return in_array( $plugin, (array) get_option( 'active_plugins', array() ) );
 		}
 
+		/**
+		 * All Original Plugin code before Mintun Media took it over (with modifications)
+		 */
 		function groupsformm_notice_mmrequired() {
 			?>
 			<div class="notice notice-error is-dismissible">
@@ -393,7 +396,6 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 					group_leader_cost INT(11) NOT NULL DEFAULT '0',
 					group_member_cost INT(11) NOT NULL DEFAULT '0',
 					group_size INT(11) NOT NULL DEFAULT '0',
-					description LONGTEXT NOT NULL,
 					createdDate DATETIME NOT NULL,
 					modifiedDate DATETIME NOT NULL,
 					PRIMARY KEY (id)
@@ -527,168 +529,163 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 					</div>
 				</div>
 			</div>
-<?php
-}
+		<?php
+		}
 
-function MemberMouseManageGroup()
-{
-	include_once(dirname(__FILE__) . "/includes/manage_groups.php");
-}
+		function MemberMouseManageGroup() {
+			include_once(dirname(__FILE__) . "/includes/manage_groups.php");
+		}
 
-function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetpage, $type = "groups")
-{
-	$prev = $page - 1;
-	$next = $page + 1;
-	$lastpage = ceil($count / $limit);
-	$pagination = "";
-	$pagination .= "<div class=\"group_pagination\">";
-	$pagination .= '<span class="group_prev_next">';
-	$pagination .= 'Page';
-	if ($page > 1) :
-		$pagination .= '<a href="' . $targetpage . '&p=' . $prev . '" class="prev" title="Previous" style="margin-left:4px; margin-right:4px;">';
-	$pagination .= MM_Utils::getIcon('chevron-circle-left', 'light-blue', '1.4em', '1px');
-	$pagination .= '</a>';
-	else :
-		$pagination .= '<a href="javascript:void(0);" class="prev" title="Previous" style="margin-left:4px; margin-right:4px;">';
-	$pagination .= MM_Utils::getIcon('chevron-circle-left', 'light-blue', '1.4em', '1px');
-	$pagination .= '</a>';
-	endif;
-	$pagination .= $page;
-	if ($page < $lastpage) :
-		$pagination .= '<a href="' . $targetpage . '&p=' . $next . '" class="next" title="Next" style="margin-left:4px; margin-right:4px;">';
-	$pagination .= MM_Utils::getIcon('chevron-circle-right', 'light-blue', '1.4em', '1px');
-	$pagination .= '</a>';
-	else :
-		$pagination .= '<a href="javascript:void(0);" title="Next" style="margin-left:4px; margin-right:4px;">';
-	$pagination .= MM_Utils::getIcon('chevron-circle-right', 'light-blue', '1.4em', '1px');
-	$pagination .= '</a>';
-	endif;
-	$pagination .= 'of	' . $lastpage . ' pages';
-	$pagination .= '</span>';
-	$pagination .= '<span class="group_show">';
-	$pagination .= 'Show ';
-	$pagination .= "<select name=\"show_record\" id=\"show_record\" onchange=\"javascript:MGROUP.changeRecordVal(this.value,'" . $targetpage . "');\">";
-	$pagination .= '<option value="10"';
-	if ($limit == 10) :
-		$pagination .= ' selected="selected"';
-	endif;
-	$pagination .= '>10</option>';
-	$pagination .= '<option value="20"';
-	if ($limit == 20) :
-		$pagination .= ' selected="selected"';
-	endif;
-	$pagination .= '>20</option>';
-	$pagination .= '<option value="50"';
-	if ($limit == 50) :
-		$pagination .= ' selected="selected"';
-	endif;
-	$pagination .= '>50</option>';
-	$pagination .= '<option value="100"';
-	if ($limit == 100) :
-		$pagination .= ' selected="selected"';
-	endif;
-	$pagination .= '>100</option>';
-	$pagination .= '<option value="500"';
-	if ($limit == 500) :
-		$pagination .= ' selected="selected"';
-	endif;
-	$pagination .= '>500</option>';
-	$pagination .= '<option value="1000"';
-	if ($limit == 1000) :
-		$pagination .= ' selected="selected"';
-	endif;
-	$pagination .= '>1000</option>';
-	$pagination .= '</select> ';
-	$pagination .= 'per page';
-	$pagination .= '</span>';
-	$pagination .= '<span class="group_found">' . $count . ' ' . $type . ' found</span>';
-	$pagination .= "</div>";
+		function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetpage, $type = "groups") {
+			$prev = $page - 1;
+			$next = $page + 1;
+			$lastpage = ceil($count / $limit);
+			$pagination = "";
+			$pagination .= "<div class=\"group_pagination\">";
+			$pagination .= '<span class="group_prev_next">';
+			$pagination .= 'Page';
+			if ($page > 1) :
+				$pagination .= '<a href="' . $targetpage . '&p=' . $prev . '" class="prev" title="Previous" style="margin-left:4px; margin-right:4px;">';
+			$pagination .= MM_Utils::getIcon('chevron-circle-left', 'light-blue', '1.4em', '1px');
+			$pagination .= '</a>';
+			else :
+				$pagination .= '<a href="javascript:void(0);" class="prev" title="Previous" style="margin-left:4px; margin-right:4px;">';
+			$pagination .= MM_Utils::getIcon('chevron-circle-left', 'light-blue', '1.4em', '1px');
+			$pagination .= '</a>';
+			endif;
+			$pagination .= $page;
+			if ($page < $lastpage) :
+				$pagination .= '<a href="' . $targetpage . '&p=' . $next . '" class="next" title="Next" style="margin-left:4px; margin-right:4px;">';
+			$pagination .= MM_Utils::getIcon('chevron-circle-right', 'light-blue', '1.4em', '1px');
+			$pagination .= '</a>';
+			else :
+				$pagination .= '<a href="javascript:void(0);" title="Next" style="margin-left:4px; margin-right:4px;">';
+			$pagination .= MM_Utils::getIcon('chevron-circle-right', 'light-blue', '1.4em', '1px');
+			$pagination .= '</a>';
+			endif;
+			$pagination .= 'of	' . $lastpage . ' pages';
+			$pagination .= '</span>';
+			$pagination .= '<span class="group_show">';
+			$pagination .= 'Show ';
+			$pagination .= "<select name=\"show_record\" id=\"show_record\" onchange=\"javascript:MGROUP.changeRecordVal(this.value,'" . $targetpage . "');\">";
+			$pagination .= '<option value="10"';
+			if ($limit == 10) :
+				$pagination .= ' selected="selected"';
+			endif;
+			$pagination .= '>10</option>';
+			$pagination .= '<option value="20"';
+			if ($limit == 20) :
+				$pagination .= ' selected="selected"';
+			endif;
+			$pagination .= '>20</option>';
+			$pagination .= '<option value="50"';
+			if ($limit == 50) :
+				$pagination .= ' selected="selected"';
+			endif;
+			$pagination .= '>50</option>';
+			$pagination .= '<option value="100"';
+			if ($limit == 100) :
+				$pagination .= ' selected="selected"';
+			endif;
+			$pagination .= '>100</option>';
+			$pagination .= '<option value="500"';
+			if ($limit == 500) :
+				$pagination .= ' selected="selected"';
+			endif;
+			$pagination .= '>500</option>';
+			$pagination .= '<option value="1000"';
+			if ($limit == 1000) :
+				$pagination .= ' selected="selected"';
+			endif;
+			$pagination .= '>1000</option>';
+			$pagination .= '</select> ';
+			$pagination .= 'per page';
+			$pagination .= '</span>';
+			$pagination .= '<span class="group_found">' . $count . ' ' . $type . ' found</span>';
+			$pagination .= "</div>";
 
-	return $pagination;
-}
+			return $pagination;
+		}
 
 		// hook over mm_member_add
+		function MemberMouseGroupMemberAdded($data)	{
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
+			global $wpdb;
+			$groupId = get_option("mm_custom_field_group_id");
+			if (isset($data["cf_" . $groupId]) && !empty($data["cf_" . $groupId])) :
+				$cf = $data["cf_" . $groupId];
+			$memberId = $data["member_id"];
+			$groupName = (!empty($data["cf_4"])) ? $data["cf_4"] : 'Group';
+			if (is_numeric($cf)) :
+				$templateSql = "SELECT id,group_size FROM " . $wpdb->prefix . "group_items WHERE id = '" . $cf . "'";
+			$templateResult = $wpdb->get_row($templateSql);
+			if (count($templateResult) > 0) :
+				$template_id = $templateResult->id;
+			$groupSize = $templateResult->group_size;
+			$sql = "INSERT INTO " . $wpdb->prefix . "group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
+			$query = $wpdb->query($sql);
+			$updateUser = wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));
+			endif;
+			else :
+						//	$gID	= substr($cf, -1);
+			$gID = substr($cf, 1);
+			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $gID . "'";
+			$result = $wpdb->get_row($sql);
+			if (count($result) > 0) :
+				$groupSize = $result->group_size;
+			$groupId = $result->id;
+			$sSql = "SELECT COUNT(id) AS count FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gID . "'";
+			$sRes = $wpdb->get_row($sSql);
+			$gCount = $sRes->count;
+			if ($gCount < $groupSize) :
+				$sql = "INSERT INTO " . $wpdb->prefix . "group_sets_members (id,group_id,member_id,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "',now(),now())";
+			$query = $wpdb->query($sql);
+			else :
+				$groupSql = "SELECT group_leader FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $groupId . "'";
+			$groupResult = $wpdb->get_row($groupSql);
+			$group_leader = $groupResult->group_leader;
 
-function MemberMouseGroupMemberAdded($data)
-{
-	include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
-	include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
-	global $wpdb;
-	$groupId = get_option("mm_custom_field_group_id");
-	if (isset($data["cf_" . $groupId]) && !empty($data["cf_" . $groupId])) :
-		$cf = $data["cf_" . $groupId];
-	$memberId = $data["member_id"];
-	$groupName = (!empty($data["cf_4"])) ? $data["cf_4"] : 'Group';
-	if (is_numeric($cf)) :
-		$templateSql = "SELECT id,group_size FROM " . $wpdb->prefix . "group_items WHERE id = '" . $cf . "'";
-	$templateResult = $wpdb->get_row($templateSql);
-	if (count($templateResult) > 0) :
-		$template_id = $templateResult->id;
-	$groupSize = $templateResult->group_size;
-	$sql = "INSERT INTO " . $wpdb->prefix . "group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
-	$query = $wpdb->query($sql);
-	$updateUser = wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));
-	endif;
-	else :
-				//	$gID	= substr($cf, -1);
-	$gID = substr($cf, 1);
-	$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $gID . "'";
-	$result = $wpdb->get_row($sql);
-	if (count($result) > 0) :
-		$groupSize = $result->group_size;
-	$groupId = $result->id;
-	$sSql = "SELECT COUNT(id) AS count FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gID . "'";
-	$sRes = $wpdb->get_row($sSql);
-	$gCount = $sRes->count;
-	if ($gCount < $groupSize) :
-		$sql = "INSERT INTO " . $wpdb->prefix . "group_sets_members (id,group_id,member_id,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "',now(),now())";
-	$query = $wpdb->query($sql);
-	else :
-		$groupSql = "SELECT group_leader FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $groupId . "'";
-	$groupResult = $wpdb->get_row($groupSql);
-	$group_leader = $groupResult->group_leader;
+			$adminSql = "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','0',now(),now())";
+			$adminQuery = $wpdb->query($adminSql);
 
-	$adminSql = "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','0',now(),now())";
-	$adminQuery = $wpdb->query($adminSql);
+			$leaderSql = "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','1',now(),now())";
+			$leaderQuery = $wpdb->query($leaderSql);
 
-	$leaderSql = "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','1',now(),now())";
-	$leaderQuery = $wpdb->query($leaderSql);
+			$user = new MM_User($memberId);
+			$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+			endif;
+			endif;
+			endif;
+			endif;
+		}
 
-	$user = new MM_User($memberId);
-	$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
-	endif;
-	endif;
-	endif;
-	endif;
-}
+		function MemberMouseGroupLeaderStatus($data) {
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
+			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
+			global $wpdb;
+			$memberId = $data["member_id"];
+			$status = $data["status"];
+			$leaderSql = "SELECT id FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $memberId . "'";
+			$leaderResult = $wpdb->get_row($leaderSql);
+			if (count($leaderResult) > 0) :
+				$groupId = $leaderResult->id;
+			else :
+				$groupId = 0;
+			endif;
 
-function MemberMouseGroupLeaderStatus($data)
-{
-	include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
-	include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
-	global $wpdb;
-	$memberId = $data["member_id"];
-	$status = $data["status"];
-	$leaderSql = "SELECT id FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $memberId . "'";
-	$leaderResult = $wpdb->get_row($leaderSql);
-	if (count($leaderResult) > 0) :
-		$groupId = $leaderResult->id;
-	else :
-		$groupId = 0;
-	endif;
-
-	if (($status == 2) && !empty($groupId)) :
-		$sql = "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
-	$results = $wpdb->get_results($sql);
-	if (count($results) > 0) :
-		foreach ($results as $result) :
-		$user = new MM_User($result->member_id);
-	$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
-	endforeach;
-	endif;
-	endif;
-}
-}
+			if (($status == 2) && !empty($groupId)) :
+				$sql = "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
+			$results = $wpdb->get_results($sql);
+			if (count($results) > 0) :
+				foreach ($results as $result) :
+				$user = new MM_User($result->member_id);
+			$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+			endforeach;
+			endif;
+			endif;
+		}
+	}
 }
 if (class_exists('MemberMouseGroupAddon')) :
 	global $MemberMouseGroupAddon;

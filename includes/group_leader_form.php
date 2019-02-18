@@ -64,7 +64,7 @@ $groupResults	= $wpdb -> get_results($groupSql);
 						<input type="hidden" name="user_id" id="user_id" value="0"/>
 					</div>
 					<div id="userLoading" style="display:none;">
-						<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
+						<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 					</div>
 					<div class="groupError" id="userErr"></div>
 				</td>
@@ -77,7 +77,7 @@ $groupResults	= $wpdb -> get_results($groupSql);
 			<a class="group-button" href="javascript:MGROUP.closeGroupPopup();">Cancel</a>
 		</div>
 		<div class="group-loading-container" style="display:none;">
-			<img src="<?php echo MGROUP_IMG;?>loading.gif" alt=""/>
+			<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 		</div>
 	</div>
 </div>
