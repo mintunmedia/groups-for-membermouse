@@ -1,4 +1,26 @@
 jQuery(document).ready(function(){
+	// Admin Notices Functionality
+	// Checkout Page notice
+	$(document).on('click', '.checkoutpage_notice .notice-dismiss', function(){
+		jQuery.ajax({
+			url: dismiss_notices.ajax_url,
+			data: {
+				action: 'dismiss_checkoutpage_notice'
+			}
+		});
+	});
+
+	// Confirmation Page notice
+	$(document).on('click', '.confirmationpage_notice .notice-dismiss', function(){
+		jQuery.ajax({
+			url: dismiss_notices.ajax_url,
+			data: {
+				action: 'dismiss_confirmationpage_notice'
+			}
+		});
+	});
+
+	// Create Group Functionality
 	jQuery("a#create_group").click(function(){
 		var height = MGROUP.contentheight();
 		var width  = MGROUP.contentwidth();

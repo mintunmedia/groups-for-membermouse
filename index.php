@@ -18,8 +18,7 @@ if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membe
 if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
 if ( ! class_exists('MemberMouseGroupAddon') ) {
-	class MemberMouseGroupAddon
-	{
+	class MemberMouseGroupAddon	{
 
 		const ACTIONS = array(
 			'create_group',
@@ -58,10 +57,21 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 				add_action('mm_member_add', array(&$this, 'MemberMouseGroupMemberAdded'));
 				add_action('mm_member_status_change', array(&$this, 'MemberMouseGroupLeaderStatus'));
 				add_action('admin_head', array(&$this, 'MemberMouseGroupOptionUpdate'));
-				add_action('admin_notices', array(&$this, 'MemberMouseGroupAdminNotice'));
-				add_action('admin_init', array(&$this, 'MemberMouseGroupAdminNoticeIgnore'));
 				add_shortcode('MM_Group_SignUp_Link', array(&$this, 'MemberMouseGroupPurchaseLinkShortcode'));
 				add_action( 'plugins_loaded', array( $this, 'plugins_loaded') );
+
+				// Admin Notices
+				if ( empty(get_option('gfmm_checkoutpage_notice'))) {
+					add_action('admin_notices', array($this, 'gfm_adminnotice_checkoutpage'));
+				}
+				if ( empty(get_option('gfmm_confirmationpage_notice'))) {
+					add_action('admin_notices', array($this, 'gfm_adminnotice_confirmationpage'));
+				}
+				add_action('wp_ajax_dismiss_checkoutpage_notice', array($this, 'gfm_dismiss_checkoutpage_notice'));
+				add_action('wp_ajax_dismiss_confirmationpage_notice', array($this, 'gfm_dismiss_confirmationpage_notice'));
+
+				//add_action('admin_notices', array(&$this, 'MemberMouseGroupAdminNotice'));
+				//add_action('admin_init', array(&$this, 'MemberMouseGroupAdminNoticeIgnore'));
 			} else {
 
 				// Show notice that plugin can't be activated
@@ -77,8 +87,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		 *
 		 * @author Roy McKenzie<roypmckenzie@icloud.com>
 		 */
-		public function admin_enqueue_scripts( $hook_suffix )
-		{
+		public function admin_enqueue_scripts( $hook_suffix )	{
 			$pages_to_enqueue_in = array('membermouse_page_membermousemanagegroup');
 
 			if ( in_array( $hook_suffix, $pages_to_enqueue_in ) ) {
@@ -93,8 +102,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		 *
 		 * @author Roy McKenzie<roypmckenzie@icloud.com>
 		 */
-		public function plugins_loaded()
-		{
+		public function plugins_loaded() {
 			add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
 		}
 
@@ -105,8 +113,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		 *
 		 * @author Roy McKenzie <roypmckenzie@icloud.com>
 		 */
-		public function rest_api_init()
-		{
+		public function rest_api_init()	{
 			foreach ( self::ACTIONS as $action ) {
 				register_rest_route( 'mm-groups/v1/', $action, array(
 					'methods' 	=> WP_REST_Server::EDITABLE,
@@ -127,8 +134,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		 *
 		 * @author Roy McKenzie<roypmckenzie@icloud.com>
 		 */
-		public function permission_callback( $action )
-		{
+		public function permission_callback( $action ) {
 			$user = wp_get_current_user();
 
 			$group_leader_actions = array(
@@ -156,8 +162,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		 *
 		 * @author Roy McKenzie<roypmckenzie@icloud.com>
 		 */
-		public function rest_callback( $action )
-		{
+		public function rest_callback( $action ) {
 			header('Content-Type: text/html');
 
 			require( plugin_dir_path( __FILE__ ) . "/includes/$action.php" );
@@ -179,24 +184,22 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		/**
 		 * All Original Plugin code before Mintun Media took it over (with modifications)
 		 */
-		function groupsformm_notice_mmrequired() {
+		public function groupsformm_notice_mmrequired() {
 			?>
-			<div class="notice notice-error is-dismissible">
+			<div class="notice error is-dismissible">
 					<p>Sorry! MemberMouse is required to activate Groups for MemberMouse.</p>
 			</div>
 			<?php
 		}
 
-		function MemberMouseGroupAddonActivate()
-		{
+		public function MemberMouseGroupAddonActivate()	{
 			$this->MemberMouseGroupAddGroup();
 			$this->MemberMouseGroupAddonCreateTables();
 			$this->MemberMouseGroupAddCap();
 			$this->MemberMouseGroupAddRoll();
 		}
 
-		function MemberMouseGroupAddonDeactivate()
-		{
+		public function MemberMouseGroupAddonDeactivate()	{
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			global $wpdb, $current_user;
@@ -230,10 +233,11 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			 */
 		}
 
-		function MemberMouseGroupAddonAdminResources()
-		{
+		public function MemberMouseGroupAddonAdminResources()	{
 			/** Scripts */
 			wp_enqueue_script('MemberMouseGroupAddOnAdminJs', plugins_url('js/admin.js', __FILE__), array('jquery', 'membermouse-global' ), filemtime( plugin_dir_path( __FILE__) .'/js/admin.js' ) );
+			wp_localize_script('MemberMouseGroupAddOnAdminJs', 'dismiss_notices', array('ajax_url' => admin_url('admin-ajax.php')));
+
 			wp_enqueue_script('import-group', plugins_url('js/mm-group-import_wizard.js', __FILE__), array('jquery', 'MemberMouseGroupAddOnAdminJs'), '1.0.0', true);
 
 			/** Styles */
@@ -252,16 +256,14 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			wp_localize_script( 'MemberMouseGroupAddOnAdminJs', 'rest_nonce', array( '_wpnonce' => wp_create_nonce( 'wp_rest' ) ) );
 		}
 
-		function MemberMouseGroupAddonAdminMenu()
-		{
+		public function MemberMouseGroupAddonAdminMenu() {
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			add_submenu_page('mmdashboard', 'MemberMouse Groups', 'Groups', 'manage_options', 'groupsformm', array(&$this, 'MemberMouseGroupAddonAdminManagement'));
 			add_submenu_page('mmdashboard','Group Management Dashboard','Group Management Dashboard','Group Leader','membermousemanagegroup',array(&$this,"MemberMouseManageGroup"));
 		}
 
-		function MemberMouseGroupPurchaseLinkShortcode()
-		{
+		public function MemberMouseGroupPurchaseLinkShortcode()	{
 			global $wpdb, $current_user;
 			if (is_user_logged_in() && in_array('Group Leader', $current_user->roles)) :
 				$leaderSql = "SELECT id,group_template_id,group_name FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $current_user->ID . "'";
@@ -288,30 +290,48 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			return '';
 		}
 
-		function MemberMouseGroupAdminNotice()
-		{
+		/**
+		 * Checkout Page Add Shortcode Notice
+		 */
+		public function gfm_adminnotice_checkoutpage()	{
 			global $current_user;
-			$user_id = $current_user->ID;
 			$userRole = $current_user->roles;
-			if (in_array('administrator', $userRole)) :
+
+			if (in_array('administrator', $userRole)) {
 				$group_id = get_option("mm_custom_field_group_id");
-				if (!get_user_meta($user_id, 'mmgroups-ignore')) :
-					echo '<div class="updated"><p>';
-					printf(__('<strong>Please add the following to your checkout page within the [MM_Form type="checkout"] and [/MM_Form] tags:</strong> [MM_Form_Field type="custom-hidden" id="' . $group_id . '"] | <a href="%1$s">Hide Notice</a>'), '?page=groupsformm&mmgroups-ignore=1');
-					echo "</p></div>";
-				endif;
 
-				if (!get_user_meta($user_id, 'mmgroups-sc-ignore')) :
-					echo '<div class="updated is-dismissable"><p>';
-					printf(__('<strong>Place this shortcode on your Group Leader\'s confirmation page to show their member signup link.</strong> [MM_Group_SignUp_Link]. | <a href="%1$s">Hide Notice</a>'), '?page=groupsformm&mmgroups-sc-ignore=1');
-					echo "</p></div>";
-
-				endif;
-			endif;
+				echo "<div class='checkoutpage_notice notice updated is-dismissible'><p><strong>Please add the following to your checkout page within the [MM_Form type='checkout'] and [/MM_Form] tags:</strong></p><pre>[MM_Form_Field type='custom-hidden' id='$group_id']</pre></div>";
+			}
 		}
 
-		function MemberMouseGroupAdminNoticeIgnore()
-		{
+		/**
+		 * Confirmation Page Add Shortcode Notice
+		 */
+		public function gfm_adminnotice_confirmationpage()	{
+			global $current_user;
+			$userRole = $current_user->roles;
+
+			if (in_array('administrator', $userRole)) {
+				echo "<div class='confirmationpage_notice notice updated is-dismissible'><p><strong>Place this shortcode on your Group Leader's confirmation page to show their member signup link.</strong></p><pre>[MM_Group_SignUp_Link]</pre></div>";
+			}
+		}
+
+
+		/**
+		 * Update plugin options for notice dismissal - Checkout Page
+		 */
+		public function gfm_dismiss_checkoutpage_notice() {
+			update_option('gfmm_checkoutpage_notice', 1);
+		}
+
+		/**
+		 * Update plugin options for notice dismissal - Confirmation Page
+		 */
+		public function gfm_dismiss_confirmationpage_notice() {
+			update_option('gfmm_confirmationpage_notice', 1);
+		}
+
+		public function MemberMouseGroupAdminNoticeIgnore()	{
 			global $current_user;
 			$user_id = $current_user->ID;
 			if ( isset( $_GET['mmgroups-ignore'] ) && '1' == $_GET['mmgroups-ignore']) :
@@ -323,8 +343,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			endif;
 		}
 
-		function MemberMouseGroupAddCap()
-		{
+		public function MemberMouseGroupAddCap() {
 			$custom_cap = "membermouse_group_capability";
 			$grant = true;
 			foreach ($GLOBALS['wp_roles']->role_objects as $role => $name) :
@@ -336,8 +355,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			endforeach;
 		}
 
-		function MemberMouseGroupRemoveCap()
-		{
+		public function MemberMouseGroupRemoveCap()	{
 			$custom_cap = "membermouse_group_capability";
 			foreach ($GLOBALS['wp_roles']->role_objects as $role => $name) :
 			//	if($role == "Group Leader"):
@@ -348,8 +366,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			endforeach;
 		}
 
-		function MemberMouseGroupAddonCreateTables()
-		{
+		public function MemberMouseGroupAddonCreateTables()	{
 			global $wpdb;
 
 			$table_name = $wpdb->prefix . 'group_sets';
@@ -418,8 +435,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			endif;
 		}
 
-		function MemberMouseGroupAddGroup()
-		{
+		public function MemberMouseGroupAddGroup() {
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			$customFieldList = MM_CustomField::getCustomFieldsList();
@@ -451,8 +467,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			endif;
 		}
 
-		function MemberMouseGroupOptionUpdate()
-		{
+		public function MemberMouseGroupOptionUpdate() {
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			$customFieldList = MM_CustomField::getCustomFieldsList();
@@ -464,21 +479,18 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			endforeach;
 		}
 
-		function MemberMouseGroupAddRoll()
-		{
+		public function MemberMouseGroupAddRoll() {
 			$role = "Group Leader";
 			$display_name = "Group Leader";
 			$capabilities = array("read" => true, "membermouse_group_capability" => true);
 			add_role($role, $display_name, $capabilities);
 		}
 
-		function MemberMouseGroupRemoveRoll()
-		{
+		public function MemberMouseGroupRemoveRoll() {
 			remove_role("Group Leader");
 		}
 
-		function MemberMouseGroupAddonAdminManagement()
-		{
+		public function MemberMouseGroupAddonAdminManagement() {
 			global $wpdb;
 			if ( isset($_GET["type"] ) && ! empty( $_GET["type"] ) ) {
 				$type = $_GET["type"];
@@ -532,11 +544,11 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		<?php
 		}
 
-		function MemberMouseManageGroup() {
+		public function MemberMouseManageGroup() {
 			include_once(dirname(__FILE__) . "/includes/manage_groups.php");
 		}
 
-		function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetpage, $type = "groups") {
+		public function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetpage, $type = "groups") {
 			$prev = $page - 1;
 			$next = $page + 1;
 			$lastpage = ceil($count / $limit);
@@ -608,7 +620,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 		}
 
 		// hook over mm_member_add
-		function MemberMouseGroupMemberAdded($data)	{
+		public function MemberMouseGroupMemberAdded($data) {
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			global $wpdb;
@@ -660,7 +672,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			endif;
 		}
 
-		function MemberMouseGroupLeaderStatus($data) {
+		public function MemberMouseGroupLeaderStatus($data) {
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			global $wpdb;
