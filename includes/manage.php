@@ -64,7 +64,7 @@ $results	= $wpdb->get_results( $sql );
 <table class="widefat" id="mm-data-grid" style="width:800px;">
 	<thead>
 		<tr>
-			<th>Name</th>
+			<th>Group Name</th>
 			<th>Group Type</th>
 			<th>Group Leader</th>
 			<th># of Members</th>
@@ -74,15 +74,16 @@ $results	= $wpdb->get_results( $sql );
 	</thead>
 	<tbody>
 <?php	foreach($results as $res):
-			$userSql					= "SELECT user_email FROM ".$wpdb -> prefix."users WHERE ID = '".$res -> group_leader."'";
+			$userSql					= "SELECT user_email FROM ". $wpdb->prefix ."users WHERE ID = '". $res->group_leader ."'";
+			$group_leader_id	= $res->group_leader;
 			$userResult				= $wpdb -> get_row($userSql);
-			$groupTypeSql   	= "SELECT name FROM ".$wpdb -> prefix."group_items WHERE id = '".$res -> group_template_id."'";
+			$groupTypeSql   	= "SELECT name FROM ".$wpdb->prefix ."group_items WHERE id = '". $res->group_template_id ."'";
 			$groupTypeResult 	= $wpdb -> get_row($groupTypeSql);
-			$activeSql				= "SELECT count(id) AS active FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$res -> id."'";
+			$activeSql				= "SELECT count(id) AS active FROM ". $wpdb->prefix ."group_sets_members WHERE group_id = '". $res->id."'";
 			$activeResult			= $wpdb->get_row($activeSql);
 			?>
 			<tr>
-				<td><?php if(!empty($res -> group_name)): echo $res -> group_name;else: echo "Group";endif;?></td>
+				<td><a href="admin.php?page=groupsformm&type=manage_group&group_leader=<?= $group_leader_id; ?>"><?php if(!empty($res->group_name)): echo $res->group_name; else: echo "Group"; endif;?></a></td>
 				<td><?php echo $groupTypeResult->name; ?></td>
 				<td><a href="<?php echo MM_ModuleUtils::getUrl(MM_MODULE_MANAGE_MEMBERS, MM_MODULE_MEMBER_DETAILS_GENERAL).'&user_id='.$res -> group_leader; ?>" target="_blank"><?php echo $userResult -> user_email;?></a></td>
 				<td><?php echo $activeResult -> active;?> of <?php echo $res -> group_size;?> members</td>

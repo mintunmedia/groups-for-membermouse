@@ -115,15 +115,15 @@ if( count( $result ) > 0 ):
 		</thead>
 		<tbody>
 <?php		foreach($gMemResults as $gMemRes):
-				$userSql		= "SELECT * FROM ".$wpdb->prefix."users WHERE ID = '".$gMemRes->member_id."'";
+				$userSql			= "SELECT * FROM ".$wpdb->prefix."users WHERE ID = '".$gMemRes->member_id."'";
 				$userResult		= $wpdb -> get_row($userSql);
 				$registered		= $userResult->user_registered;
-				$memSql			= "SELECT * FROM mm_user_data WHERE wp_user_id = '".$gMemRes->member_id."'";
+				$memSql				= "SELECT * FROM mm_user_data WHERE wp_user_id = '".$gMemRes->member_id."'";
 				$memResult		= $wpdb -> get_row($memSql);
 				$firstName 		= $memResult->first_name;
 				$lastName 		= $memResult -> last_name;
-				$email 			= $userResult -> user_email;
-				$phone 			= empty($memResult -> phone) ? "&mdash;" : $memResult -> phone;
+				$email 				= $userResult -> user_email;
+				$phone 				= empty($memResult -> phone) ? "&mdash;" : $memResult -> phone;
 				$statusId 		= $memResult -> status;
 				$membershipId	= $memResult -> membership_level_id;
 				$levelSql 		= "SELECT name FROM mm_membership_levels WHERE id = '".$membershipId."'";
@@ -132,7 +132,7 @@ if( count( $result ) > 0 ):
 				$redirecturl  		= "";
 				$crntMemberId 		= $gMemRes -> member_id;
 				$member		 		= new MM_User($crntMemberId);
-				$url 				= "javascript:mmjs.changeMembershipStatus('".$crntMemberId."', ";
+				$url 					= "javascript:mmjs.changeMembershipStatus('".$crntMemberId."', ";
 				$url 		   	   .= $membershipId.", ".MM_Status::$CANCELED.", '".$redirecturl."');";
 				$cancellationHtml 	= "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"".$url."\"/>".MM_Utils::getIcon('stop', 'red', '1.2em', '1px')."</a>";?>
 				<tr>
@@ -190,7 +190,7 @@ if($noticeCount > 0):?>
 				$leaderEmail	= $leaderResult -> user_email;
 ?>
 				<tr>
-					<td>Member <font style="color:#FF0000;"><?php echo $userEmail;?></font> failed to join <?php echo $groupName;?> (<?php echo $leaderEmail;?>) because it was full. Please cancel that member account and inform the group leader.</td>
+					<td>Member <span style="color:#FF0000;"><?php echo $userEmail;?></span> failed to join <?php echo $groupName;?> (<?php echo $leaderEmail;?>) because it was full. Please cancel that member account and inform the group leader.</td>
 					<td>
 						<a title="Delete Notice" href="admin.php?page=membermousemanagegroup&notice=<?php echo $noticeResult -> id;?>">
 							Delete Notice
