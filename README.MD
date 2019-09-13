@@ -86,6 +86,8 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 Thank you to the Github community for contributing to the plugin's codebase and for bringing it to the state is in today. Mintun Media decided to take ownership of the codebase and has enhanced its security, stability, and WordPress compatibility. We look forward to working with the Github and WordPress communities to add new features all while maintaing WordPress coding standards. We also encourage you to make a pull request if you see any issues or have ideas to enhance the plugin.
 
 ## Changelog
+2.0.0 Added Admin Management Dashboard for Groups and Group Members. Admins can now delete members from groups. Made it easier to manage groups from an Admin's perspective. Added Getting Started Tab.
+
 1.0.4 Fixed Notices - Now notices will be dismissable.
 
 1.0.3 Fixed bugs. - Removed Description Field from Create Group. Not used. Fixed issue with Pagination in plugin and number of results to display. Updated loading gif to fontawesome.

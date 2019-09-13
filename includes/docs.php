@@ -23,3 +23,23 @@ $group_id = get_option("mm_custom_field_group_id");
   </li>
   <li>Add or Share your checkout page link for Groups by clicking "Purchase Link" next to your group type in Groups for MemberMouse. <strong>IMPORTANT: </strong>do not use product links in MemberMouse > Product Settings. They will not include the correct parameters to create a Group when purchased.</li>
 </ol>
+
+<h2>Other Thoughts</h2>
+<p>I recommend you create products only used for Group purchasing. That way there's no confusion as to what people are buying in reporting and in usage. This also allows you to use [MM_Order_Decision] tags on your Confirmation Page that way your Group Sign Up link is only seen by Group Leaders. I also recommend putting this shortcode into an input field. This will require some an extra development step (which we'll be implementing in a future release of Groups)<br /><br />
+<strong>Example:</strong><br />
+<pre>
+[MM_Order_Decision productId='5']
+<input type="text" readonly="readonly" value="[MM_Group_SignUp_Link]" />
+[/MM_Order_Decision]
+</pre>
+</p>
+<p><strong>Here's the Code Snippet You'll Need to Add to functions.php:</strong><br />
+<pre>
+add_filter( 'wp_kses_allowed_html', function ( $allowedposttags, $context ) {
+  if ( $context == 'post' ) {
+    $allowedposttags['input']['value'] = 1;
+  }
+  return $allowedposttags;
+}, 10, 2 );
+</pre>
+</p>
