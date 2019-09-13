@@ -425,9 +425,10 @@ jQuery(document).ready(function(){
 		},
 		updateGroup:function(gId){
 			$(".group-loading-container").show();
-			var group_name	= $("#group_name").val();
-			var group_size	= $("#group_size").val();
-			var retVar		= false;
+			var group_name				= $("#group_name").val();
+			var group_size				= $("#group_size").val();
+			var retVar						= false;
+			var current_location 	= window.location;
 
 			if(group_name == ''){
 				$("#group_namee").css({"border-color":"#FF0000"});
@@ -468,7 +469,7 @@ jQuery(document).ready(function(){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_success">Update successful.</div>');
 									$("#group_popup_msg").show();
-									window.location = 'admin.php?page=groupsformm&type=manage';
+									window.location = current_location;
 								}else if(data[i] == "no"){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_failure">An error occured. Please try again later.</div>');
@@ -506,8 +507,9 @@ jQuery(document).ready(function(){
 		},
 		updateGroupName:function(group_id, member_id){
 			$(".group-loading-container").show();
-			var name	= $("#name").val();
-			var retVar		= false;
+			var name							= $("#name").val();
+			var retVar						= false;
+			var current_location 	= window.location;
 			if(name == ''){
 				$("#name").css({"border-color":"#FF0000"});
 				$("#nameErr").html("Please enter the Name.");
@@ -537,7 +539,7 @@ jQuery(document).ready(function(){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_success">Update successful.</div>');
 									$("#group_popup_msg").show();
-									window.location = 'admin.php?page=membermousemanagegroup';
+									window.location = current_location;
 								}else if(data[i] == "no"){
 									$(".group-loading-container").hide();
 									$("#group_popup_msg").html('<div class="group_failure">An error occured. Please try again later.</div>');
@@ -603,10 +605,10 @@ jQuery(document).ready(function(){
 		addGroupUsers:function(group_id, member_id){
 			$("#add_user_loading").show();
 			$.ajax({
-				type		: 'POST',
+				type			: 'POST',
 				dataType	: 'json',
-				data		: 'group_id='+group_id+'&member_id='+member_id+'&_wpnonce='+rest_nonce._wpnonce,
-				url			: add_group_user.ajax_url,
+				data			: 'group_id='+group_id+'&member_id='+member_id+'&_wpnonce='+rest_nonce._wpnonce,
+				url				: add_group_user.ajax_url,
 				success		: function(data){
 					$("#add_user_loading").hide();
 					$.each(data, function(i){
@@ -625,13 +627,14 @@ jQuery(document).ready(function(){
 				}
 			});
 		},
-		deleteGroupMember:function(gmId){
+		deleteGroupMember:function(gmId, member_id){
 			var c = confirm('Are you sure you want to remove this member from the group?');
 			if(c == true){
 				var height = MGROUP.contentheight();
 				var width  = MGROUP.contentwidth();
 				var top	   = MGROUP.contentLoadingTop();
 				var left   = MGROUP.contentLoadingLeft();
+				var current_location = window.location;
 				$("#create_group_background").height(height);
 				$("#create_group_loading").css({"top":top, "left":left});
 				$("#create_group_background").show();
@@ -640,18 +643,18 @@ jQuery(document).ready(function(){
 					type: 'post',
 					url : delete_group_member.ajax_url,
 					dataType : 'json',
-					data: 'gmId='+gmId+'&_wpnonce='+rest_nonce._wpnonce,
+					data: 'gmId='+gmId+'&member_id='+member_id+'&_wpnonce='+rest_nonce._wpnonce,
 					success: function(data){
 						$.each(data, function(i){
 							if(i == "success"){
 								if(data[i] == "yes"){
 									$("#create_group_loading").hide();
 									$("#create_group_background").hide();
-									window.location = 'admin.php?page=membermousemanagegroup&delete=1';
+									window.location = current_location + '&delete=1';
 								}else if(data[i] == "no"){
 									$("#create_group_loading").hide();
 									$("#create_group_background").hide();
-									window.location = 'admin.php?page=membermousemanagegroup&delete=0';
+									window.location = current_location + '&delete=0';
 								}
 							}
 						});

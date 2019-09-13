@@ -190,7 +190,7 @@ if($noticeCount > 0):?>
 				$leaderEmail	= $leaderResult -> user_email;
 ?>
 				<tr>
-					<td>Member <font style="color:#FF0000;"><?php echo $userEmail;?></font> failed to join <?php echo $groupName;?> (<?php echo $leaderEmail;?>) because it was full. Please cancel that member account and inform the group leader.</td>
+					<td>Member <span style="color:#FF0000;"><?php echo $userEmail;?></span> failed to join <?php echo $groupName;?> (<?php echo $leaderEmail;?>) because it was full. Please cancel that member account and inform the group leader.</td>
 					<td>
 						<a title="Delete Notice" href="admin.php?page=membermousemanagegroup&notice=<?php echo $noticeResult -> id;?>">
 							Delete Notice

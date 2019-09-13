@@ -1,23 +1,27 @@
 <?php
-
+/**
+ * Popup to Edit the Group's Name
+ * Used by: manage_groups_admin.php, manage_groups.php
+ *
+ */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
 
 $name 		= "";
 $group_id	= "";
-$data = sanitize_post($_POST);
+$data 		= sanitize_post($_POST);
 if ( count( $data ) > 0 ):
 	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 
-	$sql	= "SELECT id,group_name,group_leader FROM ".$wpdb -> prefix."group_sets WHERE id = '".$group_id."' AND group_leader = '".$member_id."'";
+	$sql	= "SELECT id,group_name,group_leader FROM ".$wpdb->prefix."group_sets WHERE id = '". $group_id ."' AND group_leader = '".$member_id."'";
 	$result	= $wpdb -> get_row($sql);
 	if(count($result) > 0):
-		$group_id	= $result -> id;
-		$name 		= $result -> group_name;
-		$member_id	= $result -> group_leader;
+		$group_id		= $result->id;
+		$name 			= $result->group_name;
+		$member_id	= $result->group_leader;
 	endif;?>
 	<div id="group_popup_container">
 		<h2>
