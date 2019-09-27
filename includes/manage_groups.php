@@ -134,26 +134,36 @@ if( count( $result ) > 0 ):
 				$member		 		= new MM_User($crntMemberId);
 				$url 					= "javascript:mmjs.changeMembershipStatus('".$crntMemberId."', ";
 				$url 		   	   .= $membershipId.", ".MM_Status::$CANCELED.", '".$redirecturl."');";
-				$cancellationHtml 	= "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"".$url."\"/>".MM_Utils::getIcon('stop', 'red', '1.2em', '1px')."</a>";?>
+				$cancellationHtml 	= "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"".$url."\"/>".MM_Utils::getIcon('stop', 'red', '1.2em', '1px')."</a>";
+
+				// Get Member's Active Subscriptions - includes overdue subscriptions
+				$activeSubscriptions = $member->getActiveMembershipSubscriptions(true);
+
+				if ( empty($activeSubscriptions) ) {
+					// No Subscriptions
+					$has_subscriptions = false;
+				} else {
+					$has_subscriptions = true;
+				}
+
+				?>
 				<tr>
 					<td><?php echo $firstName.'&nbsp;'.$lastName;?></td>
 					<td><?php echo $email;?></td>
 					<td><?php echo $phone;?></td>
-					<!--td><?php echo $membershipName;?></td-->
 					<td><?php echo date('F d, Y h:m a',strtotime($registered));?></td>
+					<td><?php echo MM_Status::getImage($statusId); ?></td>
 					<td>
-						<?php echo MM_Status::getImage($statusId); ?>
-					</td>
-					<td>
-						<?php if($statusId == MM_Status::$ACTIVE): ?>
-							<?php echo $cancellationHtml;?>
-							<?php echo MM_Utils::getDeleteIcon("This member has an active paid membership which must be canceled before they can be removed from the group", 'margin-left:5px;', '', true); ?>
-						<?php else:?>
-							<?php
-							$deleteActionUrl = 'onclick="javascript:MGROUP.deleteGroupMember(\''.$gMemRes -> id.'\');"';
+						<?php
+						if ( $has_subscriptions ) {
+							// Member has active subscriptions. Show error
+							echo $cancellationHtml;
+							echo MM_Utils::getDeleteIcon("This member has an active paid membership which must be canceled before they can be removed from the group. Please contact support.", 'margin-left:5px;', '', true);
+						} else {
+							$deleteActionUrl = 'onclick="javascript:MGROUP.deleteGroupMember('. $gMemRes->id .','. $gMemRes->member_id .');"';
 							echo MM_Utils::getDeleteIcon("Remove the member from this group", 'margin-left:5px;', $deleteActionUrl);
-							?>
-						<?php endif;?>
+						}
+						?>
 					</td>
 				</tr>
 <?php		endforeach;?>
