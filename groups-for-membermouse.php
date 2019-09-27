@@ -3,7 +3,7 @@
 /****************************************************************************************************************************
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.0.0
+ * Version: 2.0.1
  * Author: Mintun Media
  * Plugin URI:  https://www.powerpackmm.com/groups-for-membermouse-plugin/
  * Author URI:  https://www.mintunmedia.com
