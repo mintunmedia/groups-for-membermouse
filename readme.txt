@@ -71,7 +71,15 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 == Changelog ==
 2.0.1 Added ability for Group Leader to delete members on Group Leader Dashboard - only if that member does not have a paid subscription. Updated Docs.
 
-2.0.0 Added Admin Management Dashboard for Groups and Group Members. Admins can now delete members from groups. Made it easier to manage groups from an Admin's perspective. Added Getting Started Tab.
+2.0.0
+- Added Admin groups management dashboard
+- Added ability for admin to remove member's from groups
+- Added ability for Admin's to see who is in each group
+- Added ability for Admin's to navigate to member's profile from Admin Dashboard
+- Improved remove Member functionality - to also remove Group Custom Field in MM
+- Gave admin ability to remove a member from group when member doesn't have any active subscriptions. Before it'd only allow it if the member's status = cancelled
+- Added Getting Started tab with light documentation
+- General Housekeeping and cleanup
 
 1.0.4 Fixed Notices - Now notices will be dismissable.
 
