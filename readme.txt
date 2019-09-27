@@ -69,6 +69,10 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 1. The Groups Dashboard
 
 == Changelog ==
+2.0.1 Added ability for Group Leader to delete members on Group Leader Dashboard - only if that member does not have a paid subscription. Updated Docs.
+
+2.0.0 Added Admin Management Dashboard for Groups and Group Members. Admins can now delete members from groups. Made it easier to manage groups from an Admin's perspective. Added Getting Started Tab.
+
 1.0.4 Fixed Notices - Now notices will be dismissable.
 
 1.0.3 Fixed bugs. - Removed Description Field from Create Group. Not used. Fixed issue with Pagination in plugin and number of results to display. Updated loading gif to fontawesome.

@@ -22,6 +22,7 @@ $group_id = get_option("mm_custom_field_group_id");
     </ul>
   </li>
   <li>Add or Share your checkout page link for Groups by clicking "Purchase Link" next to your group type in Groups for MemberMouse. <strong>IMPORTANT: </strong>do not use product links in MemberMouse > Product Settings. They will not include the correct parameters to create a Group when purchased.</li>
+  <li><strong>Group Member Dashboard URL:</strong> <a href="<?php echo admin_url('/admin.php?page=membermousemanagegroup') ?>"><?php echo admin_url('/admin.php?page=membermousemanagegroup') ?></a> - This URL is only accessible by the Group Leader. <em>Important: We're going to move this dashboard out of the WordPress Admin area soon.</em></li>
 </ol>
 
 <h2>Other Thoughts</h2>
