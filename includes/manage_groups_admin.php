@@ -16,8 +16,16 @@ include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 global $wpdb, $current_user;
 
 // Get Group Leader ID
-if ( isset($_GET['group_leader']) && ! empty($_GET['group_leader']) ) {
+error_log("Group Leader: ". $_GET['group_leader']);
+if ( isset($_GET['group_leader']) && ! empty($_GET['group_leader']) && is_numeric($_GET['group_leader']) ) {
 	$group_leader_id = $_GET['group_leader'];
+} else {
+	// No Group Leader ID. Redirect back
+	?>
+	<script type="text/javascript">
+		window.location = 'admin.php?page=groupsformm&type=manage';
+	</script>
+	<?php
 }
 
 ?>
@@ -26,94 +34,113 @@ if ( isset($_GET['group_leader']) && ! empty($_GET['group_leader']) ) {
 	<div id="create_group_content" style="display:none;"></div>
 </div>
 <div id="group_popup_msg">
-<?php if ( isset( $_GET["delete"] ) ) { ?>
-	<?php if ( $_GET["delete"] == 1 ) { ?>
-		<div class="group_success">The operation completed successfully.</div>
-	<?php } elseif ($_GET["delete"] == 0) { ?>
-		<div class="group_failure">An error occured. Please try again later.</div>
-	<?php } ?>
-<?php } ?>
+	<?php if ( isset( $_GET["delete"] ) ) {
+		if ( $_GET["delete"] == 1 ) { ?>
+			<div class="group_success">The operation completed successfully.</div>
+		<?php } elseif ($_GET["delete"] == 0) { ?>
+			<div class="group_failure">An error occured. Please try again later.</div>
+		<?php }
+	}
 
-<?php if ( isset( $_GET["ndelete"] ) ) { ?>
-	<?php if ($_GET["ndelete"] == 1 ) { ?>
-		<div class="group_success">Successfully deleted the notice.</div>
-	<?php } elseif ( $_GET["ndelete"] == 0 ) { ?>
-		<div class="group_failure">An error occured. Please try again later.</div>
-	<?php } ?>
-<?php } ?>
+	if ( isset( $_GET["ndelete"] ) ) {
+		if ($_GET["ndelete"] == 1 ) { ?>
+			<div class="group_success">Successfully deleted the notice.</div>
+		<?php } elseif ( $_GET["ndelete"] == 0 ) { ?>
+			<div class="group_failure">An error occured. Please try again later.</div>
+		<?php }
+	} ?>
 </div>
 <?php
-if ( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_int( $_GET['notice'] ) ) {
+if ( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_numeric( $_GET['notice'] ) ) {
 	$notice 	= $_GET['notice'];
 	$delSql		= "DELETE FROM " . $wpdb->prefix . "group_notices WHERE id = '". $notice ."'";
 	$delQuery	= $wpdb -> query($delSql);
 	if ( $delQuery ) { ?>
 		<script type="text/javascript">
-			window.location = 'admin.php?page=membermousemanagegroup&ndelete=1';
+			window.location = 'admin.php?page=groupsformm&type=manage&ndelete=1';
 		</script>
 <?php } else { ?>
 		<script type="text/javascript">
-			window.location = 'admin.php?page=membermousemanagegroup&ndelete=0';
+			window.location = 'admin.php?page=groupsformm&type=manage&ndelete=0';
 		</script>
 <?php
 	}
 }
 
-$sql		= "SELECT id, group_name FROM ". $wpdb->prefix ."group_sets WHERE group_leader = '". $group_leader_id ."'";
-$result	= $wpdb->get_row($sql);
+/**
+ * Get Group ID from DB
+ */
+$sql				= "SELECT id, group_name FROM ". $wpdb->prefix ."group_sets WHERE group_leader = '". $group_leader_id ."'";
+$result 		= $wpdb->get_row($sql);
+if ( $result ) {
+	$gid				= $result->id;
+	$group_name = $result->group_name;
+} else {
+	?>
+	<script type="text/javascript">
+		window.location = 'admin.php?page=groupsformm&type=manage';
+	</script>
+	<?php
+}
 
-if( count( $result ) > 0 ) :
-	$gid 			= $result->id;
-	$totalSql	= "SELECT COUNT(id) AS total FROM ". $wpdb->prefix ."group_sets_members WHERE group_id = '". $gid ."'";
-	$totalRes	= $wpdb->get_row($totalSql);
-	$count		= $totalRes->total;
-	$show			= 0;
-	if ( isset($_GET["show"] ) && !empty( $_GET["show"] ) && is_int( $_GET['show'] ) ) {
-		$show = $_GET["show"];
-	}
+// Get total results
+$totalSql	= "SELECT COUNT(id) AS total FROM ". $wpdb->prefix ."group_sets_members WHERE group_id = '". $gid ."'";
+$totalRes	= $wpdb->get_row($totalSql);
+$members  = $totalRes->total;
 
-	if ( ! empty( $show ) ) {
-		$limit = $show;
-	} else {
-		$limit = 10;
-	}
+// Show # Results Handler
+$show	= 0;
+if ( isset($_GET["show"] ) && !empty( $_GET["show"] ) && is_numeric( $_GET['show'] ) ) {
+	$show = $_GET["show"];
+}
 
-	$page = 0;
+if ( ! empty( $show ) ) {
+	$limit = $show;
+} else {
+	$limit = 10;
+}
 
-	if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_int( $_GET['p'] ) ) {
-		$page 	= $_GET['p'];
-		$start 	= ( $page - 1 ) * $limit;
-	} else {
-		$start	= 0;
-	}
+// Page # Handler
+$page = 0;
+if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_numeric( $_GET['p'] ) ) {
+	$page 	= $_GET['p'];
+	$start 	= ( $page - 1 ) * $limit;
+} else {
+	$start	= 0;
+}
 
-	if( $page == 0 ) {
-		$page = 1;
-	}
+if( $page == 0 ) {
+	$page = 1;
+}
 
-	$targetpage = 'admin.php?page=groupsformm&type=manage_group&group_leader='. $group_leader_id;
-	if ( ! empty( $show ) ) {
-		$targetpage .= '&show=' . $show;
-	}
-	$gMemSql		= "SELECT * FROM ". $wpdb->prefix ."group_sets_members WHERE group_id = '". $gid ."' ORDER BY createdDate DESC LIMIT $start, $limit";
-	$gMemResults	= $wpdb->get_results($gMemSql);?>
+// Perform Actual SQL to pull results with limit and page
+$gMemSql = "SELECT * FROM ". $wpdb->prefix ."group_sets_members WHERE group_id = '". $gid ."' ORDER BY createdDate DESC LIMIT $start, $limit";
+$gMemResults	= $wpdb->get_results($gMemSql);
 
-	<h2><em><?php echo $result->group_name; ?></em> Management Dashboard</h2>
 
-		<div class="membermousegroupbuttoncontainer">
-			<a class="group-button button-green button-small" title="Edit Group Name" id="edit_group" onclick="javascript:MGROUP.editGroupNameForm('<?php echo $gid;?>','<?= $group_leader_id; ?>');">
-				Edit Group Name
-			</a>&nbsp;&nbsp;
-			<a class="group-button button-green button-small" title="Signup Link" id="purchase_link" onclick="javascript:MGROUP.showMemberPurchaseLink('<?php echo $gid;?>', '<?= $group_leader_id; ?>');">
-				Signup Link
-			</a>
-		</div>
-	<div class="clear"></div>
-<?php if(count($gMemResults) == 0 ) { ?>
-<p><em>No members found.</em></p>
-<?php } else { ?>
-<?php
-	echo MemberMouseGroupAddon::MemberMouseGroupPagination($limit, $count, $page, $start, $targetpage, 'members');?>
+// Set Target Page
+$targetpage = 'admin.php?page=groupsformm&type=manage_group&group_leader='. $group_leader_id;
+if ( ! empty( $show ) ) {
+	$targetpage .= '&show=' . $show;
+}
+?>
+
+<h2><em><?php echo $group_name; ?></em> Management Dashboard</h2>
+<div class="membermousegroupbuttoncontainer">
+	<a class="group-button button-green button-small" title="Edit Group Name" id="edit_group" onclick="javascript:MGROUP.editGroupNameForm('<?php echo $gid;?>','<?= $group_leader_id; ?>');">
+		Edit Group Name
+	</a>&nbsp;&nbsp;
+	<a class="group-button button-green button-small" title="Signup Link" id="purchase_link" onclick="javascript:MGROUP.showMemberPurchaseLink('<?php echo $gid;?>', '<?= $group_leader_id; ?>');">
+		Signup Link
+	</a>
+</div>
+<div class="clear"></div>
+
+<?php if( $members == 0 ) { ?>
+	<p><em>No members found.</em></p>
+<?php } else {
+
+	echo MemberMouseGroupAddon::MemberMouseGroupPagination($limit, $members, $page, $start, $targetpage, 'members');?>
 	<table class="widefat" id="mm-data-grid" style="width:96%">
 		<thead>
 			<tr>
@@ -175,10 +202,9 @@ if( count( $result ) > 0 ) :
 					</td>
 				</tr>
       <?php	endforeach;?>
-	</tbody>
-</table>
+		</tbody>
+	</table>
 <?php }
-endif;
 
 $noticeSql		 = "SELECT * FROM ". $wpdb->prefix ."group_notices WHERE msg_type = '1' AND leader_id = '". $group_leader_id ."' ORDER BY createdDate DESC";
 $noticeResults = $wpdb->get_results($noticeSql);
@@ -211,7 +237,7 @@ if($noticeCount > 0) : ?>
           <tr>
             <td>Member <span style="color:#FF0000;"><?php echo $userEmail;?></span> failed to join <?php echo $groupName;?> (<?php echo $leaderEmail;?>) because it was full. Please cancel that member account and inform the group leader.</td>
             <td>
-              <a title="Delete Notice" href="admin.php?page=membermousemanagegroup&notice=<?php echo $noticeResult -> id;?>">
+              <a title="Delete Notice" href="admin.php?page=groupsformm&type=manage&notice=<?php echo $noticeResult -> id;?>">
                 Delete Notice
               </a>
             </td>

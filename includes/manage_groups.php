@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Group Member Dashboard.
+ *
+ */
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
@@ -30,7 +33,7 @@ global $wpdb, $current_user;
 <?php } ?>
 </div>
 <?php
-if ( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_int( $_GET['notice'] ) ) {
+if ( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_numeric( $_GET['notice'] ) ) {
 	$notice 	= $_GET['notice'];
 	$delSql		= "DELETE FROM " . $wpdb->prefix . "group_notices WHERE id = '" . $notice . "'";
 	$delQuery	= $wpdb -> query($delSql);
@@ -46,55 +49,58 @@ if ( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_int( $_GET['no
 	}
 }
 
+/**
+ * Get Group ID from DB
+ */
 $sql	= "SELECT id, group_name FROM ".$wpdb -> prefix."group_sets WHERE group_leader = '".$current_user -> ID."'";
-$result	= $wpdb -> get_row($sql);
+$result	= $wpdb->get_row($sql);
+$gid 	= $result->id;
+$group_name = $result->group_name;
 
-if( count( $result ) > 0 ):
-	$gid 	= $result -> id;
-	$totalSql	= "SELECT COUNT(id) AS total FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$gid."'";
-	$totalRes	= $wpdb -> get_row($totalSql);
-	$count		= $totalRes -> total;
-	$show		= 0;
-	if ( isset($_GET["show"] ) && !empty( $_GET["show"] ) && is_int( $_GET['show'] ) ) {
-		$show = $_GET["show"];
-	}
+$totalSql	= "SELECT COUNT(id) AS total FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$gid."'";
+$totalRes	= $wpdb -> get_row($totalSql);
+$count		= $totalRes -> total;
+$show		= 0;
+if ( isset($_GET["show"] ) && !empty( $_GET["show"] ) && is_numeric( $_GET['show'] ) ) {
+	$show = $_GET["show"];
+}
 
-	if ( ! empty( $show ) ) {
-		$limit = $show;
-	} else {
-		$limit = 10;
-	}
+if ( ! empty( $show ) ) {
+	$limit = $show;
+} else {
+	$limit = 10;
+}
 
-	$page = 0;
+$page = 0;
 
-	if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_int( $_GET['p'] ) ) {
-		$page 	= $_GET['p'];
-		$start 	= ( $page - 1 ) * $limit;
-	} else {
-		$start	= 0;
-	}
+if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_numeric( $_GET['p'] ) ) {
+	$page 	= $_GET['p'];
+	$start 	= ( $page - 1 ) * $limit;
+} else {
+	$start	= 0;
+}
 
-	if( $page == 0 ) {
-		$page = 1;
-	}
+if( $page == 0 ) {
+	$page = 1;
+}
 
-	$targetpage = 'admin.php?page=membermousemanagegroup';
-	if ( ! empty( $show ) ) {
-		$targetpage .= '&show=' . $show;
-	}
-	$gMemSql		= "SELECT * FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$gid."' ORDER BY createdDate DESC LIMIT $start, $limit";
-	$gMemResults	= $wpdb -> get_results($gMemSql);?>
+$targetpage = 'admin.php?page=membermousemanagegroup';
+if ( ! empty( $show ) ) {
+	$targetpage .= '&show=' . $show;
+}
+$gMemSql		= "SELECT * FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$gid."' ORDER BY createdDate DESC LIMIT $start, $limit";
+$gMemResults	= $wpdb -> get_results($gMemSql);?>
 
-	<h2><em><?php echo $result->group_name; ?></em> Management Dashboard</h2>
+<h2><em><?php echo $group_name; ?></em> Management Dashboard</h2>
 
-		<div class="membermousegroupbuttoncontainer">
-			<a class="group-button button-green button-small" title="Edit Group Name" id="edit_group" onclick="javascript:MGROUP.editGroupNameForm('<?php echo $gid;?>','<?php echo $current_user -> ID;?>');">
-				Edit Group Name
-			</a>&nbsp;&nbsp;
-			<a class="group-button button-green button-small" title="Signup Link" id="purchase_link" onclick="javascript:MGROUP.showMemberPurchaseLink('<?php echo $gid;?>', '<?php echo $current_user -> ID;?>');">
-				Signup Link
-			</a>
-		</div>
+	<div class="membermousegroupbuttoncontainer">
+		<a class="group-button button-green button-small" title="Edit Group Name" id="edit_group" onclick="javascript:MGROUP.editGroupNameForm('<?php echo $gid;?>','<?php echo $current_user -> ID;?>');">
+			Edit Group Name
+		</a>&nbsp;&nbsp;
+		<a class="group-button button-green button-small" title="Signup Link" id="purchase_link" onclick="javascript:MGROUP.showMemberPurchaseLink('<?php echo $gid;?>', '<?php echo $current_user -> ID;?>');">
+			Signup Link
+		</a>
+	</div>
 	<div class="clear"></div>
 <?php if(count($gMemResults) == 0 ) { ?>
 <p><em>No members found.</em></p>
@@ -171,7 +177,7 @@ if( count( $result ) > 0 ):
 </table>
 <?php } ?>
 <?php
-endif;
+
 $noticeSql		= "SELECT * FROM ".$wpdb -> prefix."group_notices WHERE msg_type = '1' AND leader_id = '".$current_user -> ID."' ORDER BY createdDate DESC";
 $noticeResults 	= $wpdb -> get_results($noticeSql);
 $noticeCount	= count($noticeResults);
