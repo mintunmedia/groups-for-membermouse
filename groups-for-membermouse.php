@@ -3,7 +3,7 @@
 /****************************************************************************************************************************
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.0.2
+ * Version: 2.0.3
  * Author: Mintun Media
  * Plugin URI:  https://www.powerpackmm.com/groups-for-membermouse-plugin/
  * Author URI:  https://www.mintunmedia.com
@@ -68,6 +68,7 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 				add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts') );
 				add_action('mm_member_add', array(&$this, 'MemberMouseGroupMemberAdded'));
 				add_action('mm_member_status_change', array(&$this, 'MemberMouseGroupLeaderStatus'));
+				add_action('mm_member_membership_change', array( $this, 'membership_changed_handler'));
 				add_action('admin_head', array(&$this, 'MemberMouseGroupOptionUpdate'));
 				add_shortcode('MM_Group_SignUp_Link', array(&$this, 'MemberMouseGroupPurchaseLinkShortcode'));
 				add_action( 'plugins_loaded', array( $this, 'plugins_loaded') );
@@ -248,30 +249,36 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			add_submenu_page('mmdashboard','Group Management Dashboard','Group Management Dashboard','Group Leader','membermousemanagegroup',array(&$this,"MemberMouseManageGroup"));
 		}
 
+		/**
+		 * Shortcode output for Purchase Link
+		 * [MM_Group_SignUp_Link]
+		 */
 		public function MemberMouseGroupPurchaseLinkShortcode()	{
 			global $wpdb, $current_user;
-			if (is_user_logged_in() && in_array('Group Leader', $current_user->roles)) :
-				$leaderSql = "SELECT id,group_template_id,group_name FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $current_user->ID . "'";
-			$leaderResult = $wpdb->get_row($leaderSql);
-			if (count($leaderResult) > 0) :
-				$group_id = $leaderResult->id;
-			$template_id = $leaderResult->group_template_id;
-			$groupName = $leaderResult->group_name;
-			$itemSql = "SELECT member_memlevel,group_member_cost FROM " . $wpdb->prefix . "group_items WHERE id = '" . $template_id . "'";
-			$itemResult = $wpdb->get_row($itemSql);
 
-			if (!empty($itemResult->group_member_cost)) :
-				$itemCost = $itemResult->group_member_cost;
-			$purchaseUrl = MM_CorePageEngine::getCheckoutPageStaticLink($itemCost);
-			else :
-				$itemCost = $itemResult->member_memlevel;
-			$purchaseUrl = MM_CorePageEngine::getCheckoutPageStaticLink($itemCost, true);
-			endif;
-			$custom_field = get_option("mm_custom_field_group_id");
-			$purchaseUrl .= '&cf_' . $custom_field . '=g' . $group_id;
-			return $purchaseUrl;
-			endif;
-			endif;
+			if (is_user_logged_in() && in_array('Group Leader', $current_user->roles)) {
+				$leaderSql = "SELECT id,group_template_id,group_name FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $current_user->ID . "'";
+				$leaderResult = $wpdb->get_row($leaderSql);
+
+				if ( is_array($leaderResult) || is_object($leaderResult) ) {
+					$group_id 		= $leaderResult->id;
+					$template_id 	= $leaderResult->group_template_id;
+					$groupName 		= $leaderResult->group_name;
+					$itemSql 			= "SELECT member_memlevel,group_member_cost FROM " . $wpdb->prefix . "group_items WHERE id = '" . $template_id . "'";
+					$itemResult 	= $wpdb->get_row($itemSql);
+
+					if (!empty($itemResult->group_member_cost)) {
+						$itemCost 		= $itemResult->group_member_cost;
+						$purchaseUrl 	= MM_CorePageEngine::getCheckoutPageStaticLink($itemCost);
+					} else {
+						$itemCost 		= $itemResult->member_memlevel;
+						$purchaseUrl 	= MM_CorePageEngine::getCheckoutPageStaticLink($itemCost, true);
+					}
+					$custom_field = get_option("mm_custom_field_group_id");
+					$purchaseUrl .= '&cf_' . $custom_field . '=g' . $group_id;
+					return $purchaseUrl;
+				}
+			}
 			return '';
 		}
 
@@ -610,86 +617,174 @@ if ( ! class_exists('MemberMouseGroupAddon') ) {
 			return $pagination;
 		}
 
-		// hook over mm_member_add
+		/**
+		 * Member Added to MemberMouse - Check if it's a group purchase and add to Groups table
+		 */
 		public function MemberMouseGroupMemberAdded($data) {
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
+
 			global $wpdb;
+
 			$groupId = get_option("mm_custom_field_group_id");
-			if (isset($data["cf_" . $groupId]) && !empty($data["cf_" . $groupId])) :
-				$cf = $data["cf_" . $groupId];
-			$memberId = $data["member_id"];
-			$groupName = (!empty($data["cf_4"])) ? $data["cf_4"] : 'Group';
-			if (is_numeric($cf)) :
-				$templateSql = "SELECT id,group_size FROM " . $wpdb->prefix . "group_items WHERE id = '" . $cf . "'";
-			$templateResult = $wpdb->get_row($templateSql);
-			if (count($templateResult) > 0) :
-				$template_id = $templateResult->id;
-			$groupSize = $templateResult->group_size;
-			$sql = "INSERT INTO " . $wpdb->prefix . "group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
-			$query = $wpdb->query($sql);
-			$updateUser = wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));
-			endif;
-			else :
-						//	$gID	= substr($cf, -1);
-			$gID = substr($cf, 1);
-			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $gID . "'";
-			$result = $wpdb->get_row($sql);
-			if (count($result) > 0) :
-				$groupSize = $result->group_size;
-			$groupId = $result->id;
-			$sSql = "SELECT COUNT(id) AS count FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gID . "'";
-			$sRes = $wpdb->get_row($sSql);
-			$gCount = $sRes->count;
-			if ($gCount < $groupSize) :
-				$sql = "INSERT INTO " . $wpdb->prefix . "group_sets_members (id,group_id,member_id,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "',now(),now())";
-			$query = $wpdb->query($sql);
-			else :
-				$groupSql = "SELECT group_leader FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $groupId . "'";
-			$groupResult = $wpdb->get_row($groupSql);
-			$group_leader = $groupResult->group_leader;
 
-			$adminSql = "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','0',now(),now())";
-			$adminQuery = $wpdb->query($adminSql);
+			// Check if Purchase is for a group (custom field will be filled in)
+			if (isset($data["cf_" . $groupId]) && !empty($data["cf_" . $groupId])) {
+				$cf 			 = $data["cf_" . $groupId];
+				$memberId  = $data["member_id"];
 
-			$leaderSql = "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','1',now(),now())";
-			$leaderQuery = $wpdb->query($leaderSql);
+				if (is_numeric($cf)) {
+					// Group Leader. Custom Field contains Group Type ID
 
-			$user = new MM_User($memberId);
-			$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
-			endif;
-			endif;
-			endif;
-			endif;
+					$templateSql 		= "SELECT id,group_size FROM " . $wpdb->prefix . "group_items WHERE id = '" . $cf . "'";
+					$templateResult = $wpdb->get_row($templateSql);
+
+					if (count($templateResult) > 0) {
+						$template_id 	= $templateResult->id;
+						$groupSize 		= $templateResult->group_size;
+						$groupName 		= $templateResult->name;
+						$sql 					= "INSERT INTO " . $wpdb->prefix . "group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
+						$query 				= $wpdb->query($sql);
+						$updateUser 	= wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));
+					}
+				} else {
+					// Group Member. Custom Field contains group ID (g##)
+
+					$gID 		= substr($cf, 1);
+					$sql 		= "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $gID . "'";
+					$result = $wpdb->get_row($sql);
+
+					if (count($result) > 0) {
+						$groupSize 	= $result->group_size;
+						$groupId 		= $result->id;
+						$sSql 			= "SELECT COUNT(id) AS count FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gID . "'";
+						$sRes 			= $wpdb->get_row($sSql);
+						$gCount 		= $sRes->count;
+
+						if ($gCount < $groupSize) {
+							$sql 		= "INSERT INTO " . $wpdb->prefix . "group_sets_members (id,group_id,member_id,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "',now(),now())";
+							$query 	= $wpdb->query($sql);
+						} else {
+							// Reached Group Capacity. Do not add member
+							$groupSql 		= "SELECT group_leader FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $groupId . "'";
+							$groupResult 	= $wpdb->get_row($groupSql);
+							$group_leader = $groupResult->group_leader;
+
+							// Add notices to DB
+							$adminSql 		= "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','0',now(),now())";
+							$adminQuery 	= $wpdb->query($adminSql);
+
+							$leaderSql 		= "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','1',now(),now())";
+							$leaderQuery 	= $wpdb->query($leaderSql);
+
+							// Cancel member's access.
+							$user = new MM_User($memberId);
+							$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+						}
+					}
+				}
+			}
 		}
 
+		/**
+		 * Group Leader Member Status Changed. If status = cancelled, cancel all group member access as well
+		 */
 		public function MemberMouseGroupLeaderStatus($data) {
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php" );
 			include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php" );
 			global $wpdb;
-			$memberId = $data["member_id"];
-			$status = $data["status"];
-			$leaderSql = "SELECT id FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $memberId . "'";
-			$leaderResult = $wpdb->get_row($leaderSql);
-			if (count($leaderResult) > 0) :
-				$groupId = $leaderResult->id;
-			else :
-				$groupId = 0;
-			endif;
 
-			if (($status == 2) && !empty($groupId)) :
-				$sql = "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
-			$results = $wpdb->get_results($sql);
-			if (count($results) > 0) :
-				foreach ($results as $result) :
-				$user = new MM_User($result->member_id);
-			$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
-			endforeach;
-			endif;
-			endif;
+			$memberId 		= $data["member_id"];
+			$status 			= $data["status"];
+			$leaderSql 		= "SELECT id FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $memberId . "'";
+			$leaderResult = $wpdb->get_row($leaderSql);
+
+			// Check if current member is a Group Leader
+			if (count($leaderResult) > 0) {
+				$groupId = $leaderResult->id;
+			} else {
+				// Exit
+				return;
+			}
+
+			// Check if User is Cancelled and in a group. Cancels all members in the group.
+			if ( ($status == 2) && !empty($groupId) ) {
+				$sql 			= "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
+				$results 	= $wpdb->get_results($sql);
+				if (count($results) > 0) {
+					foreach ($results as $result) {
+						$user = new MM_User($result->member_id);
+						$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+					}
+				}
+			}
 		}
-	}
-}
+
+		/**
+		 * Membership Level Changed Handler
+		 * Handles group leader upgrade and downgrade.
+		 *
+		 * If Group Leader Upgrades or Downgrades > Update group template and number allowed in group in database.
+		 *
+		 * TODO - if user has more accounts than are allowed in group changed to - they'll still have that number of members in database.
+		 */
+		public function membership_changed_handler($data) {
+			global $wpdb;
+
+			$groupId = get_option("mm_custom_field_group_id");
+
+			// Check if Purchase is for a group leader (custom field will be filled in).
+			// If group is numeric - it means they are a group leader
+			if (isset($data["cf_" . $groupId]) && !empty($data["cf_" . $groupId]) && is_numeric($data["cf_" . $groupId]) ) {
+				$cf 			 = $data["cf_" . $groupId];
+				$memberId  = $data["member_id"];
+
+				// Get Group Type data based on Group Type ID. Gives us group name and size
+				$templateSql 		= "SELECT id,group_size FROM " . $wpdb->prefix . "group_items WHERE id = '" . $cf . "'";
+				$templateResult = $wpdb->get_row($templateSql);
+
+				if ( is_object($templateResult) ) {
+					// Capture Group Type Information for later
+					$template_id 	= $templateResult->id;
+					$groupSize 		= $templateResult->group_size;
+
+					// Check if Leader already has a group
+					$group = $this->get_group_from_leader_id($memberId);
+
+					if ( $group ) {
+						// Update Group Template ID and group size
+						$wpdb->update( $wpdb->prefix ."group_sets", array('group_template_id' => $template_id, 'group_size' => $groupSize), array('id' => $group->id) );
+					} else {
+						// Create Group
+						$sql 				= "INSERT INTO " . $wpdb->prefix . "group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
+						$query 			= $wpdb->query($sql);
+						$updateUser = wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));
+					}
+				}
+			}
+		}
+
+		/**
+		 * Get Group ID with Member ID
+		 * @return array | bool - If Group is found, returns row from database. If not, returns false
+		 */
+		public function get_group_from_leader_id($memberId) {
+			global $wpdb;
+
+			$sql = "SELECT * FROM " . $wpdb->prefix ."group_sets WHERE group_leader='". $memberId ."'";
+			$result = $wpdb->get_row($sql);
+
+			if ( $result > 0 ) {
+				// Found group
+				return $result;
+			} else {
+				return false;
+			}
+		}
+
+	} // End Class
+} // End if class exists
+
 if (class_exists('MemberMouseGroupAddon')) :
 	global $MemberMouseGroupAddon;
 	$MemberMouseGroupAddon = new MemberMouseGroupAddon();

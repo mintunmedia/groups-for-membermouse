@@ -69,6 +69,8 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 1. The Groups Dashboard
 
 == Changelog ==
+2.0.3 Added group member upgrade/downgrade functionality.
+
 2.0.2 Fixed pagination issues on Admin Group Dashboard and Group Leader Dashboard.
 
 2.0.1 Added ability for Group Leader to delete members on Group Leader Dashboard - only if that member does not have a paid subscription. Updated Docs.
