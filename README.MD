@@ -86,6 +86,8 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 Thank you to the Github community for contributing to the plugin's codebase and for bringing it to the state is in today. Mintun Media decided to take ownership of the codebase and has enhanced its security, stability, and WordPress compatibility. We look forward to working with the Github and WordPress communities to add new features all while maintaing WordPress coding standards. We also encourage you to make a pull request if you see any issues or have ideas to enhance the plugin.
 
 ## Changelog
+2.0.4 Improved member upgrade/downgrade functionality. Improved logging. Improved Group Leader cancellation automation - cancels all members and cancels group. Fixed misc PHP warnings.
+
 2.0.3 Added group member upgrade/downgrade functionality.
 
 2.0.2 Fixed pagination issues on Admin Group Dashboard and Group Leader Dashboard.
