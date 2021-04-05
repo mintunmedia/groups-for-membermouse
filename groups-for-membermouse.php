@@ -3,7 +3,7 @@
 /****************************************************************************************************************************
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.0.4
+ * Version: 2.0.5
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -563,7 +563,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			include_once(dirname(__FILE__) . "/includes/manage_groups.php");
 		}
 
-		public function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetpage, $type = "groups") {
+		public static function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetpage, $type = "groups") {
 			$prev = $page - 1;
 			$next = $page + 1;
 			$lastpage = ceil($count / $limit);
@@ -706,7 +706,13 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		}
 
 		/**
-		 * Group Leader Member Status Changed. If status = cancelled, cancel all group member access as well
+		 * Group Leader Member Status Changed.
+		 * If status = cancelled, cancel all group member access as well
+		 * If status = expired, expire all group member access as well
+		 *
+		 * @param array $data
+		 * @return void
+		 *
 		 */
 		public function MemberMouseGroupLeaderStatus($data) {
 			include_once(WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php");
@@ -729,15 +735,30 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			}
 
 			// Check if User is Cancelled and in a group. Cancels all members in the group.
-			if (($status == 2) && !empty($groupId)) {
+			if (!empty($groupId)) {
+				if ($status == MM_Status::$CANCELED) {
+					// Cancelled
 
-				$sql 			= "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
-				$results 	= $wpdb->get_results($sql);
+					$sql 			= "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
+					$results 	= $wpdb->get_results($sql);
 
-				if (count($results) > 0) {
-					foreach ($results as $result) {
-						$user = new MM_User($result->member_id);
-						$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+					if (count($results) > 0) {
+						foreach ($results as $result) {
+							$user = new MM_User($result->member_id);
+							$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+						}
+					}
+				} else if ($status == MM_Status::$EXPIRED) {
+					// Expired
+
+					$sql 			= "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
+					$results 	= $wpdb->get_results($sql);
+
+					if (count($results) > 0) {
+						foreach ($results as $result) {
+							$user = new MM_User($result->member_id);
+							$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$EXPIRED);
+						}
 					}
 				}
 
