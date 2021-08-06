@@ -3,7 +3,7 @@
 /****************************************************************************************************************************
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.0.5
+ * Version: 2.0.6
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -15,6 +15,7 @@
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
 if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membermouse'));
+if (!(DEFINED('MGROUP_PATH'))) DEFINE('MGROUP_PATH', plugin_dir_path(__FILE__));
 if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
 define('MGROUP_TESTING', false);
@@ -94,6 +95,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				add_action('admin_head', array(&$this, 'MemberMouseGroupOptionUpdate'));
 				add_shortcode('MM_Group_SignUp_Link', array(&$this, 'MemberMouseGroupPurchaseLinkShortcode'));
 				add_action('plugins_loaded', array($this, 'plugins_loaded'));
+				add_action('template_redirect', array($this, 'checkout_groups_protection'));
+				add_action('wp_enqueue_scripts', array($this, 'frontend_enqueues'));
 
 				// Admin Notices
 				if (empty(get_option('gfmm_checkoutpage_notice'))) {
@@ -635,6 +638,21 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		}
 
 		/**
+		 * Frontend Enqueues
+		 */
+		public function frontend_enqueues() {
+			wp_register_script('groups-checkout', MGROUP_DIR . "/js/checkout.js", array('jquery'), filemtime(MGROUP_PATH . "js/checkout.js"), true);
+			wp_register_script('sweetalert', '//cdn.jsdelivr.net/npm/sweetalert2@11');
+
+			$cfe = new MM_CorePageEngine();
+			$checkout_page_id = $cfe->getCorePageIdByRefType(MM_CorePageType::$CHECKOUT, null, null);
+			if (is_page($checkout_page_id)) {
+				wp_enqueue_script('groups-checkout');
+				wp_enqueue_script('sweetalert');
+			}
+		}
+
+		/**
 		 * Member Added to MemberMouse - Check if it's a group purchase and add to Groups table
 		 */
 		public function MemberMouseGroupMemberAdded($data) {
@@ -643,7 +661,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 			global $wpdb;
 
-			write_groups_log($data, "MemberMouseGroupMemberAdded", true);
+			write_groups_log($data, __METHOD__, true);
 
 			$groupId = get_option("mm_custom_field_group_id");
 
@@ -669,42 +687,80 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				} else {
 					// Group Member. Custom Field contains group ID (g##)
 
+					/**
+					 * Check if Group is Active
+					 */
 					$gID 		= substr($cf, 1);
-					$sql 		= "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $gID . "'";
-					$result = $wpdb->get_row($sql);
+					$is_group_active = $this->is_group_active($gID);
 
-					if ($result) {
-						$groupSize 	= $result->group_size;
-						$groupId 		= $result->id;
-						$sSql 			= "SELECT COUNT(id) AS count FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gID . "'";
-						$sRes 			= $wpdb->get_row($sSql);
-						$gCount 		= $sRes->count;
+					if ($is_group_active) {
+						/**
+						 * Active Group
+						 */
+						$sql 		= "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $gID . "'";
+						$result = $wpdb->get_row($sql);
 
-						if ($gCount < $groupSize) {
-							$sql 		= "INSERT INTO " . $wpdb->prefix . "group_sets_members (id,group_id,member_id,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "',now(),now())";
-							$query 	= $wpdb->query($sql);
-						} else {
-							// Reached Group Capacity. Do not add member
-							$groupSql 		= "SELECT group_leader FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $groupId . "'";
-							$groupResult 	= $wpdb->get_row($groupSql);
-							$group_leader = $groupResult->group_leader;
+						if ($result) {
+							$groupSize 	= $result->group_size;
+							$groupId 		= $result->id;
+							$sSql 			= "SELECT COUNT(id) AS count FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gID . "'";
+							$sRes 			= $wpdb->get_row($sSql);
+							$gCount 		= $sRes->count;
 
-							// Add notices to DB
-							$adminSql 		= "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','0',now(),now())";
-							$adminQuery 	= $wpdb->query($adminSql);
+							if ($gCount < $groupSize) {
+								// There's space in this group. Add them.
+								$sql 		= "INSERT INTO " . $wpdb->prefix . "group_sets_members (id,group_id,member_id,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "',now(),now())";
+								$query 	= $wpdb->query($sql);
+							} else {
+								// Reached Group Capacity. Do not add member
+								$groupSql 		= "SELECT group_leader FROM " . $wpdb->prefix . "group_sets WHERE id = '" . $groupId . "'";
+								$groupResult 	= $wpdb->get_row($groupSql);
+								$group_leader = $groupResult->group_leader;
 
-							$leaderSql 		= "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','1',now(),now())";
-							$leaderQuery 	= $wpdb->query($leaderSql);
+								// Add notices to DB
+								$adminSql 		= "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','0',now(),now())";
+								$adminQuery 	= $wpdb->query($adminSql);
 
-							// Cancel member's access.
-							$user = new MM_User($memberId);
-							$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+								$leaderSql 		= "INSERT INTO " . $wpdb->prefix . "group_notices (id,group_id,user_id,leader_id,msg_type,createdDate,modifiedDate)VALUES('','" . $groupId . "','" . $memberId . "','" . $group_leader . "','1',now(),now())";
+								$leaderQuery 	= $wpdb->query($leaderSql);
+
+								// Cancel member's access.
+								$user = new MM_User($memberId);
+								$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+							}
 						}
+					} else {
+						/**
+						 * Group is Not Active
+						 * - Do not give access
+						 * - Change status of user to groups status
+						 */
+						$user = new MM_User($memberId);
+						$user->setStatus(MM_Status::$CANCELED);
+						$user->commitStatusOnly();
 					}
 				}
 			}
 		}
 
+		/**
+		 * Check if Group ID is Active
+		 *
+		 * @param int $group_id
+		 *
+		 * @return bool
+		 */
+		public function is_group_active($group_id) {
+			global $wpdb;
+			$sql = "SELECT group_status FROM {$wpdb->prefix}group_sets WHERE id={$group_id}";
+			$result = $wpdb->get_row($sql);
+
+			if ($result->group_status == 0) {
+				return false;
+			} else {
+				return true;
+			}
+		}
 		/**
 		 * Group Leader Member Status Changed.
 		 * If status = cancelled, cancel all group member access as well
@@ -848,6 +904,44 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			$sql = "SELECT * FROM {$wpdb->prefix}group_items WHERE id={$group_template_id}";
 			$result = $wpdb->get_row($sql);
 			return $result;
+		}
+
+		/**
+		 * Checkout Page Protection
+		 * - if user is attempting to join a group that is not active, redirect them
+		 * to the generic product page with query string added to URL to show jquery popup
+		 *
+		 * @return void
+		 */
+		public function checkout_groups_protection() {
+			$cfe = new MM_CorePageEngine();
+			$checkout_page_id = $cfe->getCorePageIdByRefType(MM_CorePageType::$CHECKOUT, null, null);
+			if (!is_page($checkout_page_id)) {
+				return;
+			}
+
+			$custom_field = get_option('mm_custom_field_group_id');
+			$group_query = "cf_{$custom_field}";
+			if (isset($_GET[$group_query]) && $_GET[$group_query] !== '') {
+				$group_id = $_GET[$group_query];
+				$group_id = substr($group_id, 1);
+
+				if (!$this->is_group_active($group_id)) {
+					// Group is not active. Redirect to default product checkout
+					$checkout_url = MM_CorePageEngine::getUrl(MM_CorePageType::$CHECKOUT, '');
+					$error_message = urlencode('Groups is not active');
+					$query = "groups-error={$error_message}";
+
+					/**
+					 * Filter the redirect URL.
+					 * @param $group_id
+					 */
+					$redirect_url = apply_filters('groups-mm-group-expired-redirect', "{$checkout_url}?{$query}", $group_id);
+
+					header("Location: {$redirect_url}");
+					exit();
+				}
+			}
 		}
 	} // End Class
 } // End if class exists
