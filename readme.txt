@@ -2,7 +2,7 @@
 Contributors: mintunmedia,roymckenzie
 Tags: membermouse, member management, membership site, groups, mm groups, groups for membermouse, membermouse groups
 Requires at least: 4.8
-Tested up to: 5.7
+Tested up to: 5.8
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv3
@@ -69,6 +69,8 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 1. The Groups Dashboard
 
 == Changelog ==
+2.0.6 Added support for members being able to sign up for a cancelled group and given full access. Now redirects to default checkout and shows a popup error. If somehow someone gets through, there's extra support to cancel their membership in the site based on the group's status being cancelled.
+
 2.0.5 Improved Group Leader status change handler to include Expired status. Now if a group leader expires, all their group members under them will also expire.
 
 2.0.4 Improved member upgrade/downgrade functionality. Improved logging. Improved Group Leader cancellation automation - cancels all members and cancels group. Fixed misc PHP warnings.
