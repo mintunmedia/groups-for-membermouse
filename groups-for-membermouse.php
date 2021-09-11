@@ -741,6 +741,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					}
 				}
 			}
+			do_action('MemberMouseGroupMemberAdded', $data);
 		}
 
 		/**
