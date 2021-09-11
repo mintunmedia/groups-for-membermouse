@@ -673,6 +673,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				if (is_numeric($cf)) {
 					// Group Leader. Custom Field contains Group Type ID
 
+					$type = 'group-leader';
+
 					$templateSql 		= "SELECT id,group_size,name FROM " . $wpdb->prefix . "group_items WHERE id = '" . $cf . "'";
 					$templateResult = $wpdb->get_row($templateSql);
 
@@ -686,6 +688,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					}
 				} else {
 					// Group Member. Custom Field contains group ID (g##)
+
+					$type = 'group-member';
 
 					/**
 					 * Check if Group is Active
@@ -740,8 +744,14 @@ if (!class_exists('MemberMouseGroupAddon')) {
 						$user->commitStatusOnly();
 					}
 				}
+
+				/**
+				 * ACTION - Group Member Added to Group
+				 * @param $data Member Data sent by MemberMouse
+				 * @param $type group-leader or group-member
+				 */
+				do_action('MemberMouseGroupMemberAdded', $data, $type);
 			}
-			do_action('MemberMouseGroupMemberAdded', $data);
 		}
 
 		/**
