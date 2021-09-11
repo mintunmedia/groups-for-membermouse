@@ -8,8 +8,6 @@ jQuery(function($) {
     return;
   }
 
-  console.log("URL has Groups error in it.");
-
   Swal.fire({
     'text': 'The Group you are attempting to join is no longer active. By signing up, you will not be added to a group.'
   });

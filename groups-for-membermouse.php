@@ -925,6 +925,11 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			$group_query = "cf_{$custom_field}";
 			if (isset($_GET[$group_query]) && $_GET[$group_query] !== '') {
 				$group_id = $_GET[$group_query];
+
+				// Exit. This is for creating a group.
+				if (strpos($group_id, 'g') === false) {
+					return;
+				}
 				$group_id = substr($group_id, 1);
 
 				if (!$this->is_group_active($group_id)) {
@@ -951,4 +956,3 @@ if (class_exists('MemberMouseGroupAddon')) :
 	global $MemberMouseGroupAddon;
 	$MemberMouseGroupAddon = new MemberMouseGroupAddon();
 endif;
-?>
