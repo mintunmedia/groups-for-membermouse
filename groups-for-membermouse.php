@@ -18,7 +18,7 @@ if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membe
 if (!(DEFINED('MGROUP_PATH'))) DEFINE('MGROUP_PATH', plugin_dir_path(__FILE__));
 if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
-define('MGROUP_TESTING', false);
+define('MGROUP_TESTING', true);
 
 /**
  * Local Logging for Plugin.
@@ -89,6 +89,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				add_action('admin_menu', array(&$this, 'MemberMouseGroupAddonAdminMenu'), 11);
 				add_action('admin_head', array(&$this, 'MemberMouseGroupAddonAdminResources'));
 				add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
+				add_action('admin_init', array($this, 'check_db_version'));
 				add_action('mm_member_add', array(&$this, 'MemberMouseGroupMemberAdded'));
 				add_action('mm_member_status_change', array(&$this, 'MemberMouseGroupLeaderStatus'));
 				add_action('mm_member_membership_change', array($this, 'membership_changed_handler'));
@@ -108,6 +109,10 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				add_action('wp_ajax_dismiss_checkoutpage_notice', array($this, 'gfm_dismiss_checkoutpage_notice'));
 				add_action('wp_ajax_dismiss_confirmationpage_notice', array($this, 'gfm_dismiss_confirmationpage_notice'));
 
+				$this->load_classes();
+
+
+
 				//add_action('admin_notices', array(&$this, 'MemberMouseGroupAdminNotice'));
 				//add_action('admin_init', array(&$this, 'MemberMouseGroupAdminNoticeIgnore'));
 			} else {
@@ -115,6 +120,47 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				// Show notice that plugin can't be activated
 				add_action('admin_notices', 'groupsformm_notice_mmrequired');
 			}
+		}
+
+		/**
+		 * Check Database Version
+		 * - Used to update tables/columns
+		 *
+		 * @return void
+		 */
+		public function check_db_version() {
+			global $wpdb;
+
+			$plugin_data = get_plugin_data(MGROUP_PATH . 'groups-for-membermouse.php');
+			$plugin_version = explode('.', $plugin_data['Version']);
+			$plugin_version_major = (int) reset($plugin_version);
+			$plugin_version_middle = (int) $plugin_version[1];
+			$plugin_version_minor = (int) end($plugin_version);
+
+			/**
+			 * 2.0.8 DB Update
+			 * - Add member_status to wp_group_sets_members
+			 * @date 9.28.2021
+			 */
+			if ($plugin_version_major <= 2 && $plugin_version_middle === 0 && $plugin_version_minor <= 7) {
+				$dbname = $wpdb->dbname;
+				$table_name = $wpdb->prefix . "group_sets_members";
+				$is_status_col = $wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'member_status'");
+				if (empty($is_status_col)) :
+					$add_status_column = "ALTER TABLE `{$table_name}` ADD `member_status` INT(11) DEFAULT 1 AFTER `member_id`; ";
+					$wpdb->query($add_status_column);
+				endif;
+			}
+		}
+		/**
+		 * Load Extra Groups Classes
+		 *
+		 * @return void
+		 */
+		public function load_classes() {
+			include_once(MGROUP_PATH . 'includes/class.shortcodes.php');
+
+			MemberMouseGroup_Shortcodes::get_instance();
 		}
 
 		/**
@@ -413,6 +459,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					id INT(11) NOT NULL AUTO_INCREMENT,
 					group_id INT(11) NOT NULL DEFAULT '0',
 					member_id VARCHAR(255) NOT NULL,
+					member_status INT(11) DEFAULT 1,
 					createdDate DATETIME NOT NULL,
 					modifiedDate DATETIME NOT NULL,
 					PRIMARY KEY (id)

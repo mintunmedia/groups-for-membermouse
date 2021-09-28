@@ -161,7 +161,6 @@ if (!empty($show)) {
 				$firstName 		= $memResult->first_name;
 				$lastName 		= $memResult->last_name;
 				$email 			  = $userResult->user_email;
-				$statusId 		= $memResult->status;
 				$membershipId	= $memResult->membership_level_id;
 				$levelSql 		= "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
 				$levelResult	= $wpdb->get_row($levelSql);
@@ -171,6 +170,7 @@ if (!empty($show)) {
 				$member		 		= new MM_User($crntMemberId);
 				$url 				  = "javascript:mmjs.changeMembershipStatus('" . $crntMemberId . "', '" . $membershipId . "', " . MM_Status::$CANCELED . ", '" . $redirecturl . "')";
 				$cancellationHtml = "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"" . $url . "\"/>" . MM_Utils::getIcon('stop', 'red', '1.2em', '1px') . "</a>";
+				$statusId = (int) $gMemRes->member_status;
 
 				// Get Member's Active Subscriptions - includes overdue subscriptions
 				$activeSubscriptions = $member->getActiveMembershipSubscriptions(true);
@@ -182,12 +182,21 @@ if (!empty($show)) {
 					$has_subscriptions = true;
 				}
 
+				switch ($statusId) {
+					case 1:
+						$status = "Active";
+						break;
+					case 0:
+						$status = "Deactivated";
+						break;
+				}
+
 			?>
-				<tr>
+				<tr class="<?= strtolower($status) ?>">
 					<td><?= $firstName . '&nbsp;' . $lastName; ?></td>
 					<td><a href="admin.php?page=manage_members&module=details_general&user_id=<?= $crntMemberId; ?>" target="_blank"><?= $email; ?></a></td>
 					<td><?= date('F d, Y h:m a', strtotime($registered)); ?></td>
-					<td><?= MM_Status::getImage($statusId); ?></td>
+					<td><?= $status; ?></td>
 					<td>
 						<?php
 						if ($has_subscriptions) {
