@@ -965,6 +965,51 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		}
 
 		/**
+		 * Get Group Sign Up link with Leader User ID
+		 *
+		 * @param int $leader_user_id
+		 *
+		 * @return string | false
+		 */
+		public function get_group_signup_link($leader_user_id) {
+			$group = $this->get_group_from_leader_id($leader_user_id);
+
+			if (!$group) {
+				return false;
+			}
+
+			$group_id = $group->id;
+			$template_id = $group->group_template_id;
+
+			$group_level_cost = $this->get_group_level_and_cost($template_id);
+
+			if (!empty($group_level_cost->group_member_cost)) {
+				$itemCost    = $group_level_cost->group_member_cost;
+				$purchaseUrl   = MM_CorePageEngine::getCheckoutPageStaticLink($itemCost);
+			} else {
+				$itemCost    = $group_level_cost->member_memlevel;
+				$purchaseUrl   = MM_CorePageEngine::getCheckoutPageStaticLink($itemCost, true);
+			}
+
+			$custom_field  = get_option("mm_custom_field_group_id");
+			$purchaseUrl   .= '&cf_' . $custom_field . '=g' . $group_id;
+			return $purchaseUrl;
+		}
+
+		/**
+		 * Get Group Membership Level and Cost from Group Template ID
+		 *
+		 * @param int $template_id
+		 *
+		 * @return object
+		 */
+		public function get_group_level_and_cost($template_id) {
+			global $wpdb;
+			$itemSql = "SELECT member_memlevel, group_member_cost FROM {$wpdb->prefix}group_items WHERE id = '" . $template_id . "'";
+			return $wpdb->get_row($itemSql);
+		}
+
+		/**
 		 * Checkout Page Protection
 		 * - if user is attempting to join a group that is not active, redirect them
 		 * to the generic product page with query string added to URL to show jquery popup

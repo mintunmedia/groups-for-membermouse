@@ -38,6 +38,26 @@ class MemberMouseGroup_Shortcodes {
    * @return void
    */
   public function load_actions() {
+    add_action('wp_enqueue_scripts', array($this, 'enqueues'));
+
+    // Ajax
+    add_action('wp_ajax_groups_get_signup_link', array($this, 'ajax_get_signup_link'));
+    add_action('wp_ajax_groups_update_group_name', array($this, 'ajax_update_group_name'));
+  }
+
+  /**
+   * Enqueues for Shortcodes
+   *
+   * @return void
+   */
+  public function enqueues() {
+    wp_register_style('groups-leader-dashboard', MGROUP_DIR . "/css/groups-leader-dashboard.css", null, filemtime(MGROUP_PATH . "css/groups-leader-dashboard.css"), 'all');
+    wp_register_script('groups-leader-dashboard', MGROUP_DIR . "/js/groups-leader-dashboard.js", array('jquery'), filemtime(MGROUP_PATH . "js/groups-leader-dashboard.js"), true);
+    wp_localize_script('groups-leader-dashboard', 'groupsDashboard', array(
+      'nonce' => wp_create_nonce('groupDashboardNonce'),
+      'ajaxurl' => admin_url('admin-ajax.php'),
+      'groupName' => $this->get_group_name()
+    ));
   }
 
   /**
@@ -58,6 +78,10 @@ class MemberMouseGroup_Shortcodes {
   public function generate_group_leader_dashboard() {
     write_groups_log(__METHOD__);
 
+    wp_enqueue_style('groups-leader-dashboard');
+    wp_enqueue_script('groups-leader-dashboard');
+    wp_enqueue_script('sweetalert');
+
     global $wpdb, $current_user;
 
     $groups = new MemberMouseGroupAddon();
@@ -74,45 +98,6 @@ class MemberMouseGroup_Shortcodes {
     }
 
     ob_start();
-
-?>
-    <div id="create_group_background" style="display:none;">
-      <div id="create_group_loading" style="display:none;"></div>
-      <div id="create_group_content" style="display:none;"></div>
-    </div>
-    <div id="group_popup_msg">
-      <?php if (isset($_GET["delete"])) { ?>
-        <?php if ($_GET["delete"] == 1) { ?>
-          <div class="group_success">The operation completed successfully.</div>
-        <?php } elseif ($_GET["delete"] == 0) { ?>
-          <div class="group_failure">An error occured. Please try again later.</div>
-        <?php } ?>
-      <?php } ?>
-
-      <?php if (isset($_GET["ndelete"])) { ?>
-        <?php if ($_GET["ndelete"] == 1) { ?>
-          <div class="group_success">Successfully deleted the notice.</div>
-        <?php } elseif ($_GET["ndelete"] == 0) { ?>
-          <div class="group_failure">An error occured. Please try again later.</div>
-        <?php } ?>
-      <?php } ?>
-    </div>
-    <?php
-    if (isset($_GET['notice']) && !empty($_GET['notice']) && is_numeric($_GET['notice'])) {
-      $notice   = $_GET['notice'];
-      $delSql    = "DELETE FROM " . $wpdb->prefix . "group_notices WHERE id = '" . $notice . "'";
-      $delQuery  = $wpdb->query($delSql);
-      if ($delQuery) { ?>
-        <script type="text/javascript">
-          window.location = 'admin.php?page=membermousemanagegroup&ndelete=1';
-        </script>
-      <?php } else { ?>
-        <script type="text/javascript">
-          window.location = 'admin.php?page=membermousemanagegroup&ndelete=0';
-        </script>
-    <?php
-      }
-    }
 
     /**
      * Get Group ID from DB
@@ -131,15 +116,11 @@ class MemberMouseGroup_Shortcodes {
 
     <h2><em><?php echo $group_name; ?></em> Management Dashboard</h2>
 
-    <div class="membermousegroupbuttoncontainer">
-      <a class="group-button button-green button-small" title="Edit Group Name" id="edit_group" onclick="javascript:MGROUP.editGroupNameForm('<?php echo $gid; ?>','<?php echo $current_user->ID; ?>');">
-        Edit Group Name
-      </a>&nbsp;&nbsp;
-      <a class="group-button button-green button-small" title="Signup Link" id="purchase_link" onclick="javascript:MGROUP.showMemberPurchaseLink('<?php echo $gid; ?>', '<?php echo $current_user->ID; ?>');">
-        Signup Link
-      </a>
+    <div class="groups-button-container">
+      <button class="btn primary-btn" title="Edit Group Name" id="edit-group-name">Edit Group Name</button>
+      <button class="btn primary-btn" title="Signup Link" id="signup-link">Signup Link</button>
     </div>
-    <div class="clear"></div>
+
     <?php if (count($gMemResults) == 0) { ?>
       <p><em>No members found.</em></p>
     <?php } else { ?>
@@ -264,5 +245,86 @@ class MemberMouseGroup_Shortcodes {
     endif;
 
     return ob_get_clean();
+  }
+
+  /**
+   * AJAX - Get Group Sign up Link
+   *
+   * @return string Sign up Link
+   */
+  public function ajax_get_signup_link() {
+    if (!wp_verify_nonce($_POST['nonce'], 'groupDashboardNonce')) {
+      wp_send_json_error('Nonce Mismatch. Please try again.');
+    }
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+      wp_send_json_error('No User ID found.');
+    }
+    $purchase_url = (new MemberMouseGroupAddon())->get_group_signup_link($user_id);
+    wp_send_json_success($purchase_url);
+  }
+
+  /**
+   * AJAX - Update Group Name
+   *
+   * @return bool
+   */
+  public function ajax_update_group_name() {
+    write_groups_log(__METHOD__);
+    if (!wp_verify_nonce($_POST['nonce'], 'groupDashboardNonce')) {
+      wp_send_json_error('Nonce Mismatch. Please try again.');
+    }
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+      wp_send_json_error('No User ID found.');
+    }
+
+    $group_name = $_POST['newGroupName'];
+    $group = (new MemberMouseGroupAddon())->get_group_from_leader_id($user_id);
+    if (!$group) {
+      wp_send_json_error("No Group associated with this user");
+    }
+
+    $group_id = $group->id;
+
+    // Update group Name
+    $this->update_group_name($group_id, $group_name);
+
+    wp_send_json_success();
+  }
+
+  /**
+   * Get Group Name
+   *
+   * @return string
+   */
+  public function get_group_name() {
+    global $wpdb;
+
+    $user_id = get_current_user_id();
+    if (!$user_id) {
+      return false;
+    }
+
+    $sql = "SELECT id, group_name FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $user_id . "'";
+    $result = $wpdb->get_row($sql);
+    return $result->group_name;
+  }
+
+  /**
+   * Update group Name
+   *
+   * @param int    $group_id
+   * @param string $group_name
+   *
+   * @return void
+   */
+  public function update_group_name($group_id, $group_name) {
+    write_groups_log(__METHOD__);
+    global $wpdb;
+
+    $sql = "UPDATE {$wpdb->prefix}group_sets SET group_name = '{$group_name}', modifiedDate = now() WHERE id = '{$group_id}'";
+    $query = $wpdb->query($sql);
+    write_groups_log($query, "Query");
   }
 } // End Class
