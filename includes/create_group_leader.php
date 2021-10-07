@@ -42,7 +42,7 @@ if (count($data) > 0) :
 					$msg["user"] = 'This member is already the Group Leader of ' . $group_name . '.';
 					$errs = true;
 				else :
-					$checkMemSql	= "SELECT gm.group_id,g.group_name FROM " . $wpdb->prefix . "group_sets_members AS gm LEFT JOIN " . $wpdb->prefix . "group_sets AS g ON gm.group_id = g.id WHERE gm.member_id = '" . $user_id . "'";
+					$checkMemSql	= "SELECT gm.group_id,g.group_name FROM " . $wpdb->prefix . "group_sets_members AS gm LEFT JOIN " . $wpdb->prefix . "group_sets AS g ON gm.group_id = g.id WHERE gm.member_id = '" . $user_id . "' AND member_status = 1";
 					$checkMemResult	= $wpdb->get_row($checkMemSql);
 					if (count($checkMemResult) > 0) :
 						if (!empty($checkMemResult->group_name)) :

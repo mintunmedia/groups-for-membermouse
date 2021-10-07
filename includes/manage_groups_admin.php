@@ -84,7 +84,7 @@ if ($result) {
 }
 
 // Get total results
-$totalSql	= "SELECT COUNT(id) AS total FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "'";
+$totalSql	= "SELECT COUNT(id) AS total FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status = 1";
 $totalRes	= $wpdb->get_row($totalSql);
 $members  = $totalRes->total;
 
@@ -114,7 +114,7 @@ if ($page == 0) {
 }
 
 // Perform Actual SQL to pull results with limit and page
-$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' ORDER BY createdDate DESC LIMIT $start, $limit";
+$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status = 1 ORDER BY createdDate DESC LIMIT $start, $limit";
 $gMemResults	= $wpdb->get_results($gMemSql);
 
 
