@@ -3,7 +3,7 @@
 /****************************************************************************************************************************
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.0.7
+ * Version: 2.0.8
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -89,6 +89,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				add_action('admin_menu', array(&$this, 'MemberMouseGroupAddonAdminMenu'), 11);
 				add_action('admin_head', array(&$this, 'MemberMouseGroupAddonAdminResources'));
 				add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
+				add_action('admin_init', array($this, 'check_db_version'));
 				add_action('mm_member_add', array(&$this, 'MemberMouseGroupMemberAdded'));
 				add_action('mm_member_status_change', array(&$this, 'MemberMouseGroupLeaderStatus'));
 				add_action('mm_member_membership_change', array($this, 'membership_changed_handler'));
@@ -108,6 +109,10 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				add_action('wp_ajax_dismiss_checkoutpage_notice', array($this, 'gfm_dismiss_checkoutpage_notice'));
 				add_action('wp_ajax_dismiss_confirmationpage_notice', array($this, 'gfm_dismiss_confirmationpage_notice'));
 
+				$this->load_classes();
+
+
+
 				//add_action('admin_notices', array(&$this, 'MemberMouseGroupAdminNotice'));
 				//add_action('admin_init', array(&$this, 'MemberMouseGroupAdminNoticeIgnore'));
 			} else {
@@ -115,6 +120,47 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				// Show notice that plugin can't be activated
 				add_action('admin_notices', 'groupsformm_notice_mmrequired');
 			}
+		}
+
+		/**
+		 * Check Database Version
+		 * - Used to update tables/columns
+		 *
+		 * @return void
+		 */
+		public function check_db_version() {
+			global $wpdb;
+
+			$plugin_data = get_plugin_data(MGROUP_PATH . 'groups-for-membermouse.php');
+			$plugin_version = explode('.', $plugin_data['Version']);
+			$plugin_version_major = (int) reset($plugin_version);
+			$plugin_version_middle = (int) $plugin_version[1];
+			$plugin_version_minor = (int) end($plugin_version);
+
+			/**
+			 * 2.0.8 DB Update
+			 * - Add member_status to wp_group_sets_members
+			 * @date 9.28.2021
+			 */
+			if ($plugin_version_major <= 2 && $plugin_version_middle === 0 && $plugin_version_minor <= 7) {
+				$dbname = $wpdb->dbname;
+				$table_name = $wpdb->prefix . "group_sets_members";
+				$is_status_col = $wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'member_status'");
+				if (empty($is_status_col)) :
+					$add_status_column = "ALTER TABLE `{$table_name}` ADD `member_status` INT(11) DEFAULT 1 AFTER `member_id`; ";
+					$wpdb->query($add_status_column);
+				endif;
+			}
+		}
+		/**
+		 * Load Extra Groups Classes
+		 *
+		 * @return void
+		 */
+		public function load_classes() {
+			include_once(MGROUP_PATH . 'includes/class.shortcodes.php');
+
+			MemberMouseGroup_Shortcodes::get_instance();
 		}
 
 		/**
@@ -413,6 +459,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					id INT(11) NOT NULL AUTO_INCREMENT,
 					group_id INT(11) NOT NULL DEFAULT '0',
 					member_id VARCHAR(255) NOT NULL,
+					member_status INT(11) DEFAULT 1,
 					createdDate DATETIME NOT NULL,
 					modifiedDate DATETIME NOT NULL,
 					PRIMARY KEY (id)
@@ -661,8 +708,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 			global $wpdb;
 
-			write_groups_log($data, __METHOD__, true);
-
 			$groupId = get_option("mm_custom_field_group_id");
 
 			// Check if Purchase is for a group (custom field will be filled in)
@@ -707,7 +752,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 						if ($result) {
 							$groupSize 	= $result->group_size;
 							$groupId 		= $result->id;
-							$sSql 			= "SELECT COUNT(id) AS count FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gID . "'";
+							$sSql 			= "SELECT COUNT(id) AS count FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gID . "' AND member_status = 1";
 							$sRes 			= $wpdb->get_row($sSql);
 							$gCount 		= $sRes->count;
 
@@ -786,8 +831,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			include_once(WP_PLUGIN_DIR . "/membermouse/includes/init.php");
 			global $wpdb;
 
-			write_groups_log($data, "MemberMouseGroupLeaderStatus", true);
-
 			$memberId 		= $data["member_id"];
 			$status 			= $data["status"];
 			$leaderSql 		= "SELECT id FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $memberId . "'";
@@ -806,7 +849,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				if ($status == MM_Status::$CANCELED) {
 					// Cancelled
 
-					$sql 			= "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
+					$sql = "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
 					$results 	= $wpdb->get_results($sql);
 
 					if (count($results) > 0) {
@@ -846,8 +889,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		public function membership_changed_handler($data) {
 			global $wpdb;
 
-			write_groups_log($data, "membership_changed_handler", true);
-
 			$groupId = get_option("mm_custom_field_group_id");
 
 			// Check if Purchase is for a group leader (custom field will be filled in).
@@ -868,14 +909,11 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 					// Check if Leader already has a group
 					$group = $this->get_group_from_leader_id($memberId);
-					write_groups_log($group, "Group Leader GRoup:");
 
 					if ($group) {
 						// Update Group Template ID and group size
-						write_groups_log("Group Exists");
 
 						$original_group_template = $this->get_group_template_by_id($group->group_template_id);
-						write_groups_log($original_group_template, "original_group_template");
 
 						// Don't change group name if it's already been changed.
 						if ($group->group_name !== $original_group_template->name) {
@@ -884,7 +922,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 						$wpdb->update($wpdb->prefix . "group_sets", array('group_template_id' => $template_id, 'group_size' => $groupSize, 'group_name' => $groupName), array('id' => $group->id));
 					} else {
-						write_groups_log("Group Does Not Exist");
 						// Create Group
 						$sql 				= "INSERT INTO {$wpdb->prefix}group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
 						$query 			= $wpdb->query($sql);
@@ -906,6 +943,17 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		}
 
 		/**
+		 * Get Group ID with Member ID
+		 * @return object | bool - If Group is found, returns row from database. If not, returns false
+		 */
+		public function get_group_from_group_id($group_id) {
+			global $wpdb;
+			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE id='" . $group_id . "'";
+			$result = $wpdb->get_row($sql);
+			return $result;
+		}
+
+		/**
 		 * Get Group Template from Group Template ID
 		 * @param int $group_template_id
 		 * @return object
@@ -915,6 +963,51 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			$sql = "SELECT * FROM {$wpdb->prefix}group_items WHERE id={$group_template_id}";
 			$result = $wpdb->get_row($sql);
 			return $result;
+		}
+
+		/**
+		 * Get Group Sign Up link with Leader User ID
+		 *
+		 * @param int $leader_user_id
+		 *
+		 * @return string | false
+		 */
+		public function get_group_signup_link($leader_user_id) {
+			$group = $this->get_group_from_leader_id($leader_user_id);
+
+			if (!$group) {
+				return false;
+			}
+
+			$group_id = $group->id;
+			$template_id = $group->group_template_id;
+
+			$group_level_cost = $this->get_group_level_and_cost($template_id);
+
+			if (!empty($group_level_cost->group_member_cost)) {
+				$itemCost    = $group_level_cost->group_member_cost;
+				$purchaseUrl   = MM_CorePageEngine::getCheckoutPageStaticLink($itemCost);
+			} else {
+				$itemCost    = $group_level_cost->member_memlevel;
+				$purchaseUrl   = MM_CorePageEngine::getCheckoutPageStaticLink($itemCost, true);
+			}
+
+			$custom_field  = get_option("mm_custom_field_group_id");
+			$purchaseUrl   .= '&cf_' . $custom_field . '=g' . $group_id;
+			return $purchaseUrl;
+		}
+
+		/**
+		 * Get Group Membership Level and Cost from Group Template ID
+		 *
+		 * @param int $template_id
+		 *
+		 * @return object
+		 */
+		public function get_group_level_and_cost($template_id) {
+			global $wpdb;
+			$itemSql = "SELECT member_memlevel, group_member_cost FROM {$wpdb->prefix}group_items WHERE id = '" . $template_id . "'";
+			return $wpdb->get_row($itemSql);
 		}
 
 		/**

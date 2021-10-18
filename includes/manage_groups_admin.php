@@ -84,7 +84,7 @@ if ($result) {
 }
 
 // Get total results
-$totalSql	= "SELECT COUNT(id) AS total FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "'";
+$totalSql	= "SELECT COUNT(id) AS total FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status = 1";
 $totalRes	= $wpdb->get_row($totalSql);
 $members  = $totalRes->total;
 
@@ -114,7 +114,7 @@ if ($page == 0) {
 }
 
 // Perform Actual SQL to pull results with limit and page
-$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' ORDER BY createdDate DESC LIMIT $start, $limit";
+$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status = 1 ORDER BY createdDate DESC LIMIT $start, $limit";
 $gMemResults	= $wpdb->get_results($gMemSql);
 
 
@@ -161,7 +161,6 @@ if (!empty($show)) {
 				$firstName 		= $memResult->first_name;
 				$lastName 		= $memResult->last_name;
 				$email 			  = $userResult->user_email;
-				$statusId 		= $memResult->status;
 				$membershipId	= $memResult->membership_level_id;
 				$levelSql 		= "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
 				$levelResult	= $wpdb->get_row($levelSql);
@@ -171,6 +170,7 @@ if (!empty($show)) {
 				$member		 		= new MM_User($crntMemberId);
 				$url 				  = "javascript:mmjs.changeMembershipStatus('" . $crntMemberId . "', '" . $membershipId . "', " . MM_Status::$CANCELED . ", '" . $redirecturl . "')";
 				$cancellationHtml = "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"" . $url . "\"/>" . MM_Utils::getIcon('stop', 'red', '1.2em', '1px') . "</a>";
+				$statusId = (int) $gMemRes->member_status;
 
 				// Get Member's Active Subscriptions - includes overdue subscriptions
 				$activeSubscriptions = $member->getActiveMembershipSubscriptions(true);
@@ -182,12 +182,21 @@ if (!empty($show)) {
 					$has_subscriptions = true;
 				}
 
+				switch ($statusId) {
+					case 1:
+						$status = "Active";
+						break;
+					case 0:
+						$status = "Deactivated";
+						break;
+				}
+
 			?>
-				<tr>
+				<tr class="<?= strtolower($status) ?>">
 					<td><?= $firstName . '&nbsp;' . $lastName; ?></td>
 					<td><a href="admin.php?page=manage_members&module=details_general&user_id=<?= $crntMemberId; ?>" target="_blank"><?= $email; ?></a></td>
 					<td><?= date('F d, Y h:m a', strtotime($registered)); ?></td>
-					<td><?= MM_Status::getImage($statusId); ?></td>
+					<td><?= $status; ?></td>
 					<td>
 						<?php
 						if ($has_subscriptions) {

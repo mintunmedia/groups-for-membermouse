@@ -53,10 +53,8 @@ You'll want to place a shortcode on the Group Leader's payment confirmation page
 Important: You can add the `[MM_Group_SignUp_Link]` shortcode anywhere. The Payment Confirmation page may not be the most ideal place to put this shortcode.
 
 __Group Leader Management Page__
-The URL you'll want to send your Group Leader to manage their Groups (adding and deleting people, etc) is located here:
-`https://[domain]/wp-admin/admin.php?page=membermousemanagegroup`
-
-*We understand that running this dashboard in your WP admin area is not ideal. We're working on building a new Group Leader Dashboard that is embedded on a regular WordPress page using a simple shortcode in the very near future (Q4 2018).*
+`[MM_Group_Leader_Dashboard]`
+You can add the front-end Group Leader Dashboard to any page with this shortcode! This dashboard allows your Group Leaders to add members, delete members, grab their group sign up link and see all the members in their group.
 
 == Installation ==
 1. Install this marvelous plugin
@@ -69,6 +67,8 @@ The URL you'll want to send your Group Leader to manage their Groups (adding and
 1. The Groups Dashboard
 
 == Changelog ==
+2.0.8 Added Group Member Dashboard. Shortcode: [MM_Group_Leader_Dashboard]. Added member statuses within groups.
+
 2.0.7 Improve group signup functionality if group is cancelled. Add Developer hooks to group creation process and add member process.
 
 2.0.6 Added support for members being able to sign up for a cancelled group and given full access. Now redirects to default checkout and shows a popup error. If somehow someone gets through, there's extra support to cancel their membership in the site based on the group's status being cancelled.

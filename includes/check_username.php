@@ -14,7 +14,7 @@ if(count($data) > 0):
 	$userResult	= $wpdb -> get_row($userSql);
 	if(count($userResult) > 0):
 		$userId	= $userResult -> ID;
-		$checkMemSql	= "SELECT gm.group_id,g.group_name FROM ".$wpdb -> prefix."group_sets_members AS gm LEFT JOIN ".$wpdb -> prefix."group_sets AS g ON gm.group_id = g.id WHERE gm.member_id = '".$userId."'";
+		$checkMemSql	= "SELECT gm.group_id,g.group_name FROM ".$wpdb -> prefix."group_sets_members AS gm LEFT JOIN ".$wpdb->prefix."group_sets AS g ON gm.group_id = g.id WHERE gm.member_id = '".$userId."' AND gm.member_status = 1";
 		$checkMemResult	= $wpdb -> get_row($checkMemSql);
 		if(count($checkMemResult) > 0):
 			if(!empty($checkMemResult -> group_name)):
@@ -37,7 +37,7 @@ if(count($data) > 0):
 				$sizeSql	= "SELECT group_size FROM ".$wpdb -> prefix."group_sets WHERE id = '".$group_id."'";
 				$sizeResult	= $wpdb -> get_row($sizeSql);
 				$groupSize	= $sizeResult -> group_size;
-				$activeSql	= "SELECT count(id) AS active FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$group_id."'";
+				$activeSql	= "SELECT count(id) AS active FROM ".$wpdb -> prefix."group_sets_members WHERE group_id = '".$group_id."' AND member_status = 1";
 				$activeResult	= $wpdb -> get_row($activeSql);
 				$activeUsers	= $activeResult -> active;
 				if($activeUsers < $groupSize):
@@ -53,4 +53,3 @@ if(count($data) > 0):
 	$return = json_encode($msg);
 	echo $return;
 endif;
-?>
