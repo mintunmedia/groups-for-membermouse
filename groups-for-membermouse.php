@@ -18,7 +18,7 @@ if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membe
 if (!(DEFINED('MGROUP_PATH'))) DEFINE('MGROUP_PATH', plugin_dir_path(__FILE__));
 if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
-define('MGROUP_TESTING', true);
+define('MGROUP_TESTING', false);
 
 /**
  * Local Logging for Plugin.
