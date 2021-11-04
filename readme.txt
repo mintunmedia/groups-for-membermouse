@@ -67,6 +67,8 @@ You can add the front-end Group Leader Dashboard to any page with this shortcode
 1. The Groups Dashboard
 
 == Changelog ==
+2.0.9 Fixed DB Checker.
+
 2.0.8 Added Group Member Dashboard. Shortcode: [MM_Group_Leader_Dashboard]. Added member statuses within groups.
 
 2.0.7 Improve group signup functionality if group is cancelled. Add Developer hooks to group creation process and add member process.
