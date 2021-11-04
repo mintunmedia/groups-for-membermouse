@@ -3,7 +3,7 @@
 /****************************************************************************************************************************
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.0.8
+ * Version: 2.0.9
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -142,7 +142,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			 * - Add member_status to wp_group_sets_members
 			 * @date 9.28.2021
 			 */
-			if ($plugin_version_major <= 2 && $plugin_version_middle === 0 && $plugin_version_minor <= 7) {
+			if ($plugin_version_major <= 2 && $plugin_version_middle === 0 && $plugin_version_minor <= 9) {
 				$dbname = $wpdb->dbname;
 				$table_name = $wpdb->prefix . "group_sets_members";
 				$is_status_col = $wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'member_status'");
