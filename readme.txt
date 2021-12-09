@@ -2,7 +2,7 @@
 Contributors: mintunmedia,roymckenzie
 Tags: membermouse, member management, membership site, groups, mm groups, groups for membermouse, membermouse groups
 Requires at least: 4.8
-Tested up to: 5.8.1
+Tested up to: 5.8.2
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv3
@@ -37,11 +37,6 @@ Groups for MemberMouse REQUIRES MemberMouse in order to run.
 - Dedicated Leader Management Screen - Leaders are able to manage their groups easily from a dedicated mangement screen.
 - Easy to Manage for Admins - Easily create or remove groups, add any kind of payment plan to your group products, and add and remove members from specific groups.
 
-**Upcoming Changes**
-
-- Improved leader management screen that takes the dashboard out of /wp-admin/
-- Add group import feature
-
 **Thanks to the Github Community**
 Thank you to the Github community for contributing to the [plugin's codebase](https://github.com/mintunmedia/groups-for-membermouse) and for bringing it to the state is in today. Mintun Media decided to take ownership of the codebase and has enhanced its security, stability, and WordPress compatibility. We look forward to working with the Github and WordPress communities to add new features all while adhering to WordPress coding standards. We also encourage you to make a pull request if you see any issues or have ideas to enhance the plugin.
 
@@ -67,6 +62,8 @@ You can add the front-end Group Leader Dashboard to any page with this shortcode
 1. The Groups Dashboard
 
 == Changelog ==
+2.1.0 Bug fixes and logs cleanup
+
 2.0.9 Fixed DB Checker.
 
 2.0.8 Added Group Member Dashboard. Shortcode: [MM_Group_Leader_Dashboard]. Added member statuses within groups.

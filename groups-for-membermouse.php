@@ -3,7 +3,7 @@
 /****************************************************************************************************************************
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.0.9
+ * Version: 2.1.0
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -598,7 +598,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 						</div>
 						<div class="membermousegroups-cta">
 							<div class="theCta purple">
-								<h2>Need MemberMouse Development Help?</h2>
+								<h2>Need MemberMouse or WordPress Development Support?</h2>
 								<p>The development team behind the MemberMouse Groups plugin is here to help you get started or take your membership site to the next level! We offer development services and customization services.</p>
 								<a href="https://www.mintunmedia.com/" target="_blank">Yes! Help Me!</a>
 							</div>
