@@ -78,10 +78,6 @@ class MemberMouseGroup_Shortcodes {
    * @return void
    */
   public function generate_group_leader_dashboard() {
-    wp_enqueue_style('groups-leader-dashboard');
-    wp_enqueue_script('groups-leader-dashboard');
-    wp_enqueue_script('sweetalert');
-
     global $wpdb, $current_user;
 
     $groups = new MemberMouseGroupAddon();
@@ -96,6 +92,10 @@ class MemberMouseGroup_Shortcodes {
     if ($group && !$groups->is_group_active($group->id)) {
       return 'Your group is no longer active.';
     }
+
+    wp_enqueue_style('groups-leader-dashboard');
+    wp_enqueue_script('groups-leader-dashboard');
+    wp_enqueue_script('sweetalert');
 
     ob_start();
 
@@ -313,7 +313,12 @@ class MemberMouseGroup_Shortcodes {
 
     $sql = "SELECT id, group_name FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $user_id . "'";
     $result = $wpdb->get_row($sql);
-    return $result->group_name;
+
+    if ($result) {
+      return $result->group_name;
+    } else {
+      return false;
+    }
   }
 
   /**
