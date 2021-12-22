@@ -62,6 +62,8 @@ You can add the front-end Group Leader Dashboard to any page with this shortcode
 1. The Groups Dashboard
 
 == Changelog ==
+2.1.1 Added filter to change group leader role and group leader name: `add_filter('groupsmm_group_leader_role_slug')`, `add_filter('groupsmm_group_leader_role_name')`
+
 2.1.0 Bug fixes and logs cleanup
 
 2.0.9 Fixed DB Checker.
