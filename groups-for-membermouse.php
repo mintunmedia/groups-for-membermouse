@@ -695,7 +695,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		 * Member Added to MemberMouse - Check if it's a group purchase and add to Groups table
 		 */
 		public function MemberMouseGroupMemberAdded($data) {
-			write_groups_log(__METHOD__, null, true);
 			include_once(WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php");
 			include_once(WP_PLUGIN_DIR . "/membermouse/includes/init.php");
 
@@ -710,7 +709,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 				if (is_numeric($cf)) {
 					// Group Leader. Custom Field contains Group Type ID
-					write_groups_log("group leader");
 
 					$type = 'group-leader';
 
