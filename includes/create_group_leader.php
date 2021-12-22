@@ -68,7 +68,7 @@ if (count($data) > 0) :
 		$sql	= "INSERT INTO " . $wpdb->prefix . "group_sets(id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $group . "','" . $group_name . "','" . $group_size . "','" . $user_id . "','1',now(),now())";
 		$query  = $wpdb->query($sql);
 		if ($query) :
-			$updateUser 	= wp_update_user(array('ID' => $user_id, 'role' => 'Group Leader'));
+			$updateUser 	= wp_update_user(array('ID' => $user_id, 'role' => MemberMouseGroupAddon::get_group_leader_role()));
 			$msg["success"] = 'yes';
 		else :
 			$msg["success"] = 'no';

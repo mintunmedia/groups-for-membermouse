@@ -3,7 +3,7 @@
 /****************************************************************************************************************************
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.1.0
+ * Version: 2.1.1
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -110,8 +110,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				add_action('wp_ajax_dismiss_confirmationpage_notice', array($this, 'gfm_dismiss_confirmationpage_notice'));
 
 				$this->load_classes();
-
-
 
 				//add_action('admin_notices', array(&$this, 'MemberMouseGroupAdminNotice'));
 				//add_action('admin_init', array(&$this, 'MemberMouseGroupAdminNoticeIgnore'));
@@ -227,7 +225,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				'update_group_name'
 			);
 
-			if (in_array('Group Leader', $user->roles) && in_array($action, $group_leader_actions)) {
+			if (in_array(self::get_group_leader_role(), $user->roles) && in_array($action, $group_leader_actions)) {
 				return check_ajax_referer('wp_rest', FALSE, FALSE);
 			}
 
@@ -326,7 +324,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		public function MemberMouseGroupPurchaseLinkShortcode() {
 			global $wpdb, $current_user;
 
-			if (is_user_logged_in() && in_array('Group Leader', $current_user->roles)) {
+			if (is_user_logged_in() && in_array(self::get_group_leader_role(), $current_user->roles)) {
 				$leaderSql = "SELECT id,group_template_id,group_name FROM " . $wpdb->prefix . "group_sets WHERE group_leader = '" . $current_user->ID . "'";
 				$leaderResult = $wpdb->get_row($leaderSql);
 
@@ -409,22 +407,18 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			$custom_cap = "membermouse_group_capability";
 			$grant = true;
 			foreach ($GLOBALS['wp_roles']->role_objects as $role => $name) :
-				//	if($role == "Group Leader"):
 				if (!$name->has_cap($custom_cap)) :
 					$name->add_cap($custom_cap, $grant);
 				endif;
-			//	endif;
 			endforeach;
 		}
 
 		public function MemberMouseGroupRemoveCap() {
 			$custom_cap = "membermouse_group_capability";
 			foreach ($GLOBALS['wp_roles']->role_objects as $role => $name) :
-				//	if($role == "Group Leader"):
 				if (!$name->has_cap($custom_cap)) :
 					$name->remove_cap($custom_cap);
 				endif;
-			//	endif;
 			endforeach;
 		}
 
@@ -543,15 +537,13 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			endforeach;
 		}
 
+		/**
+		 * Add MemberMouse Groups Role on Install.
+		 *
+		 * @return void
+		 */
 		public function MemberMouseGroupAddRoll() {
-			$role = "Group Leader";
-			$display_name = "Group Leader";
-			$capabilities = array("read" => true, "membermouse_group_capability" => true);
-			add_role($role, $display_name, $capabilities);
-		}
-
-		public function MemberMouseGroupRemoveRoll() {
-			remove_role("Group Leader");
+			self::get_group_leader_role();
 		}
 
 		public function MemberMouseGroupAddonAdminManagement() {
@@ -729,7 +721,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 						$groupName 		= $templateResult->name;
 						$sql 					= "INSERT INTO " . $wpdb->prefix . "group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
 						$wpdb->query($sql);
-						wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));
+						wp_update_user(array('ID' => $memberId, 'role' => self::get_group_leader_role()));
 					}
 				} else {
 					// Group Member. Custom Field contains group ID (g##)
@@ -925,7 +917,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 						// Create Group
 						$sql 				= "INSERT INTO {$wpdb->prefix}group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
 						$query 			= $wpdb->query($sql);
-						$updateUser = wp_update_user(array('ID' => $memberId, 'role' => 'Group Leader'));
+						$updateUser = wp_update_user(array('ID' => $memberId, 'role' => self::get_group_leader_role()));
 					}
 				}
 			}
@@ -1051,6 +1043,24 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					exit();
 				}
 			}
+		}
+
+		/**
+		 * Get Group Leader Role
+		 * - Default = Group Leader
+		 * - Ability to set group leader role via filter
+		 *
+		 * @return void
+		 */
+		public static function get_group_leader_role() {
+			$role_slug =  apply_filters('groupsmm_group_leader_role_slug', 'Group Leader');
+
+			if (!wp_roles()->is_role($role_slug)) {
+				$display_name = apply_filters('groupsmm_group_leader_role_name', 'Group Leader');
+				$capabilities = array("read" => true, "membermouse_group_capability" => true);
+				add_role($role_slug, $display_name, $capabilities);
+			}
+			return $role_slug;
 		}
 	} // End Class
 } // End if class exists
