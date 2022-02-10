@@ -77,8 +77,24 @@ class MemberMouseGroup_Shortcodes {
    *
    * @return void
    */
-  public function generate_group_leader_dashboard() {
+  public function generate_group_leader_dashboard($atts) {
     global $wpdb, $current_user;
+
+    $controls = array(
+      'signup-link' => 'show',
+      'add-member' => 'show',
+      'action-column' => 'show',
+    );
+
+    $atts = shortcode_atts($controls, $atts, 'MM_Group_Leader_Dashboard');
+
+    $signup_link_content = '<button class="btn primary-btn" title="Signup Link" id="signup-link">Signup Link</button>';
+    $add_member_content = '<button class="btn primary-btn" title="Add a Member" id="add-member">Add Member</button>';
+    $action_header_content = '<th>Actions</th>';
+
+    $signup_link_control = $atts['signup-link'];
+    $add_member_control = $atts['add-member'];
+    $action_control = $atts['action-column'];
 
     $groups = new MemberMouseGroupAddon();
     $group = $groups->get_group_from_leader_id($current_user->ID);
@@ -119,8 +135,12 @@ class MemberMouseGroup_Shortcodes {
 
     <div class="groups-button-container">
       <button class="btn primary-btn" title="Edit Group Name" id="edit-group-name">Edit Group Name</button>
-      <button class="btn primary-btn" title="Signup Link" id="signup-link">Signup Link</button>
-      <button class="btn primary-btn" title="Add a Member" id="add-member">Add Member</button>
+      <?php if ($signup_link_control != 'hide') {
+        echo $signup_link_content;
+      }
+      if ($add_member_control != 'hide') {
+        echo $add_member_content;
+      } ?>
     </div>
 
     <div class="member-count">
@@ -138,7 +158,9 @@ class MemberMouseGroup_Shortcodes {
             <th>Phone</th>
             <th>Registered</th>
             <th>Status</th>
-            <th>Actions</th>
+            <?php if ($action_control != 'hide') {
+              echo $action_header_content;
+            } ?>
           </tr>
         </thead>
         <tbody>
@@ -189,18 +211,20 @@ class MemberMouseGroup_Shortcodes {
               <td><?php echo $phone; ?></td>
               <td><?php echo date('F d, Y h:m a', strtotime($registered)); ?></td>
               <td><?= $status; ?></td>
-              <td>
-                <?php
-                if ($has_subscriptions) {
-                  // Member has active subscriptions. Show error
-                  echo $cancellationHtml;
-                  echo MM_Utils::getDeleteIcon("This member has an active paid membership which must be canceled before they can be removed from the group. Please contact support.", 'margin-left:5px;', '', true);
-                } else if ($statusId === 1) {
-                  $deleteActionUrl = 'href="#" class="delete-member" data-member-id="' .  $gMemRes->member_id . '" data-name="' . $firstName . ' ' . $lastName . '"';
-                  echo MM_Utils::getDeleteIcon("Remove the member from this group", 'margin-left:5px;', $deleteActionUrl);
-                }
-                ?>
-              </td>
+              <?php if ($action_control != 'hide') { ?>
+                <td>
+                  <?php
+                  if ($has_subscriptions) {
+                    // Member has active subscriptions. Show error
+                    echo $cancellationHtml;
+                    echo MM_Utils::getDeleteIcon("This member has an active paid membership which must be canceled before they can be removed from the group. Please contact support.", 'margin-left:5px;', '', true);
+                  } else if ($statusId === 1) {
+                    $deleteActionUrl = 'href="#" class="delete-member" data-member-id="' .  $gMemRes->member_id . '" data-name="' . $firstName . ' ' . $lastName . '"';
+                    echo MM_Utils::getDeleteIcon("Remove the member from this group", 'margin-left:5px;', $deleteActionUrl);
+                  }
+                  ?>
+                </td>
+              <?php } ?>
             </tr>
           <?php endforeach; ?>
         </tbody>
