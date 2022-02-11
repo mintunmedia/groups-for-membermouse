@@ -69,6 +69,7 @@ class MemberMouseGroup_Shortcodes {
    */
   public function load_shortcodes() {
     add_shortcode('MM_Group_Leader_Dashboard', array($this, 'generate_group_leader_dashboard'));
+    add_shortcode('MM_Group_Member_List', array($this, 'generate_group_member_list'));
   }
 
   /**
@@ -271,8 +272,110 @@ class MemberMouseGroup_Shortcodes {
           </tbody>
         </table>
       </div>
-<?php
+    <?php
     endif;
+
+    return ob_get_clean();
+  }
+
+
+  /**
+   * SHORTCODE - Group Member List [MM_Group_Member_List]
+   * Outputs the Group Member List on front end as a table
+   *
+   * @return void
+   */
+  public function generate_group_member_list() {
+
+    // Do nothing if visitor is not logged in
+    if (!is_user_logged_in()) {
+      return 'You must be logged in to view this.';
+    }
+
+    global $wpdb, $current_user;
+
+    $groups = new MemberMouseGroupAddon();
+    $group = $groups->get_group_from_member_id($current_user->ID);
+    $gid = $group->id;
+    // Check if current user is a group leader
+    if (!$group) {
+      return 'You must be a group member to view this.';
+    }
+
+    // Check if current group is active
+    if ($group && !$groups->is_group_active($group->id)) {
+      return 'Your group is no longer active.';
+    }
+
+    wp_enqueue_style('groups-leader-dashboard');
+    wp_enqueue_script('groups-leader-dashboard');
+    wp_enqueue_script('sweetalert');
+
+    ob_start();
+
+    if (count($group) == 0) { ?>
+      <p><em>No members found.</em></p>
+    <?php } else { ?>
+      <table class="widefat" id="mm-data-grid" style="width:96%">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Registered</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($gid as $gMemRes) :
+            $userSql      = "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
+            $userResult    = $wpdb->get_row($userSql);
+            $registered    = $userResult->user_registered;
+            $memSql        = "SELECT * FROM mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
+            $memResult    = $wpdb->get_row($memSql);
+            $firstName     = $memResult->first_name;
+            $lastName     = $memResult->last_name;
+            $email         = $userResult->user_email;
+            $phone         = empty($memResult->phone) ? "&mdash;" : $memResult->phone;
+            $membershipId  = $memResult->membership_level_id;
+            $levelSql     = "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
+            $levelResult  = $wpdb->get_row($levelSql);
+            $redirecturl      = "";
+            $crntMemberId     = $gMemRes->member_id;
+            $member         = new MM_User($crntMemberId);
+            $statusId = (int) $gMemRes->member_status;
+
+            // Get Member's Active Subscriptions - includes overdue subscriptions
+            $activeSubscriptions = $member->getActiveMembershipSubscriptions(true);
+
+            if (empty($activeSubscriptions)) {
+              // No Subscriptions
+              $has_subscriptions = false;
+            } else {
+              $has_subscriptions = true;
+            }
+
+            switch ($statusId) {
+              case 1:
+                $status = "Active";
+                break;
+              case 0:
+                $status = "Deactivated";
+                break;
+            }
+
+          ?>
+            <tr class="<?= strtolower($status) ?>">
+              <td><?php echo $firstName . '&nbsp;' . $lastName; ?></td>
+              <td><?php echo $email; ?></td>
+              <td><?php echo $phone; ?></td>
+              <td><?php echo date('F d, Y h:m a', strtotime($registered)); ?></td>
+              <td><?= $status; ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+<?php }
 
     return ob_get_clean();
   }

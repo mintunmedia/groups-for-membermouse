@@ -946,6 +946,17 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		}
 
 		/**
+		 * Get Group ID with a Members User ID
+		 * @return object | bool - If Group is found, returns row from database. If not, returns false
+		 */
+		public function get_group_from_member_id($memberId) {
+			global $wpdb;
+			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE member_id='" . $memberId . "' ORDER BY member_status DESC, createdDate DESC";
+			$result = $wpdb->get_row($sql);
+			return $result;
+		}
+
+		/**
 		 * Get Group Template from Group Template ID
 		 * @param int $group_template_id
 		 * @return object
