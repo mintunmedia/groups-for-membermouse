@@ -286,7 +286,7 @@ class MemberMouseGroup_Shortcodes {
    * @return void
    */
   public function generate_group_member_list() {
-
+    write_groups_log(__METHOD__, null, true);
     // Do nothing if visitor is not logged in
     if (!is_user_logged_in()) {
       return 'You must be logged in to view this.';
@@ -295,15 +295,18 @@ class MemberMouseGroup_Shortcodes {
     global $wpdb, $current_user;
 
     $groups = new MemberMouseGroupAddon();
-    $group = $groups->get_group_from_member_id($current_user->ID);
-    $gid = $group->id;
+    $group_row = $groups->get_group_from_member_id($current_user->ID);
+    write_groups_log($group_row, "Group:");
+
     // Check if current user is a group leader
-    if (!$group) {
+    if (!$group_row) {
       return 'You must be a group member to view this.';
     }
 
+    $gid = $group_row->group_id;
+
     // Check if current group is active
-    if ($group && !$groups->is_group_active($group->id)) {
+    if ($group_row && !$groups->is_group_active($gid)) {
       return 'Your group is no longer active.';
     }
 
@@ -311,9 +314,14 @@ class MemberMouseGroup_Shortcodes {
     wp_enqueue_script('groups-leader-dashboard');
     wp_enqueue_script('sweetalert');
 
+    // TODO: move into it's own function in groups-for-membermouse class. get_members($group_id)
+    $gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status=1 ORDER BY member_status DESC, createdDate DESC";
+    $gMemResults = $wpdb->get_results($gMemSql);
+    write_groups_log($gMemResults, "Group MEmbers:");
+
     ob_start();
 
-    if (count($group) == 0) { ?>
+    if (count($gMemResults) == 0) { ?>
       <p><em>No members found.</em></p>
     <?php } else { ?>
       <table class="widefat" id="mm-data-grid" style="width:96%">
@@ -327,7 +335,7 @@ class MemberMouseGroup_Shortcodes {
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($gid as $gMemRes) :
+          <?php foreach ($gMemResults as $gMemRes) :
             $userSql      = "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
             $userResult    = $wpdb->get_row($userSql);
             $registered    = $userResult->user_registered;
@@ -337,23 +345,7 @@ class MemberMouseGroup_Shortcodes {
             $lastName     = $memResult->last_name;
             $email         = $userResult->user_email;
             $phone         = empty($memResult->phone) ? "&mdash;" : $memResult->phone;
-            $membershipId  = $memResult->membership_level_id;
-            $levelSql     = "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
-            $levelResult  = $wpdb->get_row($levelSql);
-            $redirecturl      = "";
-            $crntMemberId     = $gMemRes->member_id;
-            $member         = new MM_User($crntMemberId);
             $statusId = (int) $gMemRes->member_status;
-
-            // Get Member's Active Subscriptions - includes overdue subscriptions
-            $activeSubscriptions = $member->getActiveMembershipSubscriptions(true);
-
-            if (empty($activeSubscriptions)) {
-              // No Subscriptions
-              $has_subscriptions = false;
-            } else {
-              $has_subscriptions = true;
-            }
 
             switch ($statusId) {
               case 1:

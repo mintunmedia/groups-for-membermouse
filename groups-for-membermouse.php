@@ -18,7 +18,7 @@ if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membe
 if (!(DEFINED('MGROUP_PATH'))) DEFINE('MGROUP_PATH', plugin_dir_path(__FILE__));
 if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
-define('MGROUP_TESTING', false);
+define('MGROUP_TESTING', true);
 
 /**
  * Local Logging for Plugin.
@@ -950,6 +950,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		 * @return object | bool - If Group is found, returns row from database. If not, returns false
 		 */
 		public function get_group_from_member_id($memberId) {
+			write_groups_log(__METHOD__);
 			global $wpdb;
 			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE member_id='" . $memberId . "' ORDER BY member_status DESC, createdDate DESC";
 			$result = $wpdb->get_row($sql);
