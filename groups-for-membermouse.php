@@ -1,16 +1,16 @@
 <?php
 
-/****************************************************************************************************************************
+/**
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.1.1
+ * Version: 2.1.2
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
- ****************************************************************************************************************************/
+ */
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
