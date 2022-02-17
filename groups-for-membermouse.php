@@ -1,16 +1,16 @@
 <?php
 
-/****************************************************************************************************************************
+/**
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.1.1
+ * Version: 2.1.2
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  *
- ****************************************************************************************************************************/
+ */
 
 if (!defined('ABSPATH')) exit; // Exit if accessed directly
 
@@ -942,6 +942,31 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			global $wpdb;
 			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE id='" . $group_id . "'";
 			$result = $wpdb->get_row($sql);
+			return $result;
+		}
+
+		/**
+		 * Get Group ID with a Members User ID
+		 * @return object | bool - If Group is found, returns row from database. If not, returns false
+		 */
+		public function get_group_from_member_id($memberId) {
+			write_groups_log(__METHOD__);
+			global $wpdb;
+			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE member_id='" . $memberId . "' ORDER BY member_status DESC, createdDate DESC";
+			$result = $wpdb->get_row($sql);
+			return $result;
+		}
+
+		/**
+		 * Get List of Members in a Group
+		 * @param string $group_id is the group ID you want to get the list of members from
+		 * @return object | bool - If Group is found, returns row of members from database. If not, returns false
+		 */
+		public function get_members_in_group($group_id) {
+			write_groups_log(__METHOD__);
+			global $wpdb;
+			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $group_id . "' AND member_status=1 ORDER BY member_status DESC, createdDate DESC";
+			$result = $wpdb->get_results($sql);
 			return $result;
 		}
 

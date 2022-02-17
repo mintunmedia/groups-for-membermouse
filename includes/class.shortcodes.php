@@ -69,6 +69,7 @@ class MemberMouseGroup_Shortcodes {
    */
   public function load_shortcodes() {
     add_shortcode('MM_Group_Leader_Dashboard', array($this, 'generate_group_leader_dashboard'));
+    add_shortcode('MM_Group_Member_List', array($this, 'generate_group_member_list'));
   }
 
   /**
@@ -77,8 +78,24 @@ class MemberMouseGroup_Shortcodes {
    *
    * @return void
    */
-  public function generate_group_leader_dashboard() {
+  public function generate_group_leader_dashboard($atts) {
     global $wpdb, $current_user;
+
+    $controls = array(
+      'signup-link' => 'show',
+      'add-member' => 'show',
+      'action-column' => 'show',
+    );
+
+    $atts = shortcode_atts($controls, $atts, 'MM_Group_Leader_Dashboard');
+
+    $signup_link_content = '<button class="btn primary-btn" title="Signup Link" id="signup-link">Signup Link</button>';
+    $add_member_content = '<button class="btn primary-btn" title="Add a Member" id="add-member">Add Member</button>';
+    $action_header_content = '<th>Actions</th>';
+
+    $signup_link_control = $atts['signup-link'];
+    $add_member_control = $atts['add-member'];
+    $action_control = $atts['action-column'];
 
     $groups = new MemberMouseGroupAddon();
     $group = $groups->get_group_from_leader_id($current_user->ID);
@@ -119,8 +136,12 @@ class MemberMouseGroup_Shortcodes {
 
     <div class="groups-button-container">
       <button class="btn primary-btn" title="Edit Group Name" id="edit-group-name">Edit Group Name</button>
-      <button class="btn primary-btn" title="Signup Link" id="signup-link">Signup Link</button>
-      <button class="btn primary-btn" title="Add a Member" id="add-member">Add Member</button>
+      <?php if ($signup_link_control != 'hide') {
+        echo $signup_link_content;
+      }
+      if ($add_member_control != 'hide') {
+        echo $add_member_content;
+      } ?>
     </div>
 
     <div class="member-count">
@@ -138,7 +159,9 @@ class MemberMouseGroup_Shortcodes {
             <th>Phone</th>
             <th>Registered</th>
             <th>Status</th>
-            <th>Actions</th>
+            <?php if ($action_control != 'hide') {
+              echo $action_header_content;
+            } ?>
           </tr>
         </thead>
         <tbody>
@@ -189,18 +212,20 @@ class MemberMouseGroup_Shortcodes {
               <td><?php echo $phone; ?></td>
               <td><?php echo date('F d, Y h:m a', strtotime($registered)); ?></td>
               <td><?= $status; ?></td>
-              <td>
-                <?php
-                if ($has_subscriptions) {
-                  // Member has active subscriptions. Show error
-                  echo $cancellationHtml;
-                  echo MM_Utils::getDeleteIcon("This member has an active paid membership which must be canceled before they can be removed from the group. Please contact support.", 'margin-left:5px;', '', true);
-                } else if ($statusId === 1) {
-                  $deleteActionUrl = 'href="#" class="delete-member" data-member-id="' .  $gMemRes->member_id . '" data-name="' . $firstName . ' ' . $lastName . '"';
-                  echo MM_Utils::getDeleteIcon("Remove the member from this group", 'margin-left:5px;', $deleteActionUrl);
-                }
-                ?>
-              </td>
+              <?php if ($action_control != 'hide') { ?>
+                <td>
+                  <?php
+                  if ($has_subscriptions) {
+                    // Member has active subscriptions. Show error
+                    echo $cancellationHtml;
+                    echo MM_Utils::getDeleteIcon("This member has an active paid membership which must be canceled before they can be removed from the group. Please contact support.", 'margin-left:5px;', '', true);
+                  } else if ($statusId === 1) {
+                    $deleteActionUrl = 'href="#" class="delete-member" data-member-id="' .  $gMemRes->member_id . '" data-name="' . $firstName . ' ' . $lastName . '"';
+                    echo MM_Utils::getDeleteIcon("Remove the member from this group", 'margin-left:5px;', $deleteActionUrl);
+                  }
+                  ?>
+                </td>
+              <?php } ?>
             </tr>
           <?php endforeach; ?>
         </tbody>
@@ -247,8 +272,98 @@ class MemberMouseGroup_Shortcodes {
           </tbody>
         </table>
       </div>
-<?php
+    <?php
     endif;
+
+    return ob_get_clean();
+  }
+
+
+  /**
+   * SHORTCODE - Group Member List [MM_Group_Member_List]
+   * Outputs the Group Member List on front end as a table
+   *
+   * @return void
+   */
+  public function generate_group_member_list() {
+
+    // Do nothing if visitor is not logged in
+    if (!is_user_logged_in()) {
+      return 'You must be logged in to view this.';
+    }
+
+    global $wpdb, $current_user;
+
+    $groups = new MemberMouseGroupAddon();
+    $group_row = $groups->get_group_from_member_id($current_user->ID);
+
+    // Check if current user is a group leader
+    if (!$group_row) {
+      return 'You must be a group member to view this.';
+    }
+
+    $gid = $group_row->group_id;
+
+    // Check if current group is active
+    if ($group_row && !$groups->is_group_active($gid)) {
+      return 'Your group is no longer active.';
+    }
+
+    wp_enqueue_style('groups-leader-dashboard');
+    wp_enqueue_script('groups-leader-dashboard');
+    wp_enqueue_script('sweetalert');
+
+    $gMemResults = $groups->get_members_in_group($gid);
+
+    ob_start();
+
+    if (!$gMemResults) { ?>
+      <p><em>No members found.</em></p>
+    <?php } else { ?>
+      <table class="widefat" id="mm-data-grid" style="width:96%">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Registered</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($gMemResults as $gMemRes) :
+            $userSql      = "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
+            $userResult    = $wpdb->get_row($userSql);
+            $registered    = $userResult->user_registered;
+            $memSql        = "SELECT * FROM mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
+            $memResult    = $wpdb->get_row($memSql);
+            $firstName     = $memResult->first_name;
+            $lastName     = $memResult->last_name;
+            $email         = $userResult->user_email;
+            $phone         = empty($memResult->phone) ? "&mdash;" : $memResult->phone;
+            $statusId = (int) $gMemRes->member_status;
+
+            switch ($statusId) {
+              case 1:
+                $status = "Active";
+                break;
+              case 0:
+                $status = "Deactivated";
+                break;
+            }
+
+          ?>
+            <tr class="<?= strtolower($status) ?>">
+              <td><?php echo $firstName . '&nbsp;' . $lastName; ?></td>
+              <td><?php echo $email; ?></td>
+              <td><?php echo $phone; ?></td>
+              <td><?php echo date('F d, Y h:m a', strtotime($registered)); ?></td>
+              <td><?= $status; ?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+<?php }
 
     return ob_get_clean();
   }

@@ -48,8 +48,14 @@ You'll want to place a shortcode on the Group Leader's payment confirmation page
 Important: You can add the `[MM_Group_SignUp_Link]` shortcode anywhere. The Payment Confirmation page may not be the most ideal place to put this shortcode.
 
 __Group Leader Management Page__
-`[MM_Group_Leader_Dashboard]`
+`[MM_Group_Leader_Dashboard signup-link='hide' add-member='show' action-column='hide']`
 You can add the front-end Group Leader Dashboard to any page with this shortcode! This dashboard allows your Group Leaders to add members, delete members, grab their group sign up link and see all the members in their group.
+
+Shortcode Attributes aren't required. They default to "show". If you want to hide them, you can set them to "hide"
+
+__Group Member View Only Listing__
+`[MM_Group_Member_List]`
+Displays a member list (like the Group Leader Dashboard but without admin features) for members of the group to view other members.
 
 == Installation ==
 1. Install this marvelous plugin
@@ -62,6 +68,10 @@ You can add the front-end Group Leader Dashboard to any page with this shortcode
 1. The Groups Dashboard
 
 == Changelog ==
+* 2.1.2
+- ENHANCEMENT: Updated group leader dashboard shortcode to allow showing/hiding elements. Updated
+- ENHANCEMENT: Added a View Only member dashboard shortcode visible by members
+
 2.1.1 Added filter to change group leader role and group leader name: `add_filter('groupsmm_group_leader_role_slug')`, `add_filter('groupsmm_group_leader_role_name')`
 
 2.1.0 Bug fixes and logs cleanup
