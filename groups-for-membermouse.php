@@ -958,6 +958,19 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		}
 
 		/**
+		 * Get List of Members in a Group
+		 * @param string $group_id is the group ID you want to get the list of members from
+		 * @return object | bool - If Group is found, returns row of members from database. If not, returns false
+		 */
+		public function get_members_in_group($group_id) {
+			write_groups_log(__METHOD__);
+			global $wpdb;
+			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $group_id . "' AND member_status=1 ORDER BY member_status DESC, createdDate DESC";
+			$result = $wpdb->get_results($sql);
+			return $result;
+		}
+
+		/**
 		 * Get Group Template from Group Template ID
 		 * @param int $group_template_id
 		 * @return object

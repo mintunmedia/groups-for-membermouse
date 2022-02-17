@@ -296,7 +296,6 @@ class MemberMouseGroup_Shortcodes {
 
     $groups = new MemberMouseGroupAddon();
     $group_row = $groups->get_group_from_member_id($current_user->ID);
-    write_groups_log($group_row, "Group:");
 
     // Check if current user is a group leader
     if (!$group_row) {
@@ -314,14 +313,14 @@ class MemberMouseGroup_Shortcodes {
     wp_enqueue_script('groups-leader-dashboard');
     wp_enqueue_script('sweetalert');
 
-    // TODO: move into it's own function in groups-for-membermouse class. get_members($group_id)
-    $gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status=1 ORDER BY member_status DESC, createdDate DESC";
-    $gMemResults = $wpdb->get_results($gMemSql);
-    write_groups_log($gMemResults, "Group MEmbers:");
+    $gMemResults = get_members_in_group($gid);
+    //$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status=1 ORDER BY member_status DESC, createdDate DESC";
+    //$gMemResults = $wpdb->get_results($gMemSql);
+    write_groups_log($gMemResults, "Group Members:");
 
     ob_start();
 
-    if (count($gMemResults) == 0) { ?>
+    if (!$gMemResults) { ?>
       <p><em>No members found.</em></p>
     <?php } else { ?>
       <table class="widefat" id="mm-data-grid" style="width:96%">
