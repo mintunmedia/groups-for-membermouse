@@ -313,7 +313,7 @@ class MemberMouseGroup_Shortcodes {
     wp_enqueue_script('groups-leader-dashboard');
     wp_enqueue_script('sweetalert');
 
-    $gMemResults = get_members_in_group($gid);
+    $gMemResults = $groups->get_members_in_group($gid);
     //$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status=1 ORDER BY member_status DESC, createdDate DESC";
     //$gMemResults = $wpdb->get_results($gMemSql);
     write_groups_log($gMemResults, "Group Members:");
