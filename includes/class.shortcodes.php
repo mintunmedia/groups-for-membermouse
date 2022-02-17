@@ -286,7 +286,7 @@ class MemberMouseGroup_Shortcodes {
    * @return void
    */
   public function generate_group_member_list() {
-    write_groups_log(__METHOD__, null, true);
+
     // Do nothing if visitor is not logged in
     if (!is_user_logged_in()) {
       return 'You must be logged in to view this.';
@@ -314,9 +314,6 @@ class MemberMouseGroup_Shortcodes {
     wp_enqueue_script('sweetalert');
 
     $gMemResults = $groups->get_members_in_group($gid);
-    //$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status=1 ORDER BY member_status DESC, createdDate DESC";
-    //$gMemResults = $wpdb->get_results($gMemSql);
-    write_groups_log($gMemResults, "Group Members:");
 
     ob_start();
 
