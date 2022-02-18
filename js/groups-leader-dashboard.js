@@ -10,10 +10,66 @@ jQuery(function($) {
   const $addMemberTrigger = $('#add-member');
   let $deleteMemberTrigger = $('.delete-member');
 
+  let $filterHeaderTrigger = $('.filter-header');
+  let $searchTrigger = $('#search-members');
+  let $searchInput = $('#search-input');
+
   $groupSignupLinkTrigger.click(openSignUpLinkPop);
   $editGroupNameTrigger.click(openGroupNamePop);
   $addMemberTrigger.click(openAddMemberPop);
   $deleteMemberTrigger.click(openDeleteMemberPop);
+  $filterHeaderTrigger.click(changeMemberFilter);
+  $searchTrigger.click(searchMembers);
+
+  /**
+   * Refreshes the page and changes the member filter.
+   * When pressing a filter link, the order is as follows:
+   *  No filter -> ASC filter -> DESC filter -> Reset to No Filter
+   */
+  function changeMemberFilter() {
+    let selectedFilter = $(this).data('filter');
+    let params = (new URL(document.location)).searchParams;
+    let newOrder = null;
+    let currentFilter = null;
+
+    if (params.has('filter')) {
+      let currentFilter = params.get('filter');
+      if (currentFilter !== selectedFilter) {
+        params.delete('order');
+      }
+    }
+
+    if (params.has('order')) {
+      let order = params.get('order');
+      if (order === 'ASC') {
+        newOrder = 'DESC';
+      }
+
+      if (order === 'DESC') {
+        newOrder = null;
+      }
+    } else {
+      newOrder = 'ASC';
+    }
+
+    params.set('filter', $(this).data('filter'));
+
+    if (newOrder != null) {
+      params.set('order', newOrder);
+    } else {
+      params.delete('order');
+      params.delete('filter');
+    }
+
+    location.search = params.toString();
+  }
+
+  /**
+   * Refreshes the page to run a search query.
+   */
+  function searchMembers() {
+
+  }
 
 
   /**

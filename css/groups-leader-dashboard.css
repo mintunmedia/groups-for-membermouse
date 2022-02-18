@@ -43,3 +43,28 @@ tr.deactivated {
   font-size: 14px;
   margin: 0;
 }
+
+
+/* Styling for group leader table filters */
+.filter-header.active {
+  font-weight: 900;
+  border-bottom: 2px solid #000;
+}
+
+.filter-header.order-asc:after,
+.filter-header.order-desc:after {
+  content: ' ';
+  position: relative;
+  left: 12px;
+  border: 5px solid transparent;
+}
+
+.filter-header.order-desc:after {
+  bottom: 12px;
+  border-bottom-color: #333;
+}
+
+.filter-header.order-asc:after {
+  top: 12px;
+  border-top-color: #333;
+}
