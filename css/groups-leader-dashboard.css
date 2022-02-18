@@ -68,3 +68,8 @@ tr.deactivated {
   top: 12px;
   border-top-color: #333;
 }
+
+.filter-header:hover {
+  cursor: pointer;
+  font-weight: 800;
+}

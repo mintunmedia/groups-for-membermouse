@@ -82,14 +82,9 @@ class MemberMouseGroup_Shortcodes {
   public function generate_group_leader_dashboard($atts) {
     global $wpdb, $current_user;
 
-    $current_filter = 'name';
-    $filters = ['none', 'name', 'email', 'status', 'registered'];
-
-    if (!in_array($current_filter, $filters)) {
-      $current_filter = 'name';
-    } else {
-      $current_filter = 'none';
-    }
+    $search = $_GET["q"];
+    $filter = $_GET["filter"];
+    $order = $_GET["order"];
 
     $controls = array(
       'signup-link' => 'show',
@@ -156,7 +151,7 @@ class MemberMouseGroup_Shortcodes {
 
     <!-- TODO create a JS action that refreshes the page & changes the query param for 'search'. -->
     <div class="search-input-container">
-      <input type="text" class="members-search-input" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name">
+      <input type="text" id="members-search-input" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php echo $search; ?>">
       <button id="members-search">Search</button>
     </div>
 
@@ -230,9 +225,18 @@ class MemberMouseGroup_Shortcodes {
         );
       }
 
-      $filter = $_GET["filter"];
-      $order = $_GET["order"];
-      $filteredData = $this->filter_member_results($gMemResultsData, $filter, $order);
+
+      // 1. Run search query if there is one.
+      // 2. Then sort all results by filter and order.
+      $filteredData = $gMemResultsData;
+
+      if (!empty($filter) && !empty($order)) {
+        $filteredData = $this->filter_member_results($gMemResultsData, $filter, $order);
+      }
+
+      if (!empty($search)) {
+        $filteredData = $this->search_member_results($filteredData, $search);
+      }
       ?>
 
       <table class="widefat" id="mm-data-grid" style="width:96%">
@@ -329,6 +333,25 @@ class MemberMouseGroup_Shortcodes {
   }
 
   /**
+   * Searches through the member results for a relatable match.
+   */
+  public function search_member_results($results, $query) {
+    return array_filter($results, function ($result) use ($query) {
+      $name_match = strpos(
+        strtolower($result['name']),
+        strtolower($query)
+      );
+
+      $email_match = strpos(
+        strtolower($result['email']),
+        strtolower($query)
+      );
+
+      return ($name_match !== false || $email_match !== false);
+    });
+  }
+
+  /**
    * Creates a class string for a Filter Header on the Leader Table.
    *
    * $currentFilter (optional)
@@ -367,23 +390,6 @@ class MemberMouseGroup_Shortcodes {
     } else {
       return $data;
     }
-    // switch ($filter) {
-    //   case 'name':
-    //     if ($order == "ASC") {
-    //       usort($data, function ($item1, $item2) {
-    //         return $item1['name'] <=> $item2['name'];
-    //       });
-    //     } else {
-    //       usort($data, function ($item1, $item2) {
-    //         return $item2['name'] <=> $item1['name'];
-    //       });
-    //     }
-    //     break;
-    //   case 'email':
-    //     if
-    // }
-
-    // return $data;
   }
 
   /**
