@@ -152,11 +152,10 @@ class MemberMouseGroup_Shortcodes {
     <!-- TODO create a JS action that refreshes the page & changes the query param for 'search'. -->
     <div class="search-input-container">
       <input type="text" id="members-search-input" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php echo $search; ?>">
-      <button id="members-search">Search</button>
-    </div>
-
-    <div class="member-count">
-      <p>Members: <?= $member_count ?>/<?= $group_size ?></p>
+      <div class="groups-button-container">
+        <button id="members-search" class="btn btn-primary">Search</button>
+        <button id="clear-search" class="btn btn-primary">Clear</button>
+      </div>
     </div>
 
     <?php if (count($gMemResults) == 0) { ?>
@@ -239,14 +238,32 @@ class MemberMouseGroup_Shortcodes {
       }
       ?>
 
+      <div class="member-count">
+        <p>Members: <?= sizeof($filteredData) ?>/<?= $group_size ?></p>
+      </div>
+
+      <?php if (!empty($search)) : ?>
+        <div class="search-result-notif">
+          <h3>Search Results for <span class="query">"<?php echo $search ?>"</span></h3>
+        </div>
+      <?php endif; ?>
+
       <table class="widefat" id="mm-data-grid" style="width:96%">
         <thead>
           <tr>
-            <th class="<?php echo $this->filter_header_class($filter, 'name', $order); ?>" data-filter="name">Name</th>
-            <th class="<?php echo $this->filter_header_class($filter, 'email', $order); ?>" data-filter="email">Email</th>
+            <th>
+              <div class="<?php echo $this->filter_header_class($filter, 'name', $order); ?>" data-filter="name">Name</div>
+            </th>
+            <th>
+              <div class="<?php echo $this->filter_header_class($filter, 'email', $order); ?>" data-filter="email">Email</div>
+            </th>
             <th>Phone</th>
-            <th class="<?php echo $this->filter_header_class($filter, 'registered', $order); ?>" data-filter="registered">Registered</th>
-            <th class="<?php echo $this->filter_header_class($filter, 'status', $order); ?>" data-filter="status">Status</th>
+            <th>
+              <div class="<?php echo $this->filter_header_class($filter, 'registered', $order); ?>" data-filter="registered">Registered</div>
+            </th>
+            <th>
+              <div class="<?php echo $this->filter_header_class($filter, 'status', $order); ?>" data-filter="status">Status</div>
+            </th>
             <?php if ($action_control != 'hide') {
               echo $action_header_content;
             } ?>
@@ -359,10 +376,12 @@ class MemberMouseGroup_Shortcodes {
    * @return string
    */
   public function filter_header_class($currentFilter, $filterHeader, $order) {
-    $class = "filter-header";
+    $class = "filter-header-wrapper";
     if ($currentFilter == $filterHeader) {
       $order_lower = strtolower($order);
       $class = "$class active order-$order_lower";
+    } else {
+      $class = "$class inactive order-none";
     }
     return $class;
   }

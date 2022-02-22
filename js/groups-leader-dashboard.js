@@ -8,9 +8,10 @@ jQuery(function($) {
   const $editGroupNameTrigger = $('#edit-group-name');
   const $groupSignupLinkTrigger = $('#signup-link');
   const $addMemberTrigger = $('#add-member');
+  const $clearSearchTrigger = $("#clear-search");
   let $deleteMemberTrigger = $('.delete-member');
 
-  let $filterHeaderTrigger = $('.filter-header');
+  let $filterHeaderTrigger = $('.filter-header-wrapper');
   let $searchTrigger = $('#members-search');
   let $searchInput = $('#members-search-input');
 
@@ -20,6 +21,7 @@ jQuery(function($) {
   $deleteMemberTrigger.click(openDeleteMemberPop);
   $filterHeaderTrigger.click(changeMemberFilter);
   $searchTrigger.on('click', searchMembers);
+  $clearSearchTrigger.on('click', clearSearch);
 
   /**
    * Refreshes the page and changes the member filter.
@@ -72,6 +74,17 @@ jQuery(function($) {
     let params = (new URL(document.location)).searchParams;
     params.set('q', searchQuery);
     location.search = params.toString();
+  }
+
+  /**
+   * Clears the search results.
+   */
+  function clearSearch() {
+    let params = (new URL(document.location)).searchParams;
+    if (params.has('q')) {
+      params.delete('q');
+      location.search = params.toString();
+    }
   }
 
 
