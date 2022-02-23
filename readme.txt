@@ -2,7 +2,7 @@
 Contributors: mintunmedia,roymckenzie
 Tags: membermouse, member management, membership site, groups, mm groups, groups for membermouse, membermouse groups
 Requires at least: 4.8
-Tested up to: 5.8.2
+Tested up to: 5.9
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv3
@@ -68,7 +68,10 @@ Displays a member list (like the Group Leader Dashboard but without admin featur
 1. The Groups Dashboard
 
 == Changelog ==
-* 2.1.2
+2.1.3
+- ENHANCEMENT: Added Filtering and sorting functionality to Group Leader Dashboard
+
+2.1.2
 - ENHANCEMENT: Updated group leader dashboard shortcode to allow showing/hiding elements. Updated
 - ENHANCEMENT: Added a View Only member dashboard shortcode visible by members
 
