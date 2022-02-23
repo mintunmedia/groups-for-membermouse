@@ -152,10 +152,8 @@ class MemberMouseGroup_Shortcodes {
     <!-- TODO create a JS action that refreshes the page & changes the query param for 'search'. -->
     <div class="search-input-container">
       <input type="text" id="members-search-input" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php echo $search; ?>">
-      <div class="groups-button-container">
-        <button id="members-search" class="btn btn-primary">Search</button>
-        <button id="clear-search" class="btn btn-primary">Clear</button>
-      </div>
+      <button id="members-search" class="btn btn-primary">Search</button>
+      <button id="clear-search" class="btn btn-primary">Clear</button>
     </div>
 
     <?php if (count($gMemResults) == 0) { ?>

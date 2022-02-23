@@ -44,6 +44,9 @@ tr.deactivated {
   margin: 0;
 }
 
+.search-input-container {
+  display: flex;
+}
 
 /* Styling for group leader table filters */
 .filter-header-wrapper.active,
