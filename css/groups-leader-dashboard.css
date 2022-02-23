@@ -43,3 +43,50 @@ tr.deactivated {
   font-size: 14px;
   margin: 0;
 }
+
+.search-input-container {
+  display: flex;
+}
+
+/* Styling for group leader table filters */
+.filter-header-wrapper.active,
+.filter-header-wrapper.inactive {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.filter-header {
+  /* display: flex;
+  justify-content: center;
+  align-items: center; */
+}
+
+.filter-header-wrapper.order-asc:after,
+.filter-header-wrapper.order-desc:after,
+.filter-header-wrapper.order-none:after {
+  content: ' ';
+  position: relative;
+  margin-left: 13px;
+  border: 5px solid transparent;
+}
+
+.filter-header-wrapper.order-desc:after {
+  border-bottom-color: #333;
+}
+
+.filter-header-wrapper.order-asc:after {
+  border-top-color: #333;
+}
+
+.filter-header-wrapper.order-none:after {
+  border-bottom-color: transparent;
+}
+
+.filter-header-wrapper.order-none:hover:after {
+  border-top-color: #333;
+}
+
+.filter-header-wrapper:hover {
+  cursor: pointer;
+}

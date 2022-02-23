@@ -41,6 +41,7 @@ class MemberMouseGroup_Shortcodes {
     add_action('wp_enqueue_scripts', array($this, 'enqueues'));
 
     // Ajax
+    add_action('wp_ajax_groups_load_members', array($this, 'ajax_load_members'));
     add_action('wp_ajax_groups_get_signup_link', array($this, 'ajax_get_signup_link'));
     add_action('wp_ajax_groups_update_group_name', array($this, 'ajax_update_group_name'));
     add_action('wp_ajax_groups_add_member', array($this, 'ajax_add_member_to_group'));
@@ -80,6 +81,10 @@ class MemberMouseGroup_Shortcodes {
    */
   public function generate_group_leader_dashboard($atts) {
     global $wpdb, $current_user;
+
+    $search = $_GET["q"];
+    $filter = $_GET["filter"];
+    $order = $_GET["order"];
 
     $controls = array(
       'signup-link' => 'show',
@@ -144,83 +149,147 @@ class MemberMouseGroup_Shortcodes {
       } ?>
     </div>
 
-    <div class="member-count">
-      <p>Members: <?= $member_count ?>/<?= $group_size ?></p>
+    <!-- TODO create a JS action that refreshes the page & changes the query param for 'search'. -->
+    <div class="search-input-container">
+      <input type="text" id="members-search-input" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php echo $search; ?>">
+      <button id="members-search" class="btn btn-primary">Search</button>
+      <button id="clear-search" class="btn btn-primary">Clear</button>
     </div>
 
     <?php if (count($gMemResults) == 0) { ?>
       <p><em>No members found.</em></p>
     <?php } else { ?>
+      <?php
+
+      $gMemResultsData = array();
+      foreach ($gMemResults as $gMemRes) {
+        $userSql      = "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
+        $userResult    = $wpdb->get_row($userSql);
+        $registered    = $userResult->user_registered;
+        $memSql        = "SELECT * FROM mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
+        $memResult    = $wpdb->get_row($memSql);
+        $firstName     = $memResult->first_name;
+        $lastName     = $memResult->last_name;
+        $email         = $userResult->user_email;
+        $phone         = empty($memResult->phone) ? "&mdash;" : $memResult->phone;
+        $membershipId  = $memResult->membership_level_id;
+        $levelSql     = "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
+        $levelResult  = $wpdb->get_row($levelSql);
+        $redirecturl      = "";
+        $crntMemberId     = $gMemRes->member_id;
+        $member         = new MM_User($crntMemberId);
+        $url           = "javascript:mmjs.changeMembershipStatus('" . $crntMemberId . "', ";
+        $url             .= $membershipId . ", " . MM_Status::$CANCELED . ", '" . $redirecturl . "');";
+        $cancellationHtml   = "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"" . $url . "\"/>" . MM_Utils::getIcon('stop', 'red', '1.2em', '1px') . "</a>";
+        $statusId = (int) $gMemRes->member_status;
+
+        // Get Member's Active Subscriptions - includes overdue subscriptions
+        $activeSubscriptions = $member->getActiveMembershipSubscriptions(true);
+
+        if (empty($activeSubscriptions)) {
+          // No Subscriptions
+          $has_subscriptions = false;
+        } else {
+          $has_subscriptions = true;
+        }
+
+        switch ($statusId) {
+          case 1:
+            $status = "Active";
+            break;
+          case 0:
+            $status = "Deactivated";
+            break;
+        }
+
+        array_push(
+          $gMemResultsData,
+          array(
+            'member_id' => $gMemRes->member_id,
+            'membership_id' => $membershipId,
+            'name' => "$firstName&nbsp;$lastName",
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'email' => $email,
+            'phone' => $phone,
+            'registered' => $registered,
+            'status' => $status,
+            'status_id' => $statusId,
+            'has_subscriptions' => $has_subscriptions,
+            'cancellation_html' => $cancellationHtml,
+            'cancel_url' => $url
+          )
+        );
+      }
+
+
+      // 1. Run search query if there is one.
+      // 2. Then sort all results by filter and order.
+      $filteredData = $gMemResultsData;
+
+      if (!empty($filter) && !empty($order)) {
+        $filteredData = $this->filter_member_results($gMemResultsData, $filter, $order);
+      }
+
+      if (!empty($search)) {
+        $filteredData = $this->search_member_results($filteredData, $search);
+      }
+      ?>
+
+      <div class="member-count">
+        <p>Members: <?= sizeof($filteredData) ?>/<?= $group_size ?></p>
+      </div>
+
+      <?php if (!empty($search)) : ?>
+        <div class="search-result-notif">
+          <h3>Search Results for <span class="query">"<?php echo $search ?>"</span></h3>
+        </div>
+      <?php endif; ?>
+
       <table class="widefat" id="mm-data-grid" style="width:96%">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Email</th>
+            <th>
+              <div class="<?php echo $this->filter_header_class($filter, 'name', $order); ?>" data-filter="name">Name</div>
+            </th>
+            <th>
+              <div class="<?php echo $this->filter_header_class($filter, 'email', $order); ?>" data-filter="email">Email</div>
+            </th>
             <th>Phone</th>
-            <th>Registered</th>
-            <th>Status</th>
+            <th>
+              <div class="<?php echo $this->filter_header_class($filter, 'registered', $order); ?>" data-filter="registered">Registered</div>
+            </th>
+            <th>
+              <div class="<?php echo $this->filter_header_class($filter, 'status', $order); ?>" data-filter="status">Status</div>
+            </th>
             <?php if ($action_control != 'hide') {
               echo $action_header_content;
             } ?>
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($gMemResults as $gMemRes) :
-            $userSql      = "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
-            $userResult    = $wpdb->get_row($userSql);
-            $registered    = $userResult->user_registered;
-            $memSql        = "SELECT * FROM mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
-            $memResult    = $wpdb->get_row($memSql);
-            $firstName     = $memResult->first_name;
-            $lastName     = $memResult->last_name;
-            $email         = $userResult->user_email;
-            $phone         = empty($memResult->phone) ? "&mdash;" : $memResult->phone;
-            $membershipId  = $memResult->membership_level_id;
-            $levelSql     = "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
-            $levelResult  = $wpdb->get_row($levelSql);
+          <?php foreach ($filteredData as $member) :
             $redirecturl      = "";
-            $crntMemberId     = $gMemRes->member_id;
-            $member         = new MM_User($crntMemberId);
-            $url           = "javascript:mmjs.changeMembershipStatus('" . $crntMemberId . "', ";
-            $url             .= $membershipId . ", " . MM_Status::$CANCELED . ", '" . $redirecturl . "');";
+            $url           = "javascript:mmjs.changeMembershipStatus('" . $member['member_id'] . "', ";
+            $url             .= $member['membership_id'] . ", " . MM_Status::$CANCELED . ", '" . $redirecturl . "');";
             $cancellationHtml   = "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"" . $url . "\"/>" . MM_Utils::getIcon('stop', 'red', '1.2em', '1px') . "</a>";
-            $statusId = (int) $gMemRes->member_status;
-
-            // Get Member's Active Subscriptions - includes overdue subscriptions
-            $activeSubscriptions = $member->getActiveMembershipSubscriptions(true);
-
-            if (empty($activeSubscriptions)) {
-              // No Subscriptions
-              $has_subscriptions = false;
-            } else {
-              $has_subscriptions = true;
-            }
-
-            switch ($statusId) {
-              case 1:
-                $status = "Active";
-                break;
-              case 0:
-                $status = "Deactivated";
-                break;
-            }
 
           ?>
-            <tr class="<?= strtolower($status) ?>">
-              <td><?php echo $firstName . '&nbsp;' . $lastName; ?></td>
-              <td><?php echo $email; ?></td>
-              <td><?php echo $phone; ?></td>
-              <td><?php echo date('F d, Y h:m a', strtotime($registered)); ?></td>
-              <td><?= $status; ?></td>
+            <tr class="<?= strtolower($member->status) ?>">
+              <td><?php echo $member['name']; ?></td>
+              <td><?php echo $member['email']; ?></td>
+              <td><?php echo $member['phone']; ?></td>
+              <td><?php echo date('F d, Y h:m a', strtotime($member['registered'])); ?></td>
+              <td><?= $member['status']; ?></td>
               <?php if ($action_control != 'hide') { ?>
                 <td>
                   <?php
-                  if ($has_subscriptions) {
+                  if ($member['has_subscriptions']) {
                     // Member has active subscriptions. Show error
                     echo $cancellationHtml;
                     echo MM_Utils::getDeleteIcon("This member has an active paid membership which must be canceled before they can be removed from the group. Please contact support.", 'margin-left:5px;', '', true);
                   } else if ($statusId === 1) {
-                    $deleteActionUrl = 'href="#" class="delete-member" data-member-id="' .  $gMemRes->member_id . '" data-name="' . $firstName . ' ' . $lastName . '"';
+                    $deleteActionUrl = 'href="#" class="delete-member" data-member-id="' .  $member['member_id'] . '" data-name="' . $member['first_name'] . ' ' . $member['last_name'] . '"';
                     echo MM_Utils::getDeleteIcon("Remove the member from this group", 'margin-left:5px;', $deleteActionUrl);
                   }
                   ?>
@@ -278,6 +347,67 @@ class MemberMouseGroup_Shortcodes {
     return ob_get_clean();
   }
 
+  /**
+   * Searches through the member results for a relatable match.
+   */
+  public function search_member_results($results, $query) {
+    return array_filter($results, function ($result) use ($query) {
+      $name_match = strpos(
+        strtolower($result['name']),
+        strtolower($query)
+      );
+
+      $email_match = strpos(
+        strtolower($result['email']),
+        strtolower($query)
+      );
+
+      return ($name_match !== false || $email_match !== false);
+    });
+  }
+
+  /**
+   * Creates a class string for a Filter Header on the Leader Table.
+   *
+   * $currentFilter (optional)
+   *
+   * @return string
+   */
+  public function filter_header_class($currentFilter, $filterHeader, $order) {
+    $class = "filter-header-wrapper";
+    if ($currentFilter == $filterHeader) {
+      $order_lower = strtolower($order);
+      $class = "$class active order-$order_lower";
+    } else {
+      $class = "$class inactive order-none";
+    }
+    return $class;
+  }
+
+  /**
+   * Filter member results based on filter and order given.
+   *
+   * @return array
+   */
+  public function filter_member_results($data, $filter, $order) {
+    $sorted_data = $data;
+
+    if ($order == 'ASC') {
+      $sort = usort($sorted_data, function ($item1, $item2) use ($filter) {
+        return $item1[$filter] <=> $item2[$filter];
+      });
+    } else {
+      $sort = usort($sorted_data, function ($item1, $item2) use ($filter) {
+        return $item2[$filter] <=> $item1[$filter];
+      });
+    }
+
+    if ($sort) {
+      return $sorted_data;
+    } else {
+      return $data;
+    }
+  }
 
   /**
    * SHORTCODE - Group Member List [MM_Group_Member_List]
