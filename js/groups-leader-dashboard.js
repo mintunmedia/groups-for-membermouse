@@ -8,12 +8,12 @@ jQuery(function($) {
   const $editGroupNameTrigger = $('#edit-group-name');
   const $groupSignupLinkTrigger = $('#signup-link');
   const $addMemberTrigger = $('#add-member');
-  const $clearSearchTrigger = $("#clear-search");
   let $deleteMemberTrigger = $('.delete-member');
 
   let $filterHeaderTrigger = $('.filter-header-wrapper');
-  let $searchTrigger = $('#members-search');
-  let $searchInput = $('#members-search-input');
+  let $searchTrigger = $('.search-btn');
+  let $clearSearchTrigger = $(".clear-search-btn");
+  // let $searchInput = $('#members-search-input');
 
   $groupSignupLinkTrigger.click(openSignUpLinkPop);
   $editGroupNameTrigger.click(openGroupNamePop);
@@ -70,9 +70,13 @@ jQuery(function($) {
    * Refreshes the page to run a search query.
    */
   function searchMembers() {
+    inputID = $(this).data('search-input');
+    $searchInput = $('#members-search-input-'+ inputID);
+
     let searchQuery = $searchInput.val();
     let params = (new URL(document.location)).searchParams;
     params.set('q', searchQuery);
+    params.set('countid', inputID);
     location.search = params.toString();
   }
 
@@ -81,8 +85,9 @@ jQuery(function($) {
    */
   function clearSearch() {
     let params = (new URL(document.location)).searchParams;
-    if (params.has('q')) {
+    if (params.has('q') && params.has('countid')) {
       params.delete('q');
+      params.delete('countid');
       location.search = params.toString();
     }
   }

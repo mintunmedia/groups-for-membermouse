@@ -82,25 +82,31 @@ class MemberMouseGroup_Shortcodes {
   public function generate_group_leader_dashboard($atts) {
     global $wpdb, $current_user;
 
+    static $count = 1; // used to set unique IDs
+
     $search = $_GET["q"];
     $filter = $_GET["filter"];
     $order = $_GET["order"];
+    $countID = $_GET["countid"];
 
     $controls = array(
       'signup-link' => 'show',
       'add-member' => 'show',
       'action-column' => 'show',
+      'status' => '',
     );
 
     $atts = shortcode_atts($controls, $atts, 'MM_Group_Leader_Dashboard');
 
     $signup_link_content = '<button class="btn primary-btn" title="Signup Link" id="signup-link">Signup Link</button>';
     $add_member_content = '<button class="btn primary-btn" title="Add a Member" id="add-member">Add Member</button>';
+    $edit_group_name_link = '<button class="btn primary-btn" title="Edit Group Name" id="edit-group-name">Edit Group Name</button>';
     $action_header_content = '<th>Actions</th>';
 
     $signup_link_control = $atts['signup-link'];
     $add_member_control = $atts['add-member'];
     $action_control = $atts['action-column'];
+    $status_type = $atts['status'];
 
     $groups = new MemberMouseGroupAddon();
     $group = $groups->get_group_from_leader_id($current_user->ID);
@@ -137,23 +143,26 @@ class MemberMouseGroup_Shortcodes {
     $gMemSql    = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' ORDER BY member_status DESC, createdDate DESC";
     $gMemResults  = $wpdb->get_results($gMemSql); ?>
 
-    <h2><em><?php echo $group_name; ?></em> Management Dashboard</h2>
+    <h2><em><?php echo $group_name; ?></em> Management Dashboard <? if($status_type) { echo ($status_type == 'active') ? ' - Active' : ' - Deactivated'; } ?></h2>
 
     <div class="groups-button-container">
-      <button class="btn primary-btn" title="Edit Group Name" id="edit-group-name">Edit Group Name</button>
-      <?php if ($signup_link_control != 'hide') {
-        echo $signup_link_content;
-      }
-      if ($add_member_control != 'hide') {
-        echo $add_member_content;
+      <?php if ($status_type != 'inactive') {
+        echo $edit_group_name_link;
+      
+        if ($signup_link_control != 'hide') {
+          echo $signup_link_content;
+        }
+        if ($add_member_control != 'hide') {
+          echo $add_member_content;
+        }
       } ?>
     </div>
 
     <!-- TODO create a JS action that refreshes the page & changes the query param for 'search'. -->
     <div class="search-input-container">
-      <input type="text" id="members-search-input" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php echo $search; ?>">
-      <button id="members-search" class="btn btn-primary">Search</button>
-      <button id="clear-search" class="btn btn-primary">Clear</button>
+      <input type="text" id="members-search-input<? echo '-'.$count ?>" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php if($count == $countID) { echo $search; } ?>">
+      <button id="members-search<? echo '-'.$count ?>" class="btn btn-primary search-btn" data-search-input="<? echo $count ?>">Search</button>
+      <button id="clear-search<? echo '-'.$count ?>" class="btn btn-primary clear-search-btn" data-search-input="<? echo $count ?>">Clear</button>
     </div>
 
     <?php if (count($gMemResults) == 0) { ?>
@@ -182,6 +191,13 @@ class MemberMouseGroup_Shortcodes {
         $url             .= $membershipId . ", " . MM_Status::$CANCELED . ", '" . $redirecturl . "');";
         $cancellationHtml   = "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"" . $url . "\"/>" . MM_Utils::getIcon('stop', 'red', '1.2em', '1px') . "</a>";
         $statusId = (int) $gMemRes->member_status;
+
+        if($status_type == 'active' && $statusId != 1) {
+          continue;
+        }
+        if($status_type == 'inactive' && $statusId != 0) {
+          continue;
+        }
 
         // Get Member's Active Subscriptions - includes overdue subscriptions
         $activeSubscriptions = $member->getActiveMembershipSubscriptions(true);
@@ -231,16 +247,20 @@ class MemberMouseGroup_Shortcodes {
         $filteredData = $this->filter_member_results($gMemResultsData, $filter, $order);
       }
 
-      if (!empty($search)) {
+      if (!empty($search) && $count == $countID) {
         $filteredData = $this->search_member_results($filteredData, $search);
       }
       ?>
 
       <div class="member-count">
-        <p>Members: <?= sizeof($filteredData) ?>/<?= $group_size ?></p>
+        <p>
+        <? echo ($status_type == 'inactive') ? 'Deactivated Members: ' : 'Members: ';
+        echo sizeof($filteredData);
+        if($status_type != 'inactive') { echo '/'. $group_size; } ?>
+        </p>
       </div>
 
-      <?php if (!empty($search)) : ?>
+      <?php if (!empty($search) && $count == $countID) : ?>
         <div class="search-result-notif">
           <h3>Search Results for <span class="query">"<?php echo $search ?>"</span></h3>
         </div>
@@ -273,7 +293,6 @@ class MemberMouseGroup_Shortcodes {
             $url           = "javascript:mmjs.changeMembershipStatus('" . $member['member_id'] . "', ";
             $url             .= $member['membership_id'] . ", " . MM_Status::$CANCELED . ", '" . $redirecturl . "');";
             $cancellationHtml   = "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"" . $url . "\"/>" . MM_Utils::getIcon('stop', 'red', '1.2em', '1px') . "</a>";
-
           ?>
             <tr class="<?= strtolower($member->status) ?>">
               <td><?php echo $member['name']; ?></td>
@@ -343,6 +362,8 @@ class MemberMouseGroup_Shortcodes {
       </div>
     <?php
     endif;
+
+    $count++; // update after each use
 
     return ob_get_clean();
   }
