@@ -68,6 +68,9 @@ Displays a member list (like the Group Leader Dashboard but without admin featur
 1. The Groups Dashboard
 
 == Changelog ==
+2.1.5
+- BUG FIX: Fixed a conditional bug that caused the delete action button to not show in the Group Leader Dashboard shortcode
+
 2.1.4
 - ENHANCEMENT: Added attribute support to Group Leader Dashboard shortcode. Can now display members in table based on status
 - ENHANCEMENT: Updated Group Leader Dashboard shortcode to allow multiple uses on the same page
