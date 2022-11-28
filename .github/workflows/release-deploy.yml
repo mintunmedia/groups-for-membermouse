@@ -1,2 +1,22 @@
-name: WordPress Plugin Deploy
-uses: 10up/action-wordpress-plugin-deploy@2.1.1
+name: Publish New Release to Wordpress.org
+env:
+  SLUG: "groups-for-membermouse"
+on:
+  release:
+    types: [published]
+jobs:
+  tag:
+    name: New release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: WordPress Plugin Deploy
+      if: "! github.event.release.prerelease"
+      id: deploy
+      uses: 10up/action-wordpress-plugin-deploy@stable
+      env:
+        SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+        SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+        SLUG: ${{ env.SLUG }}
