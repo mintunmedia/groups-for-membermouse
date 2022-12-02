@@ -1,4 +1,4 @@
-name: Publish New Release to Wordpress.org
+name: Publish New Release to Wordpress Repo
 env:
   SLUG: "groups-for-membermouse"
 on:

@@ -1,0 +1,31 @@
+# @format
+
+# PROTOCOL:
+# When you are ready to use this Github Action, highlight everything below and enter to remove comments: ctrl + /
+
+name: Create or Append Release
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  update_release_draft:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+
+    steps:
+      # Drafts your next Release notes as Pull Requests are merged into "master"
+      # Docs: https://github.com/marketplace/actions/release-drafter
+      - uses: release-drafter/release-drafter@v5
+        with:
+          config-name: mm-releaser.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
