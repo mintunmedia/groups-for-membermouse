@@ -68,6 +68,9 @@ Displays a member list (like the Group Leader Dashboard but without admin featur
 1. The Groups Dashboard
 
 == Changelog ==
+2.2.0
+- ENHANCEMENT: Includes changes to how updates are deployed.
+
 2.1.4
 - ENHANCEMENT: Added attribute support to Group Leader Dashboard shortcode. Can now display members in table based on status
 - ENHANCEMENT: Updated Group Leader Dashboard shortcode to allow multiple uses on the same page
