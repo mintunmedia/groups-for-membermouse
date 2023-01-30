@@ -1,6 +1,4 @@
 name: Publish New Release to Wordpress Repo
-env:
-  SLUG: "groups-for-membermouse"
 on:
   release:
     types: [published]
@@ -19,4 +17,3 @@ jobs:
       env:
         SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
         SVN_PASSWORD: '${{ secrets.SVN_PASSWORD }}'
-        SLUG: ${{ env.SLUG }}
