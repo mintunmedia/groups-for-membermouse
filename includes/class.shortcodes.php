@@ -307,7 +307,7 @@ class MemberMouseGroup_Shortcodes {
                     // Member has active subscriptions. Show error
                     echo $cancellationHtml;
                     echo MM_Utils::getDeleteIcon("This member has an active paid membership which must be canceled before they can be removed from the group. Please contact support.", 'margin-left:5px;', '', true);
-                  } else if ($statusId === 1) {
+                  } else if ($member['status_id'] === 1) {
                     $deleteActionUrl = 'href="#" class="delete-member" data-member-id="' .  $member['member_id'] . '" data-name="' . $member['first_name'] . ' ' . $member['last_name'] . '"';
                     echo MM_Utils::getDeleteIcon("Remove the member from this group", 'margin-left:5px;', $deleteActionUrl);
                   }
