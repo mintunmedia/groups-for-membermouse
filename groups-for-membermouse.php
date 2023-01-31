@@ -813,6 +813,9 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		 * Group Leader Member Status Changed.
 		 * If status = cancelled, cancel all group member access as well
 		 * If status = expired, expire all group member access as well
+		 * If status = active, activate all group member access as well
+		 *
+		 * Also handles active/inactive status for the leaders group
 		 *
 		 * @param array $data
 		 * @return void
@@ -836,10 +839,10 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				return;
 			}
 
-			// Check if User is Cancelled and in a group. Cancels all members in the group.
+			// Check if User Status is changed and has a group. Update all members in group accordingly.
 			if (!empty($groupId)) {
-				if ($status == MM_Status::$CANCELED) {
-					// Cancelled
+				if ($status == MM_Status::$CANCELED || $status == MM_Status::$EXPIRED || $status == MM_Status::$ACTIVE) {
+					// Handles Status Changes: Cancelled, Expired, Active
 
 					$sql = "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
 					$results 	= $wpdb->get_results($sql);
@@ -847,26 +850,20 @@ if (!class_exists('MemberMouseGroupAddon')) {
 					if (count($results) > 0) {
 						foreach ($results as $result) {
 							$user = new MM_User($result->member_id);
-							$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$CANCELED);
+							$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, $status);
 						}
 					}
-				} else if ($status == MM_Status::$EXPIRED) {
-					// Expired
 
-					$sql 			= "SELECT member_id FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $groupId . "'";
-					$results 	= $wpdb->get_results($sql);
-
-					if (count($results) > 0) {
-						foreach ($results as $result) {
-							$user = new MM_User($result->member_id);
-							$userStatus = MM_AccessControlEngine::changeMembershipStatus($user, MM_Status::$EXPIRED);
-						}
+					if ($status == MM_Status::$CANCELED || $status == MM_Status::$EXPIRED) {
+						// Change group Status to Cancelled
+						$groupSql	= "UPDATE {$wpdb->prefix}group_sets SET group_status='0', modifiedDate = now() WHERE group_leader={$memberId}";
+						$wpdb->query($groupSql);
+					} else if ($status == MM_Status::$ACTIVE) {
+						// Change group Status back to Active
+						$groupSql	= "UPDATE {$wpdb->prefix}group_sets SET group_status='1', modifiedDate = now() WHERE group_leader={$memberId}";
+						$wpdb->query($groupSql);
 					}
 				}
-
-				// Cancel Group
-				$groupSql	= "UPDATE {$wpdb->prefix}group_sets SET group_status='0', modifiedDate = now() WHERE group_leader={$memberId}";
-				$wpdb->query($groupSql);
 			}
 		}
 
