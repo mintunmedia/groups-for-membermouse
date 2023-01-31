@@ -196,7 +196,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		 */
 		public function rest_api_init() {
 			foreach (self::ACTIONS as $action) {
-				register_rest_route('mm-groups/v1/', $action, array(
+				register_rest_route('mm-groups/v1', $action, array(
 					'methods' 	=> WP_REST_Server::EDITABLE,
 					'callback' 	=> function () use ($action) {
 						$this->rest_callback($action);
