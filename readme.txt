@@ -69,6 +69,9 @@ Displays a member list (like the Group Leader Dashboard but without admin featur
 
 == Changelog ==
 
+2.3.2
+- BUG FIX: Fixed a PHP8 compatibility issue causing issues when creating a group leader
+
 2.3.1
 - BUG FIX: Fixed a PHP8 compatibility issue causing route response issues when adding a group
 
