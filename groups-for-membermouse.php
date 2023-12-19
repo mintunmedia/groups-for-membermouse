@@ -296,13 +296,12 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 			/** Styles */
 			wp_enqueue_style('MemberMouseGroupAddOnAdminCss', plugins_url('css/admin.css', __FILE__));
-			wp_enqueue_style(
-				'membermouse-font-awesome',
-				'//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
-				array(),
-				'6.3.2',
-				'all'
-			);
+
+			$screen = get_current_screen();
+			if ($screen->id === 'membermouse_page_groupsformm') {
+				wp_enqueue_style('membermouse-font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css', array(), '6.3.2', 'all');
+			}
+
 
 			/** REST Actions */
 			foreach (self::ACTIONS as $action) {
