@@ -1,0 +1,16 @@
+# Mintun Media Editor Config
+# Docs https://github.com/editorconfig/editorconfig/wiki/Plugin-Guidelines
+
+root = true
+
+# Defaults
+[*]
+end_of_line = lf
+insert_final_newline = true
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+# Set default charset
+[*.{js,py}]
+charset = utf-8

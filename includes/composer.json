@@ -1,0 +1,8 @@
+{
+  "name": "mintunmedia/groups-for-membermouse",
+  "description": "Contains all libraries",
+  "license": "proprietary",
+  "require": {
+    "monolog/monolog": "^2.8"
+  }
+}
