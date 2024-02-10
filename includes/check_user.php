@@ -13,10 +13,7 @@ if (count($data) > 0) :
 	$userSql	= "SELECT ID FROM " . $wpdb->prefix . "users WHERE user_email = '" . $user . "' OR user_login = '" . $user . "'";
 	$userResult	= $wpdb->get_row($userSql);
 
-	write_groups_log($userResult, 'users results: ');
-
 	if ($userResult) {
-		write_groups_log('has results:');
 		$user_id 		= $userResult->ID;
 		$user_data		= get_userdata($user_id);
 		$user_roles		= $user_data->roles;
@@ -49,7 +46,6 @@ if (count($data) > 0) :
 		}
 	} else {
 		$msg["error"] = 'This member doesn\'t exist';
-		write_groups_log('no results');
 	}
 	$return = json_encode($msg);
 	echo $return;

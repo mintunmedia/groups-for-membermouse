@@ -18,40 +18,6 @@ if (!(DEFINED('MGROUP_DIR'))) DEFINE('MGROUP_DIR', plugins_url('groups-for-membe
 if (!(DEFINED('MGROUP_PATH'))) DEFINE('MGROUP_PATH', plugin_dir_path(__FILE__));
 if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
-define('MGROUP_TESTING', false);
-
-/**
- * Local Logging for Plugin.
- *
- * @param string|array $data Data sent to logs. Can be string or Array or Object.
- * @param string $pretext Text that can be added ABOVE $data. Useful if $data is an array and you want to include a string above it.
- * @param bool $first_log True if you want to add a PHP_EOL before text is printed to give visual space and adds Date and time
- * @return void
- */
-function write_groups_log($data, $pretext = null, $first_log = false) {
-
-	if (!MGROUP_TESTING) {
-		return;
-	}
-
-	$loc = plugin_dir_path(__FILE__) . 'debug.log';
-
-	// First Log Handler
-	if ($first_log) {
-		error_log(PHP_EOL . '*** ' . date('m/d/Y H:i:s') . ' ***' . PHP_EOL, 3, $loc);
-	}
-
-	// Pretext Handler
-	if ($pretext && is_string($pretext)) {
-		error_log($pretext . PHP_EOL, 3, $loc);
-	}
-	if (is_array($data) || is_object($data)) {
-		error_log(print_r($data, true) . PHP_EOL, 3, $loc);
-	} else {
-		error_log($data . PHP_EOL, 3, $loc);
-	}
-}
-
 if (!class_exists('MemberMouseGroupAddon')) {
 	class MemberMouseGroupAddon {
 
@@ -953,7 +919,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		 * @return object | bool - If Group is found, returns row from database. If not, returns false
 		 */
 		public function get_group_from_member_id($memberId) {
-			write_groups_log(__METHOD__);
 			global $wpdb;
 			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE member_id='" . $memberId . "' ORDER BY member_status DESC, createdDate DESC";
 			$result = $wpdb->get_row($sql);
@@ -966,7 +931,6 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		 * @return object | bool - If Group is found, returns row of members from database. If not, returns false
 		 */
 		public function get_members_in_group($group_id) {
-			write_groups_log(__METHOD__);
 			global $wpdb;
 			$sql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $group_id . "' AND member_status=1 ORDER BY member_status DESC, createdDate DESC";
 			$result = $wpdb->get_results($sql);
