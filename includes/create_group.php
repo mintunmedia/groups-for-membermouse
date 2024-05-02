@@ -1,11 +1,11 @@
 <?php
 
-if (!defined('ABSPATH')) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 global $wpdb;
 
-include_once(WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php");
-include_once(WP_PLUGIN_DIR . "/membermouse/includes/init.php");
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/mm-constants.php");
+include_once( WP_PLUGIN_DIR . "/membermouse/includes/init.php");
 
 $groupId			= "";
 $name				= "";
@@ -15,32 +15,32 @@ $group_leader_cost	= '';
 $group_member_cost	= '';
 $group_size			= "";
 $data = sanitize_post($_POST);
-if (count($data) > 0) :
-	foreach ($data as $key => $value) :
+if(count($data) > 0):
+	foreach($data as $key => $value):
 		$$key = $value;
 	endforeach;
 
-	if (!empty($groupId)) :
-		$groupSql			= "SELECT id,name,leader_memlevel,member_memlevel,group_leader_cost,group_member_cost,group_size FROM " . $wpdb->prefix . "group_items WHERE id = '" . $groupId . "'";
-		$groupResult		= $wpdb->get_row($groupSql);
-		$groupId			= $groupResult->id;
-		$name				= $groupResult->name;
-		$leader_memlevel	= $groupResult->leader_memlevel;
-		$member_memlevel	= $groupResult->member_memlevel;
-		$group_leader_cost	= $groupResult->group_leader_cost;
-		$group_member_cost	= $groupResult->group_member_cost;
-		$group_size			= $groupResult->group_size;
+	if(!empty($groupId)):
+		$groupSql			= "SELECT id,name,leader_memlevel,member_memlevel,group_leader_cost,group_member_cost,group_size FROM ".$wpdb -> prefix."group_items WHERE id = '".$groupId."'";
+		$groupResult		= $wpdb -> get_row($groupSql);
+		$groupId			= $groupResult -> id;
+		$name				= $groupResult -> name;
+		$leader_memlevel	= $groupResult -> leader_memlevel;
+		$member_memlevel	= $groupResult -> member_memlevel;
+		$group_leader_cost	= $groupResult -> group_leader_cost;
+		$group_member_cost	= $groupResult -> group_member_cost;
+		$group_size			= $groupResult -> group_size;
 	endif;
 endif;
-$leaderSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM wp_mm_membership_level_products AS lp LEFT JOIN wp_mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='" . $leader_memlevel . "' ORDER BY p.name ASC";
-$leaderResults	= $wpdb->get_results($leaderSql);
+$leaderSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM wp_mm_membership_level_products AS lp LEFT JOIN wp_mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$leader_memlevel."' ORDER BY p.name ASC";
+$leaderResults	= $wpdb -> get_results($leaderSql);
 
-$memberSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM wp_mm_membership_level_products AS lp LEFT JOIN wp_mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='" . $member_memlevel . "' ORDER BY p.name ASC";
-$memberResults	= $wpdb->get_results($memberSql);
+$memberSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM wp_mm_membership_level_products AS lp LEFT JOIN wp_mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$member_memlevel."' ORDER BY p.name ASC";
+$memberResults	= $wpdb -> get_results($memberSql);
 ?>
 <div id="group_popup_container">
 	<h2>
-		<span class="group_title"><?php if (!empty($groupId)) : ?>Edit<?php else : ?>Create<?php endif; ?> Group Type</span>
+		<span class="group_title"><?php if(!empty($groupId)):?>Edit<?php else:?>Create<?php endif;?> Group Type</span>
 		<span class="group_close"><a href="javascript:MGROUP.closeGroupPopup();" title="Close">Close</a></span>
 	</h2>
 	<div id="group_popup_main">
@@ -49,7 +49,7 @@ $memberResults	= $wpdb->get_results($memberSql);
 			<tr>
 				<td width="140">Name*</td>
 				<td>
-					<input type="text" name="name" class="long-text" value="<?php echo $name; ?>" id="name" />
+					<input type="text" name="name" class="long-text" value="<?php echo $name;?>" id="name"/>
 					<div class="groupError" id="nameErr"></div>
 				</td>
 			</tr>
@@ -68,7 +68,7 @@ $memberResults	= $wpdb->get_results($memberSql);
 					<div id="group_membership_access_container">
 						<div style="float:left;width:auto;">
 							<select id='leader_memlevel' name='leader_memlevel' onchange="javascript:MGROUP.changeGroupLeaderCost(this.value);">
-								<?php echo MM_HtmlUtils::getMemberships($leader_memlevel, true); ?>
+				<?php			echo MM_HtmlUtils::getMemberships($leader_memlevel, true); ?>
 							</select>
 						</div>
 
@@ -76,26 +76,24 @@ $memberResults	= $wpdb->get_results($memberSql);
 						<div id="leadermemLoading" style="display:none;">
 							<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 						</div>
-
 					</div>
 					<div class="groupError" id="leadermemlevelErr"></div>
 				</td>
 			</tr>
 			<tr id="leader_associated_cost">
-				<td><?php if (count($leaderResults) > 0) : ?>Associated Cost* (Product)<?php endif; ?></td>
+				<td><?php if(count($leaderResults) > 0):?>Associated Cost* (Product)<?php endif;?></td>
 				<td>
-					<?php if (count($leaderResults) > 0) : ?>
+<?php				if(count($leaderResults) > 0):?>
 						<select name="group_leader_cost" id="group_leader_cost">
 							<option value="">&mdash; select option &mdash;</option>
-							<?php foreach ($leaderResults as $leaderResult) : ?>
-								<option value="<?php echo $leaderResult->id; ?>" <?php if ($group_leader_cost == $leaderResult->id) : echo 'selected="selected"';
-																																	endif; ?>><?php echo $leaderResult->name; ?></option>
-							<?php endforeach; ?>
+<?php						foreach($leaderResults as $leaderResult):?>
+								<option value="<?php echo $leaderResult -> id;?>" <?php if($group_leader_cost == $leaderResult -> id): echo 'selected="selected"';endif;?>><?php echo $leaderResult -> name;?></option>
+<?php						endforeach;?>
 						</select>
-						<input type="hidden" id="leaderCost" name="leaderCost" value="1" />
-					<?php else : ?>
-						<input type="hidden" name="leaderCost" id="leaderCost" value="0" />
-					<?php endif; ?>
+						<input type="hidden" id="leaderCost" name="leaderCost" value="1"/>
+<?php				else:?>
+						<input type="hidden" name="leaderCost" id="leaderCost" value="0"/>
+<?php				endif;?>
 					<div class="groupError" id="groupLeaderCostErr"></div>
 				</td>
 			</tr>
@@ -114,7 +112,7 @@ $memberResults	= $wpdb->get_results($memberSql);
 					<div id="group_membership_access_container">
 						<div style="float:left;width:auto;">
 							<select id='member_memlevel' name='member_memlevel' onchange="javascript:MGROUP.changeGroupMemberCost(this.value);">
-								<?php echo MM_HtmlUtils::getMemberships($member_memlevel, true); ?>
+				<?php			echo MM_HtmlUtils::getMemberships($member_memlevel, true); ?>
 							</select>
 						</div>
 						<div id="memberLoading" style="display:none;">
@@ -125,20 +123,19 @@ $memberResults	= $wpdb->get_results($memberSql);
 				</td>
 			</tr>
 			<tr id="member_associated_cost">
-				<td><?php if (count($memberResults) > 0) : ?>Associated Cost* (Product)<?php endif; ?></td>
+				<td><?php if(count($memberResults) > 0):?>Associated Cost* (Product)<?php endif;?></td>
 				<td>
-					<?php if (count($memberResults) > 0) : ?>
+<?php				if(count($memberResults) > 0):?>
 						<select name="group_member_cost" id="group_member_cost">
 							<option value="">&mdash; select option &mdash;</option>
-							<?php foreach ($memberResults as $memberResult) : ?>
-								<option value="<?php echo $memberResult->id; ?>" <?php if ($group_member_cost == $memberResult->id) : echo 'selected="selected"';
-																																	endif; ?>><?php echo $memberResult->name; ?></option>
-							<?php endforeach; ?>
+<?php						foreach($memberResults as $memberResult):?>
+								<option value="<?php echo $memberResult -> id;?>" <?php if($group_member_cost == $memberResult -> id): echo 'selected="selected"';endif;?>><?php echo $memberResult -> name;?></option>
+<?php						endforeach;?>
 						</select>
-						<input type="hidden" id="memberCost" name="memberCost" value="1" />
-					<?php else : ?>
-						<input type="hidden" id="memberCost" name="memberCost" value="0" />
-					<?php endif; ?>
+						<input type="hidden" id="memberCost" name="memberCost" value="1"/>
+<?php				else:?>
+						<input type="hidden" id="memberCost" name="memberCost" value="0"/>
+<?php				endif;?>
 					<div class="groupError" id="groupMemberCostErr"></div>
 				</td>
 			</tr>
@@ -150,7 +147,7 @@ $memberResults	= $wpdb->get_results($memberSql);
 			<tr>
 				<td>Group Size*</td>
 				<td>
-					<input type="text" style="width: 125px;" value="<?php echo $group_size; ?>" id="group_size" name="group_size" />
+					<input type="text" style="width: 125px;" value="<?php echo $group_size;?>" id="group_size" name="group_size"/>
 					<div class="groupError" id="groupSizeErr"></div>
 				</td>
 			</tr>
@@ -163,13 +160,13 @@ $memberResults	= $wpdb->get_results($memberSql);
 	</div>
 	<div id="popup_group_bottom">
 		<div class="group-dialog-button-container">
-			<?php if (!empty($groupId)) : ?>
-				<a class="group-button button-blue" href="javascript:MGROUP.saveGroupForm('<?php echo $groupId; ?>');">Edit Group Type</a>&nbsp;&nbsp;
-			<?php else : ?>
+			<?php if(!empty($groupId)):?>
+				<a class="group-button button-blue" href="javascript:MGROUP.saveGroupForm('<?php echo $groupId;?>');">Edit Group Type</a>&nbsp;&nbsp;
+			<?php else:?>
 				<a class="group-button button-blue" href="javascript:MGROUP.saveGroupForm('0');">Save Group Type</a>&nbsp;&nbsp;
-			<?php endif; ?>
+			<?php endif;?>
 			<a class="group-button" href="javascript:MGROUP.closeGroupPopup();">Cancel</a>
-			<input type="hidden" name="groupId" id="groupId" value="<?php echo $groupId; ?>" />
+			<input type="hidden" name="groupId" id="groupId" value="<?php echo $groupId;?>"/>
 		</div>
 		<div class="group-loading-container" style="display:none;">
 			<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
