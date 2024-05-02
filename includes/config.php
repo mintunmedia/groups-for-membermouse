@@ -152,7 +152,10 @@ if($noticeCount > 0):?>
 	<div class="group_notices">
 		<h3>Notices</h3>
 		<table class="widefat" id="mm-data-grid">
-	@@ -159,29 +164,29 @@
+		<thead>
+				<tr>
+					<th>Name</th>
+					<th width="60px">Action</th>
 				</tr>
 			</thead>
 			<tbody>
