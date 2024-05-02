@@ -143,12 +143,14 @@ class MemberMouseGroup_Shortcodes {
     $gMemSql    = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' ORDER BY member_status DESC, createdDate DESC";
     $gMemResults  = $wpdb->get_results($gMemSql); ?>
 
-    <h2><em><?php echo $group_name; ?></em> Management Dashboard <? if($status_type) { echo ($status_type == 'active') ? ' - Active' : ' - Deactivated'; } ?></h2>
+    <h2><em><?php echo $group_name; ?></em> Management Dashboard <? if ($status_type) {
+                                                                    echo ($status_type == 'active') ? ' - Active' : ' - Deactivated';
+                                                                  } ?></h2>
 
     <div class="groups-button-container">
       <?php if ($status_type != 'inactive') {
         echo $edit_group_name_link;
-      
+
         if ($signup_link_control != 'hide') {
           echo $signup_link_content;
         }
@@ -160,9 +162,11 @@ class MemberMouseGroup_Shortcodes {
 
     <!-- TODO create a JS action that refreshes the page & changes the query param for 'search'. -->
     <div class="search-input-container">
-      <input type="text" id="members-search-input<? echo '-'.$count ?>" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php if($count == $countID) { echo $search; } ?>">
-      <button id="members-search<? echo '-'.$count ?>" class="btn btn-primary search-btn" data-search-input="<? echo $count ?>">Search</button>
-      <button id="clear-search<? echo '-'.$count ?>" class="btn btn-primary clear-search-btn" data-search-input="<? echo $count ?>">Clear</button>
+      <input type="text" id="members-search-input<? echo '-' . $count ?>" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php if ($count == $countID) {
+                                                                                                                                                                                  echo $search;
+                                                                                                                                                                                } ?>">
+      <button id="members-search<? echo '-' . $count ?>" class="btn btn-primary search-btn" data-search-input="<? echo $count ?>">Search</button>
+      <button id="clear-search<? echo '-' . $count ?>" class="btn btn-primary clear-search-btn" data-search-input="<? echo $count ?>">Clear</button>
     </div>
 
     <?php if (count($gMemResults) == 0) { ?>
@@ -175,14 +179,14 @@ class MemberMouseGroup_Shortcodes {
         $userSql      = "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
         $userResult    = $wpdb->get_row($userSql);
         $registered    = $userResult->user_registered;
-        $memSql        = "SELECT * FROM mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
+        $memSql        = "SELECT * FROM wp_mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
         $memResult    = $wpdb->get_row($memSql);
         $firstName     = $memResult->first_name;
         $lastName     = $memResult->last_name;
         $email         = $userResult->user_email;
         $phone         = empty($memResult->phone) ? "&mdash;" : $memResult->phone;
         $membershipId  = $memResult->membership_level_id;
-        $levelSql     = "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
+        $levelSql     = "SELECT name FROM wp_mm_membership_levels WHERE id = '" . $membershipId . "'";
         $levelResult  = $wpdb->get_row($levelSql);
         $redirecturl      = "";
         $crntMemberId     = $gMemRes->member_id;
@@ -192,10 +196,10 @@ class MemberMouseGroup_Shortcodes {
         $cancellationHtml   = "<a title=\"Cancel Member\" style=\"cursor: pointer;display: none;\" onclick=\"" . $url . "\"/>" . MM_Utils::getIcon('stop', 'red', '1.2em', '1px') . "</a>";
         $statusId = (int) $gMemRes->member_status;
 
-        if($status_type == 'active' && $statusId != 1) {
+        if ($status_type == 'active' && $statusId != 1) {
           continue;
         }
-        if($status_type == 'inactive' && $statusId != 0) {
+        if ($status_type == 'inactive' && $statusId != 0) {
           continue;
         }
 
@@ -254,9 +258,11 @@ class MemberMouseGroup_Shortcodes {
 
       <div class="member-count">
         <p>
-        <? echo ($status_type == 'inactive') ? 'Deactivated Members: ' : 'Members: ';
-        echo sizeof($filteredData);
-        if($status_type != 'inactive') { echo '/'. $group_size; } ?>
+          <? echo ($status_type == 'inactive') ? 'Deactivated Members: ' : 'Members: ';
+          echo sizeof($filteredData);
+          if ($status_type != 'inactive') {
+            echo '/' . $group_size;
+          } ?>
         </p>
       </div>
 
