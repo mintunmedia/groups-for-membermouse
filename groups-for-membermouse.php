@@ -20,6 +20,10 @@ if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE
 
 define('MGROUP_TESTING', false);
 
+global $wpdb;
+$useLegacyDB = get_option("mm-option-use-legacy-db", null); // checking for custom option that's set in MM ^3.0. Allowing for logic to set the appropriate DB prefix
+define('MGROUPS_PREFIX', $useLegacyDB === null || $useLegacyDB == 1 ? '' : $wpdb->prefix);
+
 /**
  * Local Logging for Plugin.
  *
