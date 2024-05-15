@@ -148,7 +148,7 @@ class MemberMouseGroup_Shortcodes {
     <div class="groups-button-container">
       <?php if ($status_type != 'inactive') {
         echo $edit_group_name_link;
-      
+
         if ($signup_link_control != 'hide') {
           echo $signup_link_content;
         }
@@ -158,7 +158,7 @@ class MemberMouseGroup_Shortcodes {
       } ?>
     </div>
 
-    <!-- TODO create a JS action that refreshes the page & changes the query param for 'search'. -->
+  <!-- TODO create a JS action that refreshes the page & changes the query param for 'search'. -->
     <div class="search-input-container">
       <input type="text" id="members-search-input<? echo '-'.$count ?>" placeholder="Search Members by Email or Name" aria-placeholder="Search Members by Email or Name" value="<?php if($count == $countID) { echo $search; } ?>">
       <button id="members-search<? echo '-'.$count ?>" class="btn btn-primary search-btn" data-search-input="<? echo $count ?>">Search</button>
@@ -175,14 +175,14 @@ class MemberMouseGroup_Shortcodes {
         $userSql      = "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
         $userResult    = $wpdb->get_row($userSql);
         $registered    = $userResult->user_registered;
-        $memSql        = "SELECT * FROM mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
+        $memSql        = "SELECT * FROM ". MGROUPS_PREFIX ."mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
         $memResult    = $wpdb->get_row($memSql);
         $firstName     = $memResult->first_name;
         $lastName     = $memResult->last_name;
         $email         = $userResult->user_email;
         $phone         = empty($memResult->phone) ? "&mdash;" : $memResult->phone;
         $membershipId  = $memResult->membership_level_id;
-        $levelSql     = "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
+        $levelSql     = "SELECT name FROM ". MGROUPS_PREFIX ."mm_membership_levels WHERE id = '" . $membershipId . "'";
         $levelResult  = $wpdb->get_row($levelSql);
         $redirecturl      = "";
         $crntMemberId     = $gMemRes->member_id;
@@ -254,9 +254,9 @@ class MemberMouseGroup_Shortcodes {
 
       <div class="member-count">
         <p>
-        <? echo ($status_type == 'inactive') ? 'Deactivated Members: ' : 'Members: ';
-        echo sizeof($filteredData);
-        if($status_type != 'inactive') { echo '/'. $group_size; } ?>
+          <? echo ($status_type == 'inactive') ? 'Deactivated Members: ' : 'Members: ';
+          echo sizeof($filteredData);
+          if($status_type != 'inactive') { echo '/'. $group_size; } ?>
         </p>
       </div>
 
@@ -486,7 +486,7 @@ class MemberMouseGroup_Shortcodes {
             $userSql      = "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
             $userResult    = $wpdb->get_row($userSql);
             $registered    = $userResult->user_registered;
-            $memSql        = "SELECT * FROM mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
+            $memSql        = "SELECT * FROM ". MGROUPS_PREFIX ."mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
             $memResult    = $wpdb->get_row($memSql);
             $firstName     = $memResult->first_name;
             $lastName     = $memResult->last_name;

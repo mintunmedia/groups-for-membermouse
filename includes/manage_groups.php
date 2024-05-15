@@ -125,7 +125,7 @@ $gMemResults	= $wpdb->get_results($gMemSql); ?>
 				$userSql			= "SELECT * FROM " . $wpdb->prefix . "users WHERE ID = '" . $gMemRes->member_id . "'";
 				$userResult		= $wpdb->get_row($userSql);
 				$registered		= $userResult->user_registered;
-				$memSql				= "SELECT * FROM mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
+				$memSql				= "SELECT * FROM ". MGROUPS_PREFIX ."mm_user_data WHERE wp_user_id = '" . $gMemRes->member_id . "'";
 				$memResult		= $wpdb->get_row($memSql);
 				$firstName 		= $memResult->first_name;
 				$lastName 		= $memResult->last_name;
@@ -133,7 +133,7 @@ $gMemResults	= $wpdb->get_results($gMemSql); ?>
 				$phone 				= empty($memResult->phone) ? "&mdash;" : $memResult->phone;
 				$statusId 		= $memResult->status;
 				$membershipId	= $memResult->membership_level_id;
-				$levelSql 		= "SELECT name FROM mm_membership_levels WHERE id = '" . $membershipId . "'";
+				$levelSql 		= "SELECT name FROM ". MGROUPS_PREFIX ."mm_membership_levels WHERE id = '" . $membershipId . "'";
 				$levelResult	= $wpdb->get_row($levelSql);
 				$membershipName	= $levelResult->name;
 				$redirecturl  		= "";

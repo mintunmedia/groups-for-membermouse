@@ -97,20 +97,20 @@ $group_id 	= get_option("mm_custom_field_group_id");
 	</thead>
 	<tbody>
 <?php	foreach($results as $res):
-			$leadermemSql 		= "SELECT name FROM mm_membership_levels WHERE id = '".$res -> leader_memlevel."'";
+			$leadermemSql 		= "SELECT name FROM ". MGROUPS_PREFIX ."mm_membership_levels WHERE id = '".$res -> leader_memlevel."'";
 			$leadermemResult	= $wpdb -> get_row($leadermemSql);
 			$leaderCost			= "";
 			if(!empty($res -> group_leader_cost)):
-				$leaderSql			= "SELECT name FROM mm_products WHERE id = '".$res -> group_leader_cost."'";
+				$leaderSql			= "SELECT name FROM ". MGROUPS_PREFIX ."mm_products WHERE id = '".$res -> group_leader_cost."'";
 				$leaderResult		= $wpdb -> get_row($leaderSql);
 				$leaderCost			= $leaderResult -> name;
 			endif;
 
-			$membermemSql 		= "SELECT name FROM mm_membership_levels WHERE id = '".$res -> member_memlevel."'";
+			$membermemSql 		= "SELECT name FROM ". MGROUPS_PREFIX ."mm_membership_levels WHERE id = '".$res -> member_memlevel."'";
 			$membermemResult	= $wpdb -> get_row($membermemSql);
 			$memberCost			= "";
 			if(!empty($res -> group_member_cost)):
-				$memberSql			= "SELECT name FROM mm_products WHERE id = '".$res -> group_member_cost."'";
+				$memberSql			= "SELECT name FROM ". MGROUPS_PREFIX ."mm_products WHERE id = '".$res -> group_member_cost."'";
 				$memberResult		= $wpdb -> get_row($memberSql);
 				$memberCost			= $memberResult -> name;
 			endif;
@@ -152,7 +152,7 @@ if($noticeCount > 0):?>
 	<div class="group_notices">
 		<h3>Notices</h3>
 		<table class="widefat" id="mm-data-grid">
-			<thead>
+		<thead>
 				<tr>
 					<th>Name</th>
 					<th width="60px">Action</th>

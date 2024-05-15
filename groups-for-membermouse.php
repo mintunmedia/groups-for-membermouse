@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.3.4
+ * Version: 2.3.5
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -19,6 +19,10 @@ if (!(DEFINED('MGROUP_PATH'))) DEFINE('MGROUP_PATH', plugin_dir_path(__FILE__));
 if (!(DEFINED('MGROUP_IMG'))) DEFINE('MGROUP_IMG', plugins_url('images/', __FILE__));
 
 define('MGROUP_TESTING', false);
+
+global $wpdb;
+$useLegacyDB = get_option("mm-option-use-legacy-db", null); // checking for custom option that's set in MM ^3.0. Allowing for logic to set the appropriate DB prefix
+define('MGROUPS_PREFIX', $useLegacyDB === null || $useLegacyDB == 1 ? '' : $wpdb->prefix);
 
 /**
  * Local Logging for Plugin.

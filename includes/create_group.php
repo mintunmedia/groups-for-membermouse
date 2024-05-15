@@ -32,10 +32,10 @@ if(count($data) > 0):
 		$group_size			= $groupResult -> group_size;
 	endif;
 endif;
-$leaderSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM mm_membership_level_products AS lp LEFT JOIN mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$leader_memlevel."' ORDER BY p.name ASC";
+$leaderSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM ". MGROUPS_PREFIX ."mm_membership_level_products AS lp LEFT JOIN ". MGROUPS_PREFIX ."mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$leader_memlevel."' ORDER BY p.name ASC";
 $leaderResults	= $wpdb -> get_results($leaderSql);
 
-$memberSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM mm_membership_level_products AS lp LEFT JOIN mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$member_memlevel."' ORDER BY p.name ASC";
+$memberSql		= "SELECT lp.product_id AS product_id,p.id AS id,p.name AS name FROM ". MGROUPS_PREFIX ."mm_membership_level_products AS lp LEFT JOIN ". MGROUPS_PREFIX ."mm_products AS p ON lp.product_id = p.id WHERE lp.membership_id ='".$member_memlevel."' ORDER BY p.name ASC";
 $memberResults	= $wpdb -> get_results($memberSql);
 ?>
 <div id="group_popup_container">
@@ -76,7 +76,6 @@ $memberResults	= $wpdb -> get_results($memberSql);
 						<div id="leadermemLoading" style="display:none;">
 							<i class="fa fa-circle-o-notch fa-spin fa-2x" aria-hidden="true"></i>
 						</div>
-
 					</div>
 					<div class="groupError" id="leadermemlevelErr"></div>
 				</td>
