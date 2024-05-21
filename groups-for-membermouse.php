@@ -96,6 +96,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 				add_action('admin_init', array($this, 'check_db_version'));
 				add_action('mm_member_add', array(&$this, 'MemberMouseGroupMemberAdded'));
 				add_action('mm_member_status_change', array(&$this, 'MemberMouseGroupLeaderStatus'));
+				add_action('mm_payment_received', array($this, 'membership_changed_handler'));
 				add_action('mm_member_membership_change', array($this, 'membership_changed_handler'));
 				add_action('admin_head', array(&$this, 'MemberMouseGroupOptionUpdate'));
 				add_shortcode('MM_Group_SignUp_Link', array(&$this, 'MemberMouseGroupPurchaseLinkShortcode'));
@@ -914,12 +915,15 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 						$original_group_template = $this->get_group_template_by_id($group->group_template_id);
 
-						// Don't change group name if it's already been changed.
-						if ($group->group_name !== $original_group_template->name) {
-							$groupName = $group->group_name;
-						}
+						// If we
+						if($template_id != $original_group_template->id) {
+							// Don't change group name if it's already been changed.
+							if ($group->group_name !== $original_group_template->name) {
+								$groupName = $group->group_name;
+							}
 
-						$wpdb->update($wpdb->prefix . "group_sets", array('group_template_id' => $template_id, 'group_size' => $groupSize, 'group_name' => $groupName), array('id' => $group->id));
+							$wpdb->update($wpdb->prefix . "group_sets", array('group_template_id' => $template_id, 'group_size' => $groupSize, 'group_name' => $groupName), array('id' => $group->id));
+						}
 					} else {
 						// Create Group
 						$sql 				= "INSERT INTO {$wpdb->prefix}group_sets (id,group_template_id,group_name,group_size,group_leader,group_status,createdDate,modifiedDate)VALUES('','" . $template_id . "','" . $groupName . "','" . $groupSize . "','" . $memberId . "','1',now(),now())";
