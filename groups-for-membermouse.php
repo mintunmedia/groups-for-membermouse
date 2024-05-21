@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.3.5
+ * Version: 2.3.6
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -915,7 +915,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 						$original_group_template = $this->get_group_template_by_id($group->group_template_id);
 
-						// If we
+						// Only update if the new group type is different. Necessary when the callback is fired twice, as in the case of a purchase & membership change.
 						if($template_id != $original_group_template->id) {
 							// Don't change group name if it's already been changed.
 							if ($group->group_name !== $original_group_template->name) {
