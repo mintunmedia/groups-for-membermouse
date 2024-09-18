@@ -2,7 +2,7 @@
 Contributors: mintunmedia,roymckenzie
 Tags: membermouse, member management, membership site, groups, mm groups, groups for membermouse, membermouse groups
 Requires at least: 4.8
-Tested up to: 6.5.3
+Tested up to: 6.6.2
 Requires PHP: 5.6
 Stable tag: trunk
 License: GPLv3
@@ -68,6 +68,9 @@ Displays a member list (like the Group Leader Dashboard but without admin featur
 1. The Groups Dashboard
 
 == Changelog ==
+
+2.4.1
+- ENHANCEMENT: Improved compatibility with PHP8 for the Admin Dashboard
 
 2.3.5
 - BUG FIX: There was a compatibility bug when using Membermouse 3.0 and up due to their database changes. This bug has been fixed and backwards compatibility and support has been added to prevent issues if running a membermouse version prior to 3.0 and up.
