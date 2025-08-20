@@ -608,6 +608,11 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		}
 
 		public static function MemberMouseGroupPagination($count, $page, $start, $targetpage, $limit = 10, $type = "groups") {
+			$count = (int)$count;
+			$page = (int)$page;
+			$start = (int)$start;
+			$limit = max(1, (int)$limit);
+
 			$prev = $page - 1;
 			$next = $page + 1;
 			$lastpage = ceil($count / $limit);
