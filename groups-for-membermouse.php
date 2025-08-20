@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Groups for MemberMouse
  * Description: Adds group support to MemberMouse. You can define different types of groups allowing a single customer to pay for multiple seats and members to join existing groups for free or for a price based on how you configure the group type. <strong>Requires MemberMouse to activate and use.</strong>
- * Version: 2.4.1
+ * Version: 2.4.2
  * Author: Mintun Media
  * Plugin URI:  https://www.mintunmedia.com
  * Author URI:  https://www.mintunmedia.com
@@ -84,6 +84,8 @@ if (!class_exists('MemberMouseGroupAddon')) {
 
 		const MM_PLUGIN_PATH = 'membermouse/index.php';
 
+		public $plugin_name;
+
 		function __construct() {
 			$this->plugin_name = basename(dirname(__FILE__)) . '/' . basename(__FILE__);
 
@@ -134,27 +136,16 @@ if (!class_exists('MemberMouseGroupAddon')) {
 		public function check_db_version() {
 			global $wpdb;
 
-			$plugin_data = get_plugin_data(MGROUP_PATH . 'groups-for-membermouse.php');
-			$plugin_version = explode('.', $plugin_data['Version']);
-			$plugin_version_major = (int) reset($plugin_version);
-			$plugin_version_middle = (int) $plugin_version[1];
-			$plugin_version_minor = (int) end($plugin_version);
+			$dbname = $wpdb->dbname;
+			$table_name = $wpdb->prefix . "group_sets_members";
+			$is_status_col = $wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'member_status'");
 
-			/**
-			 * 2.0.8 DB Update
-			 * - Add member_status to wp_group_sets_members
-			 * @date 9.28.2021
-			 */
-			if ($plugin_version_major <= 2 && $plugin_version_middle === 0 && $plugin_version_minor <= 9) {
-				$dbname = $wpdb->dbname;
-				$table_name = $wpdb->prefix . "group_sets_members";
-				$is_status_col = $wpdb->get_results("SELECT `COLUMN_NAME` FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `table_name` = '{$table_name}' AND `TABLE_SCHEMA` = '{$dbname}' AND `COLUMN_NAME` = 'member_status'");
-				if (empty($is_status_col)) :
-					$add_status_column = "ALTER TABLE `{$table_name}` ADD `member_status` INT(11) DEFAULT 1 AFTER `member_id`; ";
-					$wpdb->query($add_status_column);
-				endif;
+			if (empty($is_status_col)) {
+				$add_status_column = "ALTER TABLE `{$table_name}` ADD `member_status` INT(11) DEFAULT 1 AFTER `member_id`; ";
+				$wpdb->query($add_status_column);
 			}
 		}
+
 		/**
 		 * Load Extra Groups Classes
 		 *
@@ -616,7 +607,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 			include_once(dirname(__FILE__) . "/includes/manage_groups.php");
 		}
 
-		public static function MemberMouseGroupPagination($limit = 10, $count, $page, $start, $targetpage, $type = "groups") {
+		public static function MemberMouseGroupPagination($count, $page, $start, $targetpage, $limit = 10, $type = "groups") {
 			$prev = $page - 1;
 			$next = $page + 1;
 			$lastpage = ceil($count / $limit);
@@ -916,7 +907,7 @@ if (!class_exists('MemberMouseGroupAddon')) {
 						$original_group_template = $this->get_group_template_by_id($group->group_template_id);
 
 						// Only update if the new group type is different. Necessary when the callback is fired twice, as in the case of a purchase & membership change.
-						if($template_id != $original_group_template->id) {
+						if ($template_id != $original_group_template->id) {
 							// Don't change group name if it's already been changed.
 							if ($group->group_name !== $original_group_template->name) {
 								$groupName = $group->group_name;
