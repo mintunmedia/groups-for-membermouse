@@ -9,8 +9,8 @@ $total_res	= $wpdb->get_row($total_sql);
 $count			= $total_res->total;
 $show				= 0;
 
-if (isset($_GET['show']) && !empty($_GET['show'])) {
-	$show = $_GET['show'];
+if (isset($_GET['show']) && !empty($_GET['show']) && is_numeric($_GET['show'])) {
+	$show = (int) $_GET['show'];
 }
 
 if (!empty($show)) {
@@ -21,8 +21,8 @@ if (!empty($show)) {
 
 $page = 0;
 
-if (isset($_GET['p']) && !empty($_GET['p'])) {
-	$page 	= $_GET['p'];
+if (isset($_GET['p']) && !empty($_GET['p']) && is_numeric($_GET['p'])) {
+	$page 	= (int) $_GET['p'];
 	$start 	= ($page - 1) * $limit;
 } else {
 	$start	= 0;
@@ -38,7 +38,7 @@ if (!empty($show)) {
 	$targetpage .= '&show=' . $show;
 }
 
-$sql			= "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE 1 ORDER BY createdDate DESC LIMIT $start, $limit";
+$sql			= "SELECT * FROM " . $wpdb->prefix . "group_sets WHERE 1 ORDER BY createdDate DESC LIMIT " . (int) $start . ", " . (int) $limit;
 $results	= $wpdb->get_results($sql);
 ?>
 
@@ -59,7 +59,7 @@ $results	= $wpdb->get_results($sql);
 <?php if (count($results) == 0) { ?>
 	<p><em>No groups created yet.</em></p>
 <?php } else { ?>
-	<?php echo MemberMouseGroupAddon::MemberMouseGroupPagination($limit, $count, $page, $start, $targetpage, 'groups'); ?>
+	<?php echo MemberMouseGroupAddon::MemberMouseGroupPagination($count, $page, $start, $targetpage, $limit, 'groups'); ?>
 
 	<table class="widefat" id="mm-data-grid" style="width:800px;">
 		<thead>
