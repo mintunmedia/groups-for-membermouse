@@ -7,8 +7,8 @@ $totalSql	= "SELECT COUNT(id) AS total FROM ".$wpdb -> prefix."group_items WHERE
 $totalRes	= $wpdb -> get_row($totalSql);
 $count		= $totalRes -> total;
 $show		= 0;
-if( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_int( $_GET['notice'] ) ) {
-	$notice 	= $_GET['notice'];
+if( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_numeric( $_GET['notice'] ) ) {
+	$notice 	= (int) $_GET['notice'];
 	$delSql		= "DELETE FROM ". $wpdb->prefix . "group_notices WHERE id = '" . $notice . "'";
 	$delQuery	= $wpdb->query( $delSql );
 	if ( $delQuery ) { ?>
@@ -22,8 +22,8 @@ if( isset( $_GET['notice'] ) && ! empty( $_GET['notice'] ) && is_int( $_GET['not
 <?php
 	}
 }
-if ( isset( $_GET['show'] ) && ! empty( $_GET['show'] ) && is_int( $_GET['show'] ) ) {
-	$show = $_GET['show'];
+if ( isset( $_GET['show'] ) && ! empty( $_GET['show'] ) && is_numeric( $_GET['show'] ) ) {
+	$show = (int) $_GET['show'];
 }
 
 if ( ! empty ($show) ) {
@@ -34,8 +34,8 @@ if ( ! empty ($show) ) {
 
 $page = 0;
 
-if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_int( $_GET['p'] ) ) {
-	$page 	= $_GET['p'];
+if ( isset( $_GET['p'] ) && ! empty( $_GET['p'] ) && is_numeric( $_GET['p'] ) ) {
+	$page 	= (int) $_GET['p'];
 	$start 	= ( $page - 1 ) * $limit;
 } else {
 	$start	= 0;
@@ -50,7 +50,7 @@ $targetpage = 'admin.php?page=groupsformm';
 if ( !empty( $show ) ) {
 	$targetpage .= '&show='.$show;
 }
-$sql 		= "SELECT * FROM ".$wpdb -> prefix."group_items WHERE 1 ORDER BY createdDate DESC LIMIT $start, $limit";
+$sql 		= "SELECT * FROM ".$wpdb -> prefix."group_items WHERE 1 ORDER BY createdDate DESC LIMIT " . (int) $start . ", " . (int) $limit;
 $results	= $wpdb->get_results($sql);
 
 $group_id 	= get_option("mm_custom_field_group_id");
@@ -81,7 +81,7 @@ $group_id 	= get_option("mm_custom_field_group_id");
 <?php if(count($results) == 0) { ?>
 <p style="margin-top:90px;"><em>No group types defined.</em></p>
 <?php } else { ?>
-<?php echo MemberMouseGroupAddon::MemberMouseGroupPagination($limit, $count, $page, $start, $targetpage, 'group types');?>
+<?php echo MemberMouseGroupAddon::MemberMouseGroupPagination($count, $page, $start, $targetpage, $limit, 'group types');?>
 <table class="widefat" id="mm-data-grid">
 	<thead>
 		<tr>

@@ -91,7 +91,7 @@ $members  = $totalRes->total;
 // Show # Results Handler
 $show	= 0;
 if (isset($_GET["show"]) && !empty($_GET["show"]) && is_numeric($_GET['show'])) {
-	$show = $_GET["show"];
+	$show = (int) $_GET["show"];
 }
 
 if (!empty($show)) {
@@ -103,7 +103,7 @@ if (!empty($show)) {
 // Page # Handler
 $page = 0;
 if (isset($_GET['p']) && !empty($_GET['p']) && is_numeric($_GET['p'])) {
-	$page 	= $_GET['p'];
+	$page 	= (int) $_GET['p'];
 	$start 	= ($page - 1) * $limit;
 } else {
 	$start	= 0;
@@ -114,7 +114,7 @@ if ($page == 0) {
 }
 
 // Perform Actual SQL to pull results with limit and page
-$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status = 1 ORDER BY createdDate DESC LIMIT $start, $limit";
+$gMemSql = "SELECT * FROM " . $wpdb->prefix . "group_sets_members WHERE group_id = '" . $gid . "' AND member_status = 1 ORDER BY createdDate DESC LIMIT " . (int) $start . ", " . (int) $limit;
 $gMemResults	= $wpdb->get_results($gMemSql);
 
 
@@ -140,7 +140,7 @@ if (!empty($show)) {
 	<p><em>No members found.</em></p>
 <?php } else {
 
-	echo MemberMouseGroupAddon::MemberMouseGroupPagination($limit, $members, $page, $start, $targetpage, 'members'); ?>
+	echo MemberMouseGroupAddon::MemberMouseGroupPagination($members, $page, $start, $targetpage, $limit, 'members'); ?>
 	<table class="widefat" id="mm-data-grid" style="width:96%">
 		<thead>
 			<tr>
